@@ -3,7 +3,6 @@
 /client/node_modules
 /client/build
 /client/pdf.js
-/client/public/pdfjs
 
 /server/node_modules
 /server/src/config/config.json
