@@ -1,0 +1,16 @@
+.wrapper { 
+    height: 93vh;
+    max-width: 100vw;
+    overflow: auto;
+}
+
+.page {
+    display: flex; 
+    justify-content: center; 
+    border: 1px solid black;
+}
+
+.pageNumber {
+    text-align: center;
+    color: black;
+}
