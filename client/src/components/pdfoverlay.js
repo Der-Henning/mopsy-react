@@ -17,7 +17,7 @@ export default class PDFOverlay extends Component {
             /* <Carousel className={styles.overlay} interval={0}>
                 <Carousel.Item> */
                     <PDF 
-                        url={"/proxy?url=http://localhost/dvtest/A1_275_3_8901.pdf"}
+                        url={"https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"}
                         page={1}
                         searchText={"text"}
                     />

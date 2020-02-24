@@ -1,0 +1,18 @@
+.cardTr {
+    text-align: left;
+    cursor: pointer;
+}
+
+.cardTr:hover {
+    background-color: lightblue;
+}
+
+.cardTr td {
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.cardTr td:first-child {
+    padding-right: 5px;
+    text-align: center;
+}

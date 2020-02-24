@@ -27,6 +27,11 @@ server.get('*', (req,res) =>{
   res.redirect('/');
 });
 
+server.use(function(err, req, res, next) {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
+
 models.sequelize.sync().then(() => {
   server.listen(port, () => {
     console.log('Express server listening on port ' + port);

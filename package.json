@@ -16,5 +16,7 @@
   "dependencies": {
     "concurrently": "^5.1.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "prettier": "^1.19.1"
+  }
 }

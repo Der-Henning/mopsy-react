@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import Searchbar from '../components/searchbar';
-import styles from '../styles/home.module.css';
+import React, { Component } from "react";
+import { Searchbar } from "../components";
+import styles from "../styles/home.module.css";
 
 export default class Home extends Component {
   render() {
@@ -10,5 +10,4 @@ export default class Home extends Component {
       </div>
     );
   }
-
 }

@@ -1,0 +1,13 @@
+.wrapper {
+    width:  calc(100% - 5px);
+    height: 100%;
+    border: 0;
+}
+
+.resizer {
+    height: 100%;
+    width: 5px;
+    float: left;
+    background-color: gray;
+    cursor: ew-resize;
+}
