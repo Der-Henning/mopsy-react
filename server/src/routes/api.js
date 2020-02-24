@@ -65,16 +65,16 @@ router.post("/search", auth, async (req, res, next) => {
     },
     (err, httpResponse, body) => {
       try {
-        if (err) {
-          res.status(500).send(err);
-        } else {
+        // if (err) {
+        //   res.status(500).send(err);
+        // } else {
           if (body.responseHeader.status == 0) {
             res.status(200).send(body);
             next();
           } else {
             res.status(body.responseHeader.status).send("SOLR backend error");
           }
-        }
+        //}
       } catch (err) {
         res.status(500).send(err);
       }
