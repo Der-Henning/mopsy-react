@@ -49,21 +49,22 @@ router.post("/search", auth, async (req, res, next) => {
       }
     });
   }
-  try {
-    request.post(
-      {
-        url: solr + "/search",
-        body: {
-          params: {
-            q: q,
-            start: start,
-            fq: fq,
-            "hl.snippets": 10
-          }
-        },
-        json: true
+
+  request.post(
+    {
+      url: solr + "/search",
+      body: {
+        params: {
+          q: q,
+          start: start,
+          fq: fq,
+          "hl.snippets": 10
+        }
       },
-      (err, httpResponse, body) => {
+      json: true
+    },
+    (err, httpResponse, body) => {
+      try {
         if (err) {
           res.status(500).send(err);
         } else {
@@ -74,11 +75,11 @@ router.post("/search", auth, async (req, res, next) => {
             res.status(body.responseHeader.status).send("SOLR backend error");
           }
         }
+      } catch (err) {
+        res.status(500).send(err);
       }
-    );
-  } catch (err) {
-    res.status(500).send(err);
-  }
+    }
+  );
 });
 
 // post /search process to save search log
