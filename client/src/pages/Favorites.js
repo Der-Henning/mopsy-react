@@ -1,17 +1,16 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
-import { Table, Spinner } from "react-bootstrap";
-import styles from "../styles/favorites.module.css";
+import { Table, Spinner, Button } from "react-bootstrap";
 import Axios from "axios";
-import Cookies from "universal-cookie";
-import qs from "qs";
+import { Trash2, ExternalLink } from "react-feather";
 
 class Favorites extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isFetching: true,
-      data: null
+      data: null,
+      error: null
     };
     if (!this.props.loginId) this.props.history.push("/");
   }
@@ -25,61 +24,105 @@ class Favorites extends Component {
   }
 
   fetchData() {
-    const cookies = new Cookies();
-    const token = cookies.get("token");
+    const { token, api } = this.props;
     this.setState({
       isFetching: true,
       data: null
     });
-    Axios.post("/api/getfavorites", qs.stringify({}), {
+    Axios.get(api + "/favorite", {
       headers: { "x-access-token": token }
     }).then(res => {
       this.setState({
         isFetching: false,
-        data: res.data
+        data: res.data,
+        error: null
       });
-      console.log(res);
+    }).catch(err => {
+      if (err.response)
+        this.setState({error: err.response.data, isFetching: false});
     });
   }
 
+  _removeFavorite = DocId => {
+    const { token, api } = this.props;
+    Axios.put(api + "/favorite/" + DocId, {}, {
+      headers: { "x-access-token": token}
+    }).then(() => {
+      this.fetchData();
+    })
+  }
+
   body() {
-    const { isFetching } = this.state;
+    const { isFetching, data, error } = this.state;
     if (isFetching)
       return (
-        <div className={styles.spinner}>
-          <Spinner animation="border" variant="primary" />
+        <div style={{
+          width: "50px",
+          margin: "0 auto",
+          marginTop: "50px"
+        }}>
+          <Spinner
+            animation="border" 
+            variant="primary" 
+          />
         </div>
       );
+    if (error)
+      return (
+        <div>{error.status.message}</div>
+      );
     return (
-      <Table striped hover>
+      <Table striped hover style={{margin: "0"}}>
         <thead>
           <tr>
             <th></th>
-            <th>Document</th>
-            <th>last change</th>
+            <th>Regelung</th>
+            <th>Stand</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>1</td>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-          </tr>
+          {data.map(doc => {return (
+            <tr key={doc.DocId}>
+              <td>
+                <Button
+                  variant="link"
+                  onClick={()=> window.open(doc.link, "_blank")}
+                >
+                  <ExternalLink />
+                </Button>
+              </td>
+              <td>
+                <i>{doc.document}</i>
+                <span> - {doc.title}</span>
+                <br/>
+                <small>{doc.zusatz}</small>
+              </td>
+              <td style={{whiteSpace: "nowrap"}}>{doc.ScanDate}</td>
+              <td>
+                <Button
+                  variant="link" 
+                  onClick={() => {this._removeFavorite(doc.DocId)}}
+                >
+                  <Trash2 />
+                </Button>
+              </td>
+            </tr>
+          )})}
         </tbody>
       </Table>
     );
   }
 
   render() {
-    return <div className={styles.main}>{this.body()}</div>;
+    const { contendHeight } = this.props;
+    return (
+      <div style={{
+        height: contendHeight,
+        overflowY: "auto"
+      }}>
+        {this.body()}
+      </div>)
   }
 }
 

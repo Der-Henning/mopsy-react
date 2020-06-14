@@ -2,15 +2,16 @@ import React, { Component } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Axios from "axios";
 import Cookies from "universal-cookie";
-import styles from "./styles/App.module.css";
-import qs from "qs";
 import { Header } from "./components";
-import { Home, Search, Favorites, Login, Register } from "./pages";
+import { Home, Search, Favorites, Login, Register, Viewer, About } from "./pages";
 
 class App extends Component {
   constructor(props) {
     super(props);
+    const cookies = new Cookies();
     this.state = {
+      api: "/api/v1",
+      token: cookies.get("token"),
       loginId: null,
       showHeader: true,
       stickyHeader: true,
@@ -19,26 +20,24 @@ class App extends Component {
       windowWidth: 0,
       pdfHeight: 0,
       pdfWidth: 0,
-      headerHeight: 0
+      headerHeight: 0,
+      theme: cookies.get("theme") || "light"
     };
-    this.setLoginId = this.setLoginId.bind(this);
-    this.showHeader = this.showHeader.bind(this);
-    this.updateDimensions = this.updateDimensions.bind(this);
-    this.setHeaderHeight = this.setHeaderHeight.bind(this);
   }
 
   componentDidMount() {
-    this.updateDimensions();
-    window.addEventListener("resize", this.updateDimensions);
+    this._updateDimensions();
+    window.addEventListener("resize", this._updateDimensions);
 
     const cookies = new Cookies();
     const token = cookies.get("token");
+    const { api } = this.state;
     if (!token) {
-      Axios.post("/api/newtoken").then(res => {
-        this.setCookie(res.headers["x-auth-token"]);
+      Axios.get(api + "/user/newtoken").then(res => {
+        this._setToken(res.headers["x-auth-token"]);
       });
     } else {
-      Axios.post("/api/getlogin", qs.stringify({}), {
+      Axios.get(api + "/user/loginid", {
         headers: { "x-access-token": token }
       }).then(res => {
         if (res.data.loginId) this.setState({ loginId: res.data.loginId });
@@ -46,17 +45,26 @@ class App extends Component {
     }
   }
 
-  setHeaderHeight(headerHeight) {
+  toggleTheme = () => {
+    const cookies = new Cookies();
+    var theme = (this.state.theme === "light") ? "dark" : "light";
+    this.setState({theme: theme})
+    cookies.set("theme", theme, {
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+    });
+  }
+
+  setHeaderHeight = (headerHeight) => {
     this.setState({ headerHeight }, () => {
-      this.updateDimensions();
+      this._updateDimensions();
     });
   }
 
   componentWillUnmount() {
-    window.removeEventListener("resize", this.updateDimensions);
+    window.removeEventListener("resize", this._updateDimensions);
   }
 
-  updateDimensions() {
+  _updateDimensions = () => {
     let windowWidth = typeof window !== "undefined" ? window.innerWidth : 0;
     let windowHeight = typeof window !== "undefined" ? window.innerHeight : 0;
     let pdfHeight = windowHeight - this.state.headerHeight;
@@ -71,19 +79,19 @@ class App extends Component {
     });
   }
 
-  setCookie(token) {
+  _setToken = token => {
     const cookies = new Cookies();
     cookies.set("token", token, {
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
     });
   }
 
-  setLoginId(loginId, token) {
-    this.setCookie(token);
+  setLoginId = (loginId, token) => {
+    this._setToken(token);
     this.setState({ loginId: loginId });
   }
 
-  showHeader(show) {
+  showHeader = show => {
     this.setState({ showHeader: show });
   }
 
@@ -92,40 +100,75 @@ class App extends Component {
   }
 
   render() {
+    const { api, token, theme, showPdfViewer, loginId, showHeader, stickyHeader, pdfWidth, pdfHeight } = this.state;
     return (
-      <div className={styles.App}>
+      <div 
+        data-theme={theme === 'light' ? "light" : "dark"}
+        style={showPdfViewer ? {} : {overflowY: "auto"} }
+      >
         <Router>
           <Header
-            loginId={this.state.loginId}
+            loginId={loginId}
             setLoginId={this.setLoginId}
-            visible={this.state.showHeader}
-            sticky={this.state.stickyHeader}
+            visible={showHeader}
+            sticky={stickyHeader}
             setHeaderHeight={this.setHeaderHeight}
+            api={api}
+            theme={theme}
+            toggleTheme={this.toggleTheme}
           />
           <Switch>
-            <Route exact path="/" component={Home} />
+            <Route 
+              exact path="/"
+              render = { props => (
+                <Home
+                  token={token}
+                  api={api}
+                />
+              )}
+            />
             <Route
               path="/search"
               render={props => (
                 <Search
-                  showPdfViewer={this.state.showPdfViewer}
-                  pdfWidth={this.state.pdfWidth}
-                  pdfHeight={this.state.pdfHeight}
+                  api={api}
+                  token={token}
+                  showPdfViewer={showPdfViewer}
+                  pdfWidth={pdfWidth}
+                  pdfHeight={pdfHeight}
+                  theme={theme}
                   resizePDF={this.resizePDF}
                 />
               )}
             />
             <Route
               path="/favorites"
-              render={props => <Favorites loginId={this.state.loginId} />}
+              render={props => (
+                <Favorites 
+                  loginId={loginId} 
+                  api={api}
+                  token={token}
+                  contendHeight={pdfHeight}
+                />
+              )}
             />
-            <Route path="/about" component={Home} />
+            <Route 
+              path="/viewer"
+              render={props => (
+                <Viewer 
+                  pdfHeight={pdfHeight}
+                />
+              )}
+            />
+            <Route path="/about" component={About} />
             <Route
               path="/login"
               render={props => (
                 <Login
+                  api={api}
+                  token={token}
                   setLoginId={this.setLoginId}
-                  loginId={this.state.loginId}
+                  loginId={loginId}
                 />
               )}
             />
@@ -133,8 +176,10 @@ class App extends Component {
               path="/register"
               render={props => (
                 <Register
+                  api={api}
+                  token={token}
                   setLoginId={this.setLoginId}
-                  loginId={this.state.loginId}
+                  loginId={loginId}
                 />
               )}
             />

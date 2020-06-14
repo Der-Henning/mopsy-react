@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import Axios from "axios";
-import Cookies from "universal-cookie";
 import qs from "qs";
 import styles from "../styles/login.module.css";
 
@@ -12,26 +11,26 @@ class Login extends Component {
     this.state = {
       error: null
     };
-    if (this.props.loginId) this.props.history.push("/");
+    if (props.loginId) this.props.history.push("/");
   }
 
   componentDidUpdate() {
     if (this.props.loginId) this.props.history.push("/");
   }
 
-  error() {
-    if (this.state.error)
-      return <Form.Text className={styles.error}>{this.state.error}</Form.Text>;
+  error = () => {
+    const { error } = this.state;
+    if (error)
+      return <Form.Text className={styles.error}>{error}</Form.Text>;
   }
 
-  login(e) {
+  login = e => {
     e.preventDefault();
     const username = e.target.username.value;
     const password = e.target.password.value;
-    const cookies = new Cookies();
-    const token = cookies.get("token");
+    const { api, token } = this.props;
     Axios.post(
-      "/api/login",
+      api + "/user/login",
       qs.stringify({
         username: username,
         password: password
@@ -51,8 +50,9 @@ class Login extends Component {
   }
 
   render() {
+    const { error } = this.state;
     return (
-      <Form onSubmit={this.login.bind(this)} className={styles.wrapper}>
+      <Form onSubmit={this.login} className={styles.wrapper}>
         <Form.Group>
           <Form.Label>Benutzername</Form.Label>
           <Form.Control
@@ -72,8 +72,11 @@ class Login extends Component {
             className="mr-sm-2"
           />
         </Form.Group>
+        <Button variant="link">
+          Passwort vergessen?
+        </Button>
         <Form.Text className={styles.error}>
-          {this.state.error ? this.state.error : ""}
+          {error ? error : ""}
         </Form.Text>
         <Button variant="outline-success" type="submit">
           Login

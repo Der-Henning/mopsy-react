@@ -1,32 +1,40 @@
 import React, { Component } from "react";
-import { Accordion, Card, Button } from "react-bootstrap";
+import { Accordion, Card } from "react-bootstrap";
 import Parser from "html-react-parser";
 import styles from "../styles/results.module.css";
+import { Star, ExternalLink } from "react-feather";
+import Axios from "axios";
 
 class Results extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: props.data,
-      activeDoc: props.activeDoc
-    };
-    this.handleClick = this.handleClick.bind(this);
-    this.setPage = this.setPage.bind(this);
+
+  componentDidMount() {
+    const { data } = this.props;
+    if (data && data.response.docs.length > 0)
+      this.props.setActiveDoc(data.response.docs[0].id);
   }
 
-  cardBody(docId) {
+  _cardBody = docId => {
+    const { data } = this.props;
+    const highlights = data.highlighting[docId];
     var pages = [];
-    const highlights = this.props.data.highlighting[docId];
+    if (!highlights.fetched) {
+      return <div>Loading ...</div>
+    }
     for (let key in highlights) {
       if (key.split("_")[0] === "page") {
         pages.push(
           <tr
             key={key}
             className={styles.cardTr}
-            onClick={this.setPage.bind(null, key.split("_")[1])}
+            style={{ textAlign: "left", cursor: "pointer"}}
+            onClick={this._setPage.bind(null, key.split("_")[1])}
           >
-            <td>{key.split("_")[1]}</td>
-            <td>{Parser(highlights[key].join(" -- "))}</td>
+            <td style={{ padding: "3px 5px 3px 1px", textAlign: "center"}}>
+              {key.split("_")[1]}
+            </td>
+            <td style={{ padding: "3px 1px"}}>
+              {Parser(highlights[key].join(" ... "))}
+            </td>
           </tr>
         );
       }
@@ -38,16 +46,11 @@ class Results extends Component {
     );
   }
 
-  setPage(page) {
+  _setPage = page => {
     this.props.setActivePage(parseInt(page));
   }
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.activeDoc !== this.props.activeDoc)
-      this.setState({ activeDoc: this.props.activeDoc });
-  }
-
-  getVal(doc, field) {
+  _getVal = (doc, field) => {
     const hl = this.props.data.highlighting;
     if (hl && hl[doc.id] && hl[doc.id][field]) {
       return Parser(hl[doc.id][field][0]);
@@ -55,42 +58,93 @@ class Results extends Component {
     return doc[field];
   }
 
-  handleClick(docId) {
-    this.props.setActiveDoc(docId === this.state.activeDoc ? null : docId);
-    //  this.setState({activeDoc: (docId === this.state.activeDoc) ? null : docId});
+  _handleClick = docId => {
+    this.props.setActiveDoc(docId === this.props.activeDoc ? null : docId);
   }
 
-  componentDidMount() {
-    var data = this.props.data;
-    if (data && data.response.docs.length > 0)
-      this.props.setActiveDoc(data.response.docs[0].id);
+  _getStar = docId => {
+    const { api, token } = this.props;
+    Axios.get(
+      api + "/favorite/" + docId,
+      {
+        headers: { "x-access-token": token }
+      }
+    ).then(res => {
+      return res.data;
+    })
+  }
+
+  _starKlickHandler = index => {
+    const { api, token, data } = this.props;
+    Axios.put(
+      api + "/favorite/" + data.response.docs[index].id, {},
+      {
+        headers: { "x-access-token": token }
+      }
+    ).then(res => {
+      this.props.setFavorite(index, res.data);
+    })
   }
 
   render() {
+    var { data } = this.props;
     var docs = [];
-    var data = this.props.data;
     if (data) docs = data.response.docs;
     if (docs.length > 0) {
-      const Cards = docs.map(doc => (
+      const Cards = docs.map((doc, i) => (
         <Card key={doc.id}>
-          <Card.Header>
+          <Card.Header style={{cursor: "pointer"}}>
+            <div style={{display: "flex", width: "100%"}}>
             <Accordion.Toggle
-              as={Button}
-              variant="link"
+              as={Card.Header}
+              block={"true"}
               eventKey={doc.id}
-              onClick={this.handleClick.bind(null, doc.id)}
+              onClick={this._handleClick.bind(null, doc.id)}
+              style={{
+                textAlign: "left", 
+                paddingRight: "5px", 
+                width: "100%", 
+                paddingBottom: "0", 
+                border: "0", 
+                backgroundColor: "transparent"
+              }}
             >
-              {doc.document} - {doc.title}
+              <i>{this._getVal(doc, "document")}</i>
+              <span> - {this._getVal(doc, "title")}</span>
+            </Accordion.Toggle>
+            <ExternalLink 
+              size="30"
+              style={{cursor: "pointer", margin: "3px"}}
+              onClick={()=> window.open(doc.link, "_blank")}
+            />
+            <Star 
+              size="30"
+              style={{ fill: doc.isFavorite ? "yellow" : "none", cursor: "pointer", margin: "3px" }}
+              onClick={this._starKlickHandler.bind(null, i)}
+            /></div>
+            <Accordion.Toggle
+              as={Card.Header}
+              block={"true"}
+              eventKey={doc.id}
+              onClick={this._handleClick.bind(null, doc.id)}
+              style={{
+                textAlign: "left", 
+                border: "0", 
+                paddingTop: "0", 
+                backgroundColor: "transparent" 
+              }}
+            >
+              <small>{this._getVal(doc, "zusatz")}</small>
             </Accordion.Toggle>
           </Card.Header>
           <Accordion.Collapse eventKey={doc.id}>
-            <Card.Body>{this.cardBody(doc.id)}</Card.Body>
+            <Card.Body>{this._cardBody(doc.id)}</Card.Body>
           </Accordion.Collapse>
         </Card>
       ));
       return (
         <React.Fragment>
-          <Accordion activeKey={this.state.activeDoc}>{Cards}</Accordion>
+          <Accordion activeKey={this.props.activeDoc} >{Cards}</Accordion>
         </React.Fragment>
       );
     } else return <React.Fragment></React.Fragment>;

@@ -1,47 +1,33 @@
 import React, { Component } from "react";
 import { Navbar, Button, Nav, Form } from "react-bootstrap";
-import { NavLink } from "react-router-dom";
-import styles from "../styles/header.module.css";
+import { NavLink, Link } from "react-router-dom";
 import { withRouter } from "react-router-dom";
 import Axios from "axios";
 import Cookies from "universal-cookie";
-import qs from "qs";
+import { Menu, Sun } from "react-feather";
+import { Searchbar } from "../components";
 
 class Header extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loginId: props.loginId,
-      visible: props.visible,
-      sticky: props.sticky,
-      height: 0
-    };
-  }
-
   componentDidMount() {
     let height = this.barElement.clientHeight;
-    this.setState({ height });
     this.props.setHeaderHeight(height);
-  }
-
-  componentDidUpdate(prevProps) {
-    // if (prevProps.loginId !== this.props.loginId) this.setState({loginId: this.props.loginId});
-    if (prevProps !== this.props) this.setState(this.props);
   }
 
   logout(e) {
     e.preventDefault();
     const cookies = new Cookies();
     const token = cookies.get("token");
-    Axios.post("/api/logout", qs.stringify({}), {
+    const { api } = this.props;
+    Axios.get(api + "/user/logout", {
       headers: { "x-access-token": token }
     }).then(res => {
       this.props.setLoginId(null, res.headers["x-auth-token"]);
     });
   }
 
-  loginForm() {
-    if (this.state.loginId)
+  _getLoginForm() {
+    const { history, loginId } = this.props;
+    if (loginId)
       return (
         <Form inline onSubmit={this.logout.bind(this)}>
           <Button variant="outline-success" type="submit">
@@ -50,52 +36,94 @@ class Header extends Component {
         </Form>
       );
     return (
-      <Form inline>
-        <NavLink to={"/login"} className="nav-link">
+      <React.Fragment>
+        <NavLink 
+          to={"/login"} 
+          className="nav-link"
+          style={{color: "#007bff"}}
+        >
           Login
         </NavLink>
-        <Button
-          onClick={() => {
-            this.props.history.push("/register");
-          }}
-          variant="outline-primary"
-        >
-          Sign in
-        </Button>
-      </Form>
+        <Form inline>
+          <Button
+            onClick={() => {
+              history.push("/register");
+            }}
+            variant="outline-primary"
+          >
+            Sign in
+          </Button>
+
+        </Form>
+
+      </React.Fragment>
     );
   }
 
+  _getNavbarContent() {
+    const { loginId, searchText } = this.props;
+
+    if (false) {
+      return (<Searchbar searchText={searchText} />)
+    } else {
+      return (
+        <React.Fragment>
+          {loginId ? (
+            <NavLink to={"/favorites"} className="nav-link">
+              Favoriten
+            </NavLink>
+          ) : (
+            ""
+          )}
+          <NavLink to={"/about"} className="nav-link">
+            Über
+          </NavLink>
+        </React.Fragment>
+      )
+    }
+  }
+
   render() {
-    if (this.state.visible)
+    const { visible, sticky, theme } = this.props;
+    if (visible)
       return (
         <Navbar
-          bg="light"
+          bg={theme}
+          variant={theme}
           expand="md"
-          sticky={this.state.sticky ? "top" : ""}
+          sticky={sticky ? "top" : ""}
           ref={bar => {
             this.barElement = bar;
           }}
         >
-          <Navbar.Toggle aria-controls="basic-nav-bar-nav" />
+          <Navbar.Brand as={Link} to={"/"}>
+            MOPS-Y <i><small>Search</small></i>
+          </Navbar.Brand>
+          <Navbar.Toggle 
+            aria-controls="basic-nav-bar-nav" 
+            children={<Menu />}
+          />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mr-auto">
-              <NavLink to={"/"} className="nav-link">
-                {" "}
-                Home{" "}
-              </NavLink>
-              {this.state.loginId ? (
-                <NavLink to="/favorites" className="nav-link">
-                  Favorites
-                </NavLink>
-              ) : (
-                ""
-              )}
-              <NavLink to={"/about"} className="nav-link">
-                About
-              </NavLink>
+              {/* <NavLink to={"/"} className="nav-link">
+                <Home />
+              </NavLink> */}
+              {this._getNavbarContent()}
             </Nav>
-            {this.loginForm()}
+            <Nav>
+              {this._getLoginForm()}
+              <Form inline>
+                <Button 
+                  variant="link"
+                  onClick={() => {
+                    this.props.toggleTheme()
+                  }}
+                >
+                  <Sun />
+                </Button>
+              </Form>
+            </Nav>
+
           </Navbar.Collapse>
         </Navbar>
       );

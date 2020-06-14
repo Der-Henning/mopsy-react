@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import Axios from "axios";
-import Cookies from "universal-cookie";
 import qs from "qs";
 import styles from "../styles/login.module.css";
 
@@ -19,16 +18,17 @@ class Register extends Component {
     if (this.props.loginId) this.props.history.push("/");
   }
 
-  register(e) {
+  register = e => {
     e.preventDefault();
     const username = e.target.username.value;
     const password = e.target.password.value;
     const repPassword = e.target.repPassword.value;
     const email = e.target.email.value;
-    const cookies = new Cookies();
-    const token = cookies.get("token");
+    const { api, token } = this.props;
+    if (password !== repPassword) 
+      return this.setState({error: "Passwords don't match!"});
     Axios.post(
-      "/api/register",
+      api + "/user/register",
       qs.stringify({
         username: username,
         password: password,
@@ -42,13 +42,14 @@ class Register extends Component {
         }
       })
       .catch(err => {
-        if (err.response) this.setState({ error: err.response.data });
+        if (err.response) this.setState({ error: err.response.data.status.message });
       });
   }
 
   render() {
+    const { error } = this.state;
     return (
-      <Form onSubmit={this.register.bind(this)} className={styles.wrapper}>
+      <Form onSubmit={this.register} className={styles.wrapper}>
         <Form.Group>
           <Form.Label>Benutzername</Form.Label>
           <Form.Control
@@ -87,7 +88,7 @@ class Register extends Component {
           />
         </Form.Group>
         <Form.Text className={styles.error}>
-          {this.state.error ? this.state.error : ""}
+          {error ? error : ""}
         </Form.Text>
         <Button variant="outline-success" type="submit">
           Register

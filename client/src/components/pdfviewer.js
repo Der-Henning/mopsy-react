@@ -1,58 +1,62 @@
 import React, { Component } from "react";
-import styles from "../styles/pdfviewer.module.css";
-import { DraggableCore } from "react-draggable";
+import Axios from "axios";
+
+const styles = {
+  height: "100%",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+}
 
 export default class PDFViewer extends Component {
-  _isMounted = false;
-
   constructor(props) {
     super(props);
     this.state = {
-      url: props.url,
-      page: props.page || 1
-    };
-  }
-
-  componentDidMount() {
-    console.log("mount");
-    this._isMounted=true;
-  }
-
-  componentWillUnmount() {
-    console.log("unmount");
-    this._isMounted = false;
+      pdfExists: false,
+      loading: true
+    }
+    this._checkURL(props.url);
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps !== this.props) {
-      this.setState({ url: null }, () => {
-        this.setState(this.props);
-        if (prevProps.url !== this.props.url) this.setState({ page: 1 });
-      });
+    const { url, page } = this.props;
+    if (url !== prevProps.url) this._checkURL(url);
+    if (page !== prevProps.page) this.setState(
+      {loading: true},
+      () => this.setState({loading: false})
+    );
+  }
+
+  _checkURL = url => {
+    if (url) {
+      Axios.head(url).then(() => {
+        this.setState({pdfExists: true, loading: false})
+      }).catch(() => {
+        this.setState({pdfExists: false, loading: false})
+      })
     }
   }
 
-  resize = (e, data) => {
-    
-      if (this._isMounted) this.props.resizePDF(data.deltaX);
-     // console.log(data.deltaX);
-  };
+  _getPdfFrame = () => {
+    const { url, page } = this.props;
+    const { pdfExists, loading } = this.state;
+    if (loading) return (<div style={styles}>Loading ...</div>)
+    if (!pdfExists) return (<div style={styles}>PDF missing!</div>)
+    return (
+      <iframe
+        title="PDFViewer"
+        src={url + "?#page=" + page}
+        style={{width: "100%", height: "100%", border: "0"}}
+      />
+    );
+  }
 
   render() {
-    const { page, url } = this.state;
-    if (url)
-      return (
-        <React.Fragment>
-          <DraggableCore onDrag={this.resize}>
-            <div className={styles.resizer} />
-          </DraggableCore>
-          <iframe
-            title="PDFViewer"
-            src={url + "?#page=" + page}
-            className={styles.wrapper}
-          />
-        </React.Fragment>
-      );
-    return <React.Fragment></React.Fragment>;
+    const { url, width, height } = this.props;
+    return (
+      <div style={{width: width, height: height}}>
+        {url ? this._getPdfFrame() : ''}
+      </div>
+    );
   }
 }
