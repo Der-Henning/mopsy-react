@@ -15,7 +15,8 @@
         "myprivatekey": "myprivatekey",
         "sessionkey": "myprivatekey",
         "salt_rounds": 10,
-        "hits_per_page": 10
+        "hits_per_page": 10,
+        "pdf_dummy": "http://localhost:3000/sample.pdf"
     },
     "testing": {
         "config_id": "testing",

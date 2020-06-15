@@ -82,11 +82,13 @@ router.get("/", auth, async (req, res, next) => {
               })))
             }
             
-            // only for developement without zrms
-            body.response.docs = body.response.docs.map(doc => ({
-              ...doc,
-              link: "http://localhost:4000/sample.pdf"
-            }))
+            // insert dummy pdf for external developement
+            if (config.pdf_dummy) {
+              body.response.docs = body.response.docs.map(doc => ({
+                ...doc,
+                link: config.pdf_dummy
+              }))
+            }
             // -----------
 
             res.status(200).send(body);

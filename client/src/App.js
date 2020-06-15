@@ -45,6 +45,8 @@ class App extends Component {
     }
   }
 
+  // toggle switch for dark and light theme
+  // saves current theme to cookies
   toggleTheme = () => {
     const cookies = new Cookies();
     var theme = (this.state.theme === "light") ? "dark" : "light";
@@ -54,16 +56,19 @@ class App extends Component {
     });
   }
 
+  // set height of header. is called of header component on did mount
   setHeaderHeight = (headerHeight) => {
     this.setState({ headerHeight }, () => {
       this._updateDimensions();
     });
   }
 
+  // set event listener for resizing
   componentWillUnmount() {
     window.removeEventListener("resize", this._updateDimensions);
   }
 
+  // update app dimensions
   _updateDimensions = () => {
     let windowWidth = typeof window !== "undefined" ? window.innerWidth : 0;
     let windowHeight = typeof window !== "undefined" ? window.innerHeight : 0;
@@ -79,24 +84,24 @@ class App extends Component {
     });
   }
 
+  // set Token and save to cookies
   _setToken = token => {
     const cookies = new Cookies();
+    this.setState({token});
     cookies.set("token", token, {
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
     });
   }
 
+  // set Login
   setLoginId = (loginId, token) => {
     this._setToken(token);
     this.setState({ loginId: loginId });
   }
 
+  // set Header visible / invisible   ---  currently unused
   showHeader = show => {
     this.setState({ showHeader: show });
-  }
-
-  resizePDF = (deltaX) => {
-    this.setState({pdfWidth: this.state.pdfWidth + deltaX});
   }
 
   render() {

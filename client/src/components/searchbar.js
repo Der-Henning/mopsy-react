@@ -10,8 +10,9 @@ class Searchbar extends Component {
     this.state = {
       searchText: props.searchText || "",
       suggestions: [],
+      renderSuggestions: [],
       activeSugg: null,
-      preSugg: props.searchText || ""
+      // preSugg: props.searchText || ""
     };
   }
 
@@ -25,7 +26,7 @@ class Searchbar extends Component {
     const { searchText } = this.state;
     if (searchText) {
       e.target.q.blur();
-      this.setState({suggestions: [], activeSugg: null});
+      this.setState({suggestions: [], renderSuggestions: [], activeSugg: null});
       this.props.history.push("/search?q=" + searchText);
     }
   }
@@ -33,7 +34,7 @@ class Searchbar extends Component {
   _changeHandler = e => {
     const searchText = e.target.value;
     const { api, token } = this.props;
-    this.setState({ searchText, preSugg: searchText });
+    this.setState({ searchText, preSugg: searchText, activeSugg: null });
     var words = searchText.split(" ");
     var word = words[words.length - 1];
     if ( word ) {
@@ -44,9 +45,25 @@ class Searchbar extends Component {
           headers: { "x-access-token": token }
         }
       ).then(res => {
-        this.setState({ suggestions: res.data });
+        const suggestions = res.data;
+        this.setState({ 
+          suggestions: suggestions,
+          renderSuggestions: suggestions.map((s, i) => {
+            var words = searchText.split(" ");
+            words.pop();
+            words.push(s);
+            var suggestion = words.join(" ").replace(searchText, "");
+            return(
+              <div 
+                key={i} 
+                onMouseEnter={() => this._mouseEnterHandler(i)}
+                onClick={() => this._klickHandler(i)}
+              >{searchText}<b>{suggestion}</b></div>
+            )
+          })
+        });
       });
-    } else this.setState({ suggestions: [] });
+    } else this.setState({ suggestions: [], renderSuggestions: [] });
   };
 
   _keyPressHandler = e => {
@@ -76,7 +93,7 @@ class Searchbar extends Component {
       }
       else if (!(e.keyCode === 39 || e.keyCode === 37)) {
         // On any Key despite Arrow Left/Right reset Suggestions
-        this.setState({activeSugg: null});
+        // this.setState({activeSugg: null});
       }
     }
   }
@@ -95,7 +112,7 @@ class Searchbar extends Component {
   }
 
   render() {
-    const { searchText, suggestions, activeSugg, preSugg } = this.state;
+    const { searchText, suggestions, renderSuggestions, activeSugg } = this.state;
     const { autofocus } = this.props;
     return (
       <form
@@ -114,18 +131,9 @@ class Searchbar extends Component {
           onKeyDown={this._keyPressHandler}
         />
         <div className={styles.suggestions}>
-          {searchText ? suggestions.map((s, i) => {
-            var words = searchText.split(" ");
-            words.pop();
-            words.push(s);
-            var suggestion = words.join(" ").replace(preSugg, "");
-            return (
-              <div 
-                key={i} 
-                className={(i === activeSugg) ? styles.activeSugg : ""} 
-                onMouseEnter={() => this._mouseEnterHandler(i)}
-                onClick={() => this._klickHandler(i)}
-              >{preSugg}<b>{suggestion}</b></div>
+          {searchText ? renderSuggestions.map((s, i) => {
+            return(
+              <div className={(i === activeSugg) ? styles.activeSugg : ""}>{s}</div>
             )
           }) : ""}
         </div>

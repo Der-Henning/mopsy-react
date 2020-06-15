@@ -16,14 +16,14 @@ class Favorites extends Component {
   }
 
   componentDidMount() {
-    this.fetchData();
+    this._fetchData();
   }
 
   componentDidUpdate() {
     if (!this.props.loginId) this.props.history.push("/");
   }
 
-  fetchData() {
+  _fetchData = () => {
     const { token, api } = this.props;
     this.setState({
       isFetching: true,
@@ -48,11 +48,11 @@ class Favorites extends Component {
     Axios.put(api + "/favorite/" + DocId, {}, {
       headers: { "x-access-token": token}
     }).then(() => {
-      this.fetchData();
+      this._fetchData();
     })
   }
 
-  body() {
+  _body = () => {
     const { isFetching, data, error } = this.state;
     if (isFetching)
       return (
@@ -121,7 +121,7 @@ class Favorites extends Component {
         height: contendHeight,
         overflowY: "auto"
       }}>
-        {this.body()}
+        {this._body()}
       </div>)
   }
 }

@@ -18,13 +18,7 @@ class Login extends Component {
     if (this.props.loginId) this.props.history.push("/");
   }
 
-  error = () => {
-    const { error } = this.state;
-    if (error)
-      return <Form.Text className={styles.error}>{error}</Form.Text>;
-  }
-
-  login = e => {
+  _login = e => {
     e.preventDefault();
     const username = e.target.username.value;
     const password = e.target.password.value;
@@ -45,14 +39,14 @@ class Login extends Component {
         }
       })
       .catch(err => {
-        if (err.response) this.setState({ error: err.response.data });
+        if (err.response) this.setState({ error: err.response.data.status.message });
       });
   }
 
   render() {
     const { error } = this.state;
     return (
-      <Form onSubmit={this.login} className={styles.wrapper}>
+      <Form onSubmit={this._login} className={styles.wrapper}>
         <Form.Group>
           <Form.Label>Benutzername</Form.Label>
           <Form.Control
@@ -62,6 +56,9 @@ class Login extends Component {
             className="mr-sm-2"
             autoFocus
           />
+          <Button variant="link" tabindex="-1">
+            Benutzername vergessen?
+          </Button>
         </Form.Group>
         <Form.Group>
           <Form.Label>Passwort</Form.Label>
@@ -71,10 +68,10 @@ class Login extends Component {
             placeholder="password"
             className="mr-sm-2"
           />
+          <Button variant="link" tabindex="-1">
+            Passwort vergessen?
+          </Button>
         </Form.Group>
-        <Button variant="link">
-          Passwort vergessen?
-        </Button>
         <Form.Text className={styles.error}>
           {error ? error : ""}
         </Form.Text>
