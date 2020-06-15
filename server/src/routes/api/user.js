@@ -5,6 +5,17 @@ const models = require('../../models');
 const config = require('../../config');
 const auth   = require('../../middleware/auth');
 const errors = require("../../middleware/errors");
+const nodemailer = require('nodemailer');
+const { smtp } = config;
+const transporter = nodemailer.createTransport({
+    host: smtp.host,
+    port: smtp.port,
+    secure: (smtp.port === 465) ? true : false, // true for 465, false for other ports
+    auth: {
+        user: smtp.username,
+        pass: smtp.password
+    }
+});
 
 // create new user
 // create new token, send as x-auth-token in header
@@ -80,11 +91,65 @@ router.get('/:LoginId', auth, async (req, res, next) => {
     try {
         if (!req.LoginId) return next(new errors.UnauthorizedError());
         var currentLogin = await models.Login.findOne({where: {id: req.LoginId}});
-        if (!currentLogin.id == LoginId && !currentLogin.admin) 
+        if (req.LoginId != LoginId && !currentLogin.admin) 
             return next(new errors.UnauthorizedError());
         var login = await models.Login.findOne({where: {id: LoginId}});
         if (!login) return next(new errors.ResourceNotFoundError("Login"));
         res.status(200).send(login);
+    } catch(err) {
+        next(err);
+    }
+});
+
+router.post('/changepassword', auth, async (req, res, next) => {
+    const { password } = req.body;
+    try {
+        if (!req.LoginId) return next(new errors.UnauthorizedError());
+        var login = await models.Login.findOne({where: {id: req.LoginId}});
+        const hash = await bcrypt.hash(password, 10);
+        login.password = hash;
+        await login.save();
+        res.status(200).send();
+    } catch(err) {
+        next(err);
+    }
+})
+
+router.post('/forgottusername', auth, async (req, res, next) => {
+    const {email} = req.body;
+    try {
+        const login = await models.Login.findOne({where: {email: email}});
+        if (!login) return next(new errors.ResourceNotFoundError("E-Mail"));
+        const mailOptions = {
+            from: smtp.from,
+            to: email,
+            subject: 'Forgotten Username',
+            text: "Benutzername: " + login.username
+        };
+        const info = await transporter.sendMail(mailOptions);
+        res.status(200).send(info);
+    } catch(err) {
+        next(err);
+    }
+});
+
+router.post('/forgottpassword', auth, async (req, res, next) => {
+    const {email} = req.body;
+    try {
+        const login = await models.Login.findOne({where: {email: email}});
+        if (!login) return next(new errors.ResourceNotFoundError("E-Mail"));
+        const randomPassword = Math.random().toString(36).slice(-8);
+        const mailOptions = {
+            from: smtp.from,
+            to: email,
+            subject: 'Forgotten Username',
+            text: "Benutzername: " + randomPassword
+        };
+        const hash = await bcrypt.hash(randomPassword, 10);
+        login.password = hash;
+        await login.save();
+        const info = await transporter.sendMail(mailOptions);
+        res.status(200).send(info);
     } catch(err) {
         next(err);
     }

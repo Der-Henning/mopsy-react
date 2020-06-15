@@ -3,7 +3,19 @@ import { withRouter } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import Axios from "axios";
 import qs from "qs";
-import styles from "../styles/login.module.css";
+
+const formStyle = {
+  width: "100%",
+  maxWidth: "500px",
+  margin: "0 auto",
+  marginTop: "50px"
+}
+
+const errorStyle = {
+  color: "red",
+  fontWeight: "bold",
+  marginBottom: "10px"
+}
 
 class Register extends Component {
   constructor(props) {
@@ -49,7 +61,7 @@ class Register extends Component {
   render() {
     const { error } = this.state;
     return (
-      <Form onSubmit={this.register} className={styles.wrapper}>
+      <Form onSubmit={this.register} style={formStyle}>
         <Form.Group>
           <Form.Label>Benutzername</Form.Label>
           <Form.Control
@@ -87,7 +99,7 @@ class Register extends Component {
             className="mr-sm-2"
           />
         </Form.Group>
-        <Form.Text className={styles.error}>
+        <Form.Text style={errorStyle}>
           {error ? error : ""}
         </Form.Text>
         <Button variant="outline-success" type="submit">

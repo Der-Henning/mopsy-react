@@ -4,7 +4,7 @@ import { NavLink, Link } from "react-router-dom";
 import { withRouter } from "react-router-dom";
 import Axios from "axios";
 import Cookies from "universal-cookie";
-import { Menu, Sun } from "react-feather";
+import { Menu, Sun, Moon, LogOut } from "react-feather";
 import { Searchbar } from "../components";
 
 class Header extends Component {
@@ -29,40 +29,46 @@ class Header extends Component {
     const { history, loginId } = this.props;
     if (loginId)
       return (
-        <Form inline onSubmit={this.logout.bind(this)}>
-          <Button variant="outline-success" type="submit">
-            Logout
+        <React.Fragment>
+          <Button
+            variant="link"
+            style={{textDecoration: "none"}}
+            onClick={() => {
+              history.push("/account");
+            }}
+          >
+            Konto
           </Button>
-        </Form>
+          <Button variant="link" onClick={this.logout.bind(this)}>
+            <LogOut />
+          </Button>
+        </React.Fragment>
       );
     return (
       <React.Fragment>
-        <NavLink 
-          to={"/login"} 
-          className="nav-link"
-          style={{color: "#007bff"}}
+        <Button
+          variant="link"
+          style={{textDecoration: "none"}}
+          onClick={() => {
+            history.push("/login");
+          }}
         >
           Login
-        </NavLink>
-        <Form inline>
-          <Button
-            onClick={() => {
-              history.push("/register");
-            }}
-            variant="outline-primary"
-          >
-            Sign in
-          </Button>
-
-        </Form>
-
+        </Button>
+        <Button
+          onClick={() => {
+            history.push("/register");
+          }}
+          variant="outline-primary"
+        >
+          Sign in
+        </Button>
       </React.Fragment>
     );
   }
 
   _getNavbarContent() {
     const { loginId, searchText } = this.props;
-
     if (false) {
       return (<Searchbar searchText={searchText} />)
     } else {
@@ -111,19 +117,18 @@ class Header extends Component {
               {this._getNavbarContent()}
             </Nav>
             <Nav>
-              {this._getLoginForm()}
               <Form inline>
+                {this._getLoginForm()}
                 <Button 
                   variant="link"
                   onClick={() => {
                     this.props.toggleTheme()
                   }}
                 >
-                  <Sun />
+                  {theme === "dark" ? <Sun /> : <Moon />}
                 </Button>
               </Form>
             </Nav>
-
           </Navbar.Collapse>
         </Navbar>
       );

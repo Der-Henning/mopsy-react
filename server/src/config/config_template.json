@@ -16,7 +16,14 @@
         "sessionkey": "myprivatekey",
         "salt_rounds": 10,
         "hits_per_page": 10,
-        "pdf_dummy": "http://localhost:3000/sample.pdf"
+        "pdf_dummy": "http://localhost:3000/sample.pdf",
+        "smtp": {
+            "host": "",
+            "port": 587,
+            "username": "",
+            "password": "",
+            "from": ""
+        }
     },
     "testing": {
         "config_id": "testing",
