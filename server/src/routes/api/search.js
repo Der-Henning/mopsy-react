@@ -69,6 +69,7 @@ router.get("/", auth, async (req, res, next) => {
       },
       async (err, httpResponse, body) => {
         try {
+          if (err) return next(new errors.InternalError(err));
           if (body.responseHeader.status == 0) {
             if (req.LoginId) {
               body.response.docs = await Promise.all(body.response.docs.map(async doc => ({
@@ -98,7 +99,7 @@ router.get("/", auth, async (req, res, next) => {
             //res.status(body.responseHeader.status).send("SOLR backend error");
           }
         } catch (err) {
-          throw new errors.InternalError(err);
+          return next(new errors.InternalError(err));
         }
       }
     );
