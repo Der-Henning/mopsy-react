@@ -45,7 +45,7 @@ export default class PDFViewer extends Component {
     return (
       <iframe
         title="PDFViewer"
-        src={url + "?#page=" + page}
+        src={url + "#toolbar=0&navpanes=0&view=Fit&page=" + page}
         style={{width: "100%", height: "100%", border: "0"}}
       />
     );
