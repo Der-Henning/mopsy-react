@@ -8,9 +8,21 @@ import Axios from "axios";
 class Results extends Component {
 
   componentDidMount() {
-    const { data } = this.props;
+    const { data, activeDoc } = this.props;
     if (data && data.response.docs.length > 0)
-      this.props.setActiveDoc(data.response.docs[0].id);
+      this.props.setActiveDoc(activeDoc ? activeDoc : data.response.docs[0].id);
+    if (activeDoc) {
+      const activeCard = document.querySelector(".restore-" + activeDoc);
+      if (activeCard) {
+        // console.log(activeCard.offsetTop);
+        activeCard.scrollIntoView();
+        window.scrollBy(0, -700);
+        // var top = activeCard.offsetTop - 100;
+        // if(top){
+        //   window.scrollTo(0, top);
+        // }
+      }
+    }
   }
 
   _cardBody = docId => {
@@ -87,13 +99,13 @@ class Results extends Component {
   }
 
   render() {
-    var { data } = this.props;
+    var { data, activeDoc } = this.props;
     var docs = [];
     if (data) docs = data.response.docs;
     if (docs.length > 0) {
       const Cards = docs.map((doc, i) => (
         <Card key={doc.id}>
-          <Card.Header style={{cursor: "pointer"}}>
+          <Card.Header style={{cursor: "pointer"}} className={"restore-" + doc.id} >
             <div style={{display: "flex", width: "100%"}}>
             <Accordion.Toggle
               as={Card.Header}
@@ -144,7 +156,7 @@ class Results extends Component {
       ));
       return (
         <React.Fragment>
-          <Accordion activeKey={this.props.activeDoc} >{Cards}</Accordion>
+          <Accordion activeKey={activeDoc} >{Cards}</Accordion>
         </React.Fragment>
       );
     } else return <React.Fragment></React.Fragment>;

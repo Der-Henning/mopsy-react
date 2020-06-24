@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import { Searchbar } from "../components";
+import { useData } from "../context";
 
-export default class Home extends Component {
-  render() {
-    const { api, token } = this.props;
+const Home = (props) => {
     return (
       <div 
         style={{
@@ -12,12 +11,12 @@ export default class Home extends Component {
           paddingTop: "100px",
           margin: "10px"
         }}>
-        <Searchbar 
-          token={token}
-          api={api}
+        <Searchbar
           autofocus={true}
         />
       </div>
     );
-  }
+  
 }
+
+export default Home;

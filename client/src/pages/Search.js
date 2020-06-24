@@ -27,10 +27,11 @@ class Main extends Component {
       data: null,
       page: 1,
       dpp: 10,
-      activeDoc: null,
+      activeDoc: props.savedDoc,
       pdfPage: 1,
       overlay: true,
     };
+    props.saveActiveDoc(null);
   }
 
   fetchData = () => {
@@ -85,8 +86,10 @@ class Main extends Component {
     const { showPdfViewer } = this.props;
     const { activeDoc } = this.state;
     this.setState({ pdfPage: page });
-    if (!showPdfViewer) 
+    if (!showPdfViewer) {
+      this.props.saveActiveDoc(activeDoc);
       this.props.history.push("/viewer?url=" + this.activeDocURL(activeDoc) + "&page=" + page);
+    }
   };
 
   setFavorite = (index, state) => {
@@ -173,7 +176,7 @@ class Main extends Component {
   };
 
   body = () => {
-    const { data, isFetching } = this.state;
+    const { data, isFetching, activeDoc } = this.state;
     const { api, token } = this.props;
     if (isFetching)
       return (
@@ -195,7 +198,7 @@ class Main extends Component {
           token={token}
           data={data}
           setActiveDoc={this.setActiveDoc}
-          activeDoc={this.state.activeDoc}
+          activeDoc={activeDoc}
           setActivePage={this.setActivePage}
           setFavorite={this.setFavorite}
         />

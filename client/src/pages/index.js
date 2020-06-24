@@ -5,5 +5,6 @@ import Login from "./Login";
 import Register from "./Register";
 import Viewer from "./Viewer";
 import About from "./About";
+import Account from "./Account";
 
-export { Home, Search, Favorites, Login, Register, Viewer, About };
+export { Home, Search, Favorites, Login, Register, Viewer, About, Account };

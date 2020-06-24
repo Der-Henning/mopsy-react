@@ -3,7 +3,8 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Axios from "axios";
 import Cookies from "universal-cookie";
 import { Header } from "./components";
-import { Home, Search, Favorites, Login, Register, Viewer, About } from "./pages";
+import { Home, Search, Favorites, Login, Register, Viewer, About, Account } from "./pages";
+import { ContextProvider } from "./context";
 
 class App extends Component {
   constructor(props) {
@@ -21,7 +22,8 @@ class App extends Component {
       pdfHeight: 0,
       pdfWidth: 0,
       headerHeight: 0,
-      theme: cookies.get("theme") || "light"
+      theme: cookies.get("theme") || "light",
+      savedDoc: null
     };
   }
 
@@ -68,6 +70,12 @@ class App extends Component {
     window.removeEventListener("resize", this._updateDimensions);
   }
 
+  saveActiveDoc = docId => {
+    this.setState({
+      savedDoc: docId
+    });
+  };
+
   // update app dimensions
   _updateDimensions = () => {
     let windowWidth = typeof window !== "undefined" ? window.innerWidth : 0;
@@ -105,8 +113,9 @@ class App extends Component {
   }
 
   render() {
-    const { api, token, theme, showPdfViewer, loginId, showHeader, stickyHeader, pdfWidth, pdfHeight } = this.state;
+    const { api, token, theme, showPdfViewer, loginId, showHeader, stickyHeader, pdfWidth, pdfHeight, savedDoc } = this.state;
     return (
+      <ContextProvider props={{api}}>
       <div 
         data-theme={theme === 'light' ? "light" : "dark"}
         style={showPdfViewer ? {} : {overflowY: "auto"} }
@@ -143,6 +152,8 @@ class App extends Component {
                   pdfHeight={pdfHeight}
                   theme={theme}
                   resizePDF={this.resizePDF}
+                  savedDoc={savedDoc}
+                  saveActiveDoc={this.saveActiveDoc}
                 />
               )}
             />
@@ -188,9 +199,20 @@ class App extends Component {
                 />
               )}
             />
+            <Route 
+              path="/account"
+              render={props => (
+                <Account 
+                  api={api}
+                  token={token}
+                  loginId={loginId}
+                />
+              )}
+            />
           </Switch>
         </Router>
       </div>
+      </ContextProvider>
     );
   }
 }

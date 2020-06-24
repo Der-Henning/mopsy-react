@@ -5,14 +5,7 @@ const url = require("url");
 const models = require("../../models");
 const auth = require("../../middleware/auth");
 const errors = require("../../middleware/errors");
-
-// build solr url for SOLR backend requests
-const solr = url.format({
-  protocol: "http",
-  hostname: config.solr_host,
-  port: config.solr_port,
-  pathname: "solr/" + config.solr_core
-});
+const solr = require("../../middleware/solr");
 
 const searchBody = (q, page, fq) => {
   return {
@@ -24,6 +17,8 @@ const searchBody = (q, page, fq) => {
       "hl.snippets": 1,
       "hl.fl": "document, title, zusatz",
       "hl.fragsize": 0,
+      // "facet": "on",
+      // "facet.field": "keywords"
     }
   }
 }
@@ -60,49 +55,31 @@ router.get("/", auth, async (req, res, next) => {
         fq = fq.concat("id:(" + favorites.join(" OR ") + ")");
       }
     }
-    
-    request.post(
-      {
-        url: solr + "/search",
-        body: searchBody(q, page, fq),
-        json: true
-      },
-      async (err, httpResponse, body) => {
-        try {
-          if (err) return next(new errors.InternalError(err));
-          if (body.responseHeader.status == 0) {
-            if (req.LoginId) {
-              body.response.docs = await Promise.all(body.response.docs.map(async doc => ({
-                ...doc,
-                isFavorite: await models.Favorite.findOne({
-                  where: {
-                    LoginId: req.LoginId,
-                    DocId: doc.id
-                  }
-                }) ? true : false
-              })))
-            }
-            
-            // insert dummy pdf for external developement
-            if (config.pdf_dummy) {
-              body.response.docs = body.response.docs.map(doc => ({
-                ...doc,
-                link: config.pdf_dummy
-              }))
-            }
-            // -----------
 
-            res.status(200).send(body);
-            next();
-          } else {
-            throw new errors.SolrBackendError();
-            //res.status(body.responseHeader.status).send("SOLR backend error");
+    const data = await solr.post("/search", searchBody(q, page, fq));
+    if (req.LoginId) {
+      data.response.docs = await Promise.all(data.response.docs.map(async doc => ({
+        ...doc,
+        isFavorite: await models.Favorite.findOne({
+          where: {
+            LoginId: req.LoginId,
+            DocId: doc.id
           }
-        } catch (err) {
-          return next(new errors.InternalError(err));
-        }
-      }
-    );
+        }) ? true : false
+      })))
+    }
+    
+    // insert dummy pdf for external developement
+    if (config.pdf_dummy) {
+      data.response.docs = data.response.docs.map(doc => ({
+        ...doc,
+        link: config.pdf_dummy
+      }))
+    }
+    // -----------
+
+    res.status(200).send(data);
+    next();
   } catch(err) {
     next(err);
   }
@@ -136,96 +113,50 @@ router.get("/", (req, res, next) => {
 });
 
 // get search suggestions
-router.get("/suggest", auth, (req, res, next) => {
+router.get("/suggest", auth, async (req, res, next) => {
   const { q } = req.query;
 
   try {
     if (!q) return next(new errors.MissingParameterError());
-    request.post(
-      {
-        url: solr + "/suggest",
-        body: {
-          params: {
-            q: q
-          }
-        },
-        json: true
-      },
-      (err, httpResponse, body) => {
-        if (err) return next(err);
-        if (body.responseHeader.status !== 0) return next(new errors.SolrBackendError());
-        res.send(body.suggest.mySuggester[q].suggestions.map(t => t.term.replace(/<(.|\n)*?>/g, '')));
-      }
-    );
+    const data = await solr.post("/suggest", { params: {q} });
+    res.send(data.suggest.mySuggester[q].suggestions.map(t => t.term.replace(/<(.|\n)*?>/g, '')));
   } catch(err) {
     next(err);
   }
 });
 
+// get search pages hits for document
 router.get("/:DocId", auth, async (req, res, next) => {
   const q = req.query.q || "*";
   const DocId = req.params.DocId;
 
   try {
-    request.post(
-      {
-        url: solr + "/search",
-        body: searchPagesBody(q, DocId),
-        json: true
-      },
-      (err, httpResponse, body) => {
-        try {
-          if (body.responseHeader.status == 0) {
-            res.status(200).send(body);
-          } else {
-            throw new errors.SolrBackendError();
-            //res.status(body.responseHeader.status).send("SOLR backend error");
-          }
-        } catch (err) {
-          throw new errors.InternalError(err);
-        }
-      }
-    );
+    const data = await solr.post("/search", searchPagesBody(q, DocId));
+    res.status(200).send(data);
   } catch(err) {
     next(err);
   }
 });
 
 // proxy /select request to SOLR backend
-router.post("/select", auth, (req, res, next) => {
-  request.post(
-    {
-      url: solr + "/select",
-      body: {
-        params: req.body
-      },
-      json: true
-    },
-    (err, httpResponse, body) => {
-      if (err) return res.status(httpResponse).send(err);
-      res.status(200).send(body);
-    }
-  );
+router.post("/select", auth, async (req, res, next) => {
+  try {
+    const data = await solr.post("/select", { params: req.body});
+    res.status(200).send(data);
+  } catch(err) {
+    next(err);
+  }
 });
 
 // get data for specific document
-router.post("/select/:DocId", auth, (req, res, next) => {
+router.post("/select/:DocId", auth, async (req, res, next) => {
   const { DocId } = req.params;
-  request.post(
-    {
-      url: solr + "/select",
-      body: {
-        params: { q: "id:" + DocId }
-      },
-      json: true
-    },
-    (err, httpResponse, body) => {
-      if (err) return res.status(httpResponse).send(err);
-      if (body.response.numFound < 1)
-        return res.status(400).send("document doesn't exist");
-      res.status(200).send(body.response.docs[0]);
-    }
-  );
+  try {
+    const data = await solr.post("/select", { params: { q: "id:" + DocId }});
+    res.send(data);
+  } catch(err) {
+    next(err);
+  }
 });
 
 // get top queries, takes count as input, default 30

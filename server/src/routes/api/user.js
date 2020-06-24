@@ -80,10 +80,31 @@ router.get('/loginid', auth, (req, res, next) => {
     } catch(err) {
         next(err);
     }
-    
-    //if (!req.LoginId) return res.status(200).send("not loged in");
-    //res.status(200).send({loginId: req.LoginId});
 });
+
+// update user information
+router.post('/:LoginId/update', auth, async (req, res, next) => {
+    const LoginId = req.params.LoginId;
+    const { password, email } = req.body;
+    try {
+        if (!req.LoginId) return next(new errors.UnauthorizedError());
+        if (!password && !email) return next(new errors.MissingParameterError());
+        var currentLogin = await models.Login.findOne({where: {id: req.LoginId}});
+        if (req.LoginId != LoginId && !currentLogin.admin)
+            return next(new errors.UnauthorizedError());
+        var login = await models.Login.findOne({ where: {id: LoginId} });
+        if (!login) return next(new errors.ResourceNotFoundError("Login"));
+        if (email) login.email = email;
+        if (password) {
+            const hash = await bcrypt.hash(password, 10);
+            login.password = hash;
+        }
+        await login.save();
+        res.status(200).send();
+    } catch(err) {
+        next(err);
+    }
+})
 
 // return userdata
 router.get('/:LoginId', auth, async (req, res, next) => {
@@ -93,7 +114,10 @@ router.get('/:LoginId', auth, async (req, res, next) => {
         var currentLogin = await models.Login.findOne({where: {id: req.LoginId}});
         if (req.LoginId != LoginId && !currentLogin.admin) 
             return next(new errors.UnauthorizedError());
-        var login = await models.Login.findOne({where: {id: LoginId}});
+        var login = await models.Login.findOne({
+            where: {id: LoginId},
+            attributes: ["username", "email", "admin"]
+        });
         if (!login) return next(new errors.ResourceNotFoundError("Login"));
         res.status(200).send(login);
     } catch(err) {
