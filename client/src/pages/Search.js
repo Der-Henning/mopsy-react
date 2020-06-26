@@ -225,7 +225,7 @@ class Main extends Component {
       <div>
         <div style={{padding: "10px"}}>
           <Searchbar 
-            searchText={searchText} 
+            // searchText={searchText} 
             api={api}
             token={token}
           />
@@ -242,7 +242,7 @@ class Main extends Component {
         <div style={{overflowY: "auto", height: "100%", width: "100%"}}>
           <div style={{padding: "10px"}}>
             <Searchbar 
-              searchText={searchText} 
+              // searchText={searchText} 
               api={api}
               token={token}
             />
