@@ -17,8 +17,7 @@ const searchBody = (q, page, fq) => {
       "hl.snippets": 1,
       "hl.fl": "document, title, zusatz",
       "hl.fragsize": 0,
-      // "facet": "on",
-      // "facet.field": "keywords"
+      "facet": "off",
     }
   }
 }
@@ -31,6 +30,7 @@ const searchPagesBody = (q, DocId) => {
       fq: "id:" + DocId,
       "hl.fl": "page_*, meta_*",
       "hl.snippets": 10,
+      "facet": "off"
     }
   }
 }
