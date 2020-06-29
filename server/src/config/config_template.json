@@ -1,42 +1,42 @@
 {
-    "development": {
-        "config_id": "development",
-        "app_name": "MOPS-Y",
-        "app_desc": "MOPS-Y WebApp",
-        "port": 4000,
-        "json_indentation": 4,
-        "mysql_database": "mopsy-dev",
-        "mysql_host": "localhost",
-        "mysql_username": "mopsy-dev",
-        "mysql_password": "mopsy",
-        "solr_host": "localhost",
-        "solr_port": 8983,
-        "solr_core": "dvcore",
-        "myprivatekey": "myprivatekey",
-        "sessionkey": "myprivatekey",
-        "salt_rounds": 10,
-        "hits_per_page": 10,
-        "pdf_dummy": "http://localhost:3000/sample.pdf",
-        "smtp": {
-            "host": "",
-            "port": 587,
-            "username": "",
-            "password": "",
-            "from": ""
-        }
-    },
-    "testing": {
-        "config_id": "testing",
-        "database": "my-app-db-test"
-    },
-    "staging": {
-        "config_id": "staging",
-        "port": 8080,
-        "database": "my-app-db-stag"
-    },
-    "production": {
-        "config_id": "production",
-        "port": 8080,
-        "database": "my-app-db-prod"
+  "development": {
+    "config_id": "development",
+    "app_name": "MOPS-Y",
+    "app_desc": "MOPS-Y WebApp",
+    "port": 4000,
+    "json_indentation": 4,
+    "mysql_database": "mopsy-dev",
+    "mysql_host": "localhost",
+    "mysql_username": "mopsy-dev",
+    "mysql_password": "mopsy",
+    "solr_host": "localhost",
+    "solr_port": 8983,
+    "solr_core": "dvcore",
+    "myprivatekey": "myprivatekey",
+    "sessionkey": "myprivatekey",
+    "salt_rounds": 10,
+    "hits_per_page": 10,
+    "pdf_dummy": "http://localhost:3000/sample.pdf",
+    "smtp": {
+      "host": "",
+      "port": 587,
+      "username": "",
+      "password": "",
+      "from": ""
     }
+  },
+  "testing": {
+    "config_id": "testing",
+    "database": "my-app-db-test"
+  },
+  "staging": {
+    "config_id": "staging",
+    "port": 8080,
+    "database": "my-app-db-stag"
+  },
+  "production": {
+    "config_id": "production",
+    "port": 8080,
+    "database": "my-app-db-prod"
+  }
 }

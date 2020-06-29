@@ -7,7 +7,15 @@ import { Menu, Sun, Moon, LogOut } from "react-feather";
 import { useGlobal } from "../context";
 
 const Header = (props) => {
-  const { api, token, loginId, theme, setUser, setHeaderHeight, toggleTheme } = useGlobal();
+  const {
+    api,
+    token,
+    loginId,
+    theme,
+    setUser,
+    setHeaderHeight,
+    toggleTheme,
+  } = useGlobal();
   const { visible, sticky } = props;
   const bar = useRef();
 

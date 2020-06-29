@@ -14,7 +14,7 @@ import { GlobalProvider } from "./context";
 
 ReactDOM.render(
   <BrowserRouter>
-    <GlobalProvider props={{api: "/api/v1"}}>
+    <GlobalProvider props={{ api: "/api/v1" }}>
       <App />
     </GlobalProvider>
   </BrowserRouter>,

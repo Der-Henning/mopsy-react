@@ -49,7 +49,7 @@ class SolrBackendError extends DomainError {
 
 class SolrDocumentDoesntExistError extends DomainError {
   constructor() {
-    super(`Document doesn't exist`)
+    super(`Document doesn't exist`);
     this.data = {};
   }
 }
@@ -70,7 +70,7 @@ const error = (errNum, message, data) => {
   return res;
 };
 
-const success = data => {
+const success = (data) => {
   return error(0, "success", data);
 };
 
@@ -83,5 +83,5 @@ module.exports = {
   AuthenticationError,
   UnauthorizedError,
   SolrBackendError,
-  SolrDocumentDoesntExistError
+  SolrDocumentDoesntExistError,
 };

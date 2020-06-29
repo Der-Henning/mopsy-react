@@ -25,20 +25,7 @@ const Register = (props) => {
 
   useEffect(() => {
     if (loginId) props.history.push("/");
-    // eslint-disable-next-line
-  }, [loginId]);
-
-  // constructor(props) {
-  //   super(props);
-  //   this.state = {
-  //     error: null
-  //   };
-  //   if (this.props.loginId) this.props.history.push("/");
-  // }
-
-  // componentDidUpdate() {
-  //   if (this.props.loginId) this.props.history.push("/");
-  // }
+  }, [loginId, props.history]);
 
   const register = useCallback(
     (e) => {
@@ -47,7 +34,6 @@ const Register = (props) => {
       const password = e.target.password.value;
       const repPassword = e.target.repPassword.value;
       const email = e.target.email.value;
-      // const { api, token } = this.props;
       if (password !== repPassword) return setError("Passwords don't match!");
       Axios.post(
         api + "/user/register",
@@ -60,12 +46,9 @@ const Register = (props) => {
       )
         .then((res) => {
           setUser(res.headers["x-auth-token"], res?.data?.loginId);
-          // if (res.data.loginId) {
-          //   this.props.setLoginId(res.data.loginId, res.headers["x-auth-token"]);
-          // }
         })
         .catch((err) => {
-          setError(err.response ? err?.response?.data?.status?.message : err);
+          setError(err.response ? err.response.data?.status?.message : err);
         });
     },
     [api, token, setUser]

@@ -37,30 +37,33 @@ const Account = (props) => {
 
   useEffect(() => {
     if (!loginId) props.history.push("/");
-    // eslint-disable-next-line
-  }, [loginId]);
+  }, [loginId, props.history]);
 
   const _fetchData = useCallback(() => {
-    setState({ ...state, isFetching: true });
+    setState((prevState) => ({ ...prevState, isFetching: true }));
     Axios.get(api + "/user/" + loginId, {
       headers: { "x-access-token": token },
     })
       .then((res) => {
-        setState({ ...state, data: res.data, isFetching: false, error: null });
+        setState((prevState) => ({
+          ...prevState,
+          data: res.data,
+          isFetching: false,
+          error: null,
+        }));
       })
       .catch((err) => {
-        setState({
-          ...state,
+        setState((prevState) => ({
+          ...prevState,
           isFetching: false,
           error: err.response ? err.response.data : err,
-        });
+        }));
       });
-  }, [api, token, loginId, state]);
+  }, [api, token, loginId]);
 
   useEffect(() => {
     if (loginId) _fetchData();
-    // eslint-disable-next-line
-  }, [loginId]);
+  }, [loginId, _fetchData]);
 
   const _update = useCallback(
     (e) => {
@@ -68,9 +71,12 @@ const Account = (props) => {
       const password = e.target.password.value;
       const repPassword = e.target.repPassword.value;
       const email = e.target.email.value;
-      setState({ ...state, error: null, success: false });
+      setState((prevState) => ({ ...prevState, error: null, success: false }));
       if (password !== repPassword)
-        return setState({ ...state, error: "Passwords don't match!" });
+        return setState((prevState) => ({
+          ...prevState,
+          error: "Passwords don't match!",
+        }));
       Axios.post(
         api + "/user/" + loginId + "/update",
         qs.stringify({
@@ -80,24 +86,28 @@ const Account = (props) => {
         { headers: { "x-access-token": token } }
       )
         .then(() => {
-          setState({ ...state, success: true, error: null });
+          setState((prevState) => ({
+            ...prevState,
+            success: true,
+            error: null,
+          }));
         })
         .catch((err) => {
-          setState({
-            ...state,
+          setState((prevState) => ({
+            ...prevState,
             error: err.response ? err.response.data?.status?.message : err,
-          });
+          }));
         });
     },
-    [api, token, loginId, state]
+    [api, token, loginId]
   );
 
-  const _onChange = useCallback(
-    (e) => {
-      setState({ ...state, data: { ...state.data, email: e.target.value } });
-    },
-    [state]
-  );
+  const _onChange = useCallback((e) => {
+    setState((prevState) => ({
+      ...prevState,
+      data: { ...prevState.data, email: e.target.value },
+    }));
+  }, []);
 
   if (state.isFetching) {
     return (

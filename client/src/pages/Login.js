@@ -30,8 +30,7 @@ const Login = (props) => {
 
   useEffect(() => {
     if (loginId) props.history.push("/");
-    // eslint-disable-next-line
-  }, [loginId]);
+  }, [loginId, props.history]);
 
   const _login = useCallback(
     (e) => {
@@ -52,10 +51,13 @@ const Login = (props) => {
           setUser(res.headers["x-auth-token"], res?.data?.loginId);
         })
         .catch((err) => {
-          setState({ ...state, error: err.response ? err?.response?.data?.status?.message : err});
+          setState((prevState) => ({
+            ...prevState,
+            error: err.response ? err?.response?.data?.status?.message : err,
+          }));
         });
     },
-    [api, token, setUser, state]
+    [api, token, setUser]
   );
 
   const _sendMail = useCallback(
@@ -74,19 +76,24 @@ const Login = (props) => {
         }
       )
         .then(() => {
-          setState({ ...state, mailSend: true });
+          setState((prevState) => ({ ...prevState, mailSend: true }));
         })
         .catch((err) => {
           if (err.response)
-            setState({
-              ...state,
+            setState((prevState) => ({
+              ...prevState,
               mailSend: true,
               error: err?.response?.data?.status?.message,
-            });
-          else setState({ ...state, mailSend: true, error: err });
+            }));
+          else
+            setState((prevState) => ({
+              ...prevState,
+              mailSend: true,
+              error: err,
+            }));
         });
     },
-    [api, token, state]
+    [api, token, state.forgottUsername]
   );
 
   if (state.mailSend) {
@@ -144,12 +151,12 @@ const Login = (props) => {
             <Button
               variant="outline-danger"
               onClick={() => {
-                setState({
-                  ...state,
+                setState((prevState) => ({
+                  ...prevState,
                   forgottUsername: false,
                   forgottPassword: false,
                   mailSend: false,
-                });
+                }));
               }}
             >
               zurück
@@ -174,7 +181,7 @@ const Login = (props) => {
           variant="link"
           tabIndex="-1"
           onClick={() => {
-            setState({ ...state, forgottUsername: true });
+            setState((prevState) => ({ ...prevState, forgottUsername: true }));
           }}
         >
           Benutzername vergessen?
@@ -192,7 +199,7 @@ const Login = (props) => {
           variant="link"
           tabIndex="-1"
           onClick={() => {
-            setState({ ...state, forgottPassword: true });
+            setState((prevState) => ({ ...prevState, forgottPassword: true }));
           }}
         >
           Passwort vergessen?

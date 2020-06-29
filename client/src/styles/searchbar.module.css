@@ -1,55 +1,55 @@
 .searchbar {
-    position: relative;
-    padding: 10px;
-    border: solid 1px #fff;
-    border-radius: 4px;
-    box-shadow: inset 1px 1px 2px 0 #707070;
-    transition: box-shadow 0.3s;
-    margin: 0;
-    width: 100%;
-    max-width: 500px;
+  position: relative;
+  padding: 10px;
+  border: solid 1px #fff;
+  border-radius: 4px;
+  box-shadow: inset 1px 1px 2px 0 #707070;
+  transition: box-shadow 0.3s;
+  margin: 0;
+  width: 100%;
+  max-width: 500px;
 }
 
 .searchbar input {
-    background-color: transparent;
-    border: 0;
-    padding: 6px 42px 6px 6px;
-    width: 100%;
-    outline: none;
+  background-color: transparent;
+  border: 0;
+  padding: 6px 42px 6px 6px;
+  width: 100%;
+  outline: none;
 }
 
-[data-suggest=on] input {
-    padding-bottom: 12px;
-    border-bottom: solid 1px grey;
+[data-suggest="on"] input {
+  padding-bottom: 12px;
+  border-bottom: solid 1px grey;
 }
 
-[data-theme=dark] .searchbar input {
-    color: white;
+[data-theme="dark"] .searchbar input {
+  color: white;
 }
 
 .searchbar button {
-    background-color: transparent;
-    outline: none;
-    border: 0;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    padding: 0;
+  background-color: transparent;
+  outline: none;
+  border: 0;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 0;
 }
 
 .suggestions {
-    width: 100%;
+  width: 100%;
 }
 
-.suggestions>div {
-    padding: 6px;
-    cursor: pointer;
+.suggestions > div {
+  padding: 6px;
+  cursor: pointer;
 }
 
 .activeSugg {
-    background-color: lightblue;
+  background-color: lightblue;
 }
 
-[data-theme=dark] .activeSugg {
-    background-color: darkslategray;
+[data-theme="dark"] .activeSugg {
+  background-color: darkslategray;
 }

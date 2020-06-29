@@ -99,11 +99,6 @@ const SearchDataProvider = ({ children }) => {
     fetchDocuments();
   }, [fetchDocuments]);
 
-  useEffect(() => {
-    setDocuments([]);
-    setHighlighting({});
-  }, [params.searchText]);
-
   const setPage = useCallback((page) => {
     setParams((prevParams) => ({ ...prevParams, page }));
   }, []);

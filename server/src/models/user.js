@@ -1,13 +1,13 @@
 module.exports = (sequelize, type) => {
-    var User = sequelize.define('User', {});
+  var User = sequelize.define("User", {});
 
-    User.associate = (models) => {
-        models.User.belongsTo(models.Login, {
-            foreignKey: {
-                allowNull: true
-            }
-        });
-    };
+  User.associate = (models) => {
+    models.User.belongsTo(models.Login, {
+      foreignKey: {
+        allowNull: true,
+      },
+    });
+  };
 
-    return User;
-}
+  return User;
+};

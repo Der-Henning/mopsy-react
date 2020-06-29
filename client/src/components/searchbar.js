@@ -26,7 +26,7 @@ const stateUpdaters = {
       activeSuggestion,
     };
   },
-  resetState: (searchText) => (prevState) => ({
+  resetState: (searchText) => () => ({
     searchText: searchText,
     suggestions: [],
     renderSuggestions: [],

@@ -1,7 +1,7 @@
 .cardTr:hover {
-    background-color: lightblue;
+  background-color: lightblue;
 }
 
-[data-theme=dark] .cardTr:hover {
-    background-color: darkslategray;
+[data-theme="dark"] .cardTr:hover {
+  background-color: darkslategray;
 }

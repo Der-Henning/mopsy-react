@@ -16,12 +16,6 @@ import { useGlobal, SearchDataProvider } from "./context";
 const App = (props) => {
   const { theme, dimensions } = useGlobal();
 
-  // const [savedDoc, setSavedDoc] = useState(null);
-
-  // const saveActiveDoc = (docId) => {
-  //   setSavedDoc(docId);
-  // };
-
   return (
     <div
       data-theme={theme === "light" ? "light" : "dark"}

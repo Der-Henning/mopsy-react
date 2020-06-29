@@ -44,8 +44,7 @@ const GlobalProvider = ({ children, props }) => {
   useEffect(() => {
     window.addEventListener("resize", _updateDimensions);
     return () => window.removeEventListener("resize", _updateDimensions);
-    // eslint-disable-next-line
-  }, []);
+  }, [_updateDimensions]);
 
   useEffect(() => {
     const cookies = new Cookies();
