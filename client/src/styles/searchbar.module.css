@@ -41,11 +41,15 @@
     width: 100%;
 }
 
-.suggestions div {
+.suggestions>div {
     padding: 6px;
     cursor: pointer;
 }
 
 .activeSugg {
     background-color: lightblue;
+}
+
+[data-theme=dark] .activeSugg {
+    background-color: darkslategray;
 }

@@ -1,45 +1,43 @@
-import React, { Component } from "react";
+import React, { useEffect, useCallback, useRef } from "react";
 import { Navbar, Button, Nav, Form } from "react-bootstrap";
 import { NavLink, Link } from "react-router-dom";
 import { withRouter } from "react-router-dom";
 import Axios from "axios";
-import Cookies from "universal-cookie";
 import { Menu, Sun, Moon, LogOut } from "react-feather";
-import { Searchbar } from "../components";
+import { useGlobal } from "../context";
 
-class Header extends Component {
-  componentDidMount() {
-    let height = this.barElement.clientHeight;
-    this.props.setHeaderHeight(height);
-  }
+const Header = (props) => {
+  const { api, token, loginId, theme, setUser, setHeaderHeight, toggleTheme } = useGlobal();
+  const { visible, sticky } = props;
+  const bar = useRef();
 
-  logout(e) {
-    e.preventDefault();
-    const cookies = new Cookies();
-    const token = cookies.get("token");
-    const { api } = this.props;
+  useEffect(() => {
+    const height = bar.current.clientHeight;
+    setHeaderHeight(height);
+  }, [setHeaderHeight]);
+
+  const logout = useCallback(() => {
     Axios.get(api + "/user/logout", {
-      headers: { "x-access-token": token }
-    }).then(res => {
-      this.props.setLoginId(null, res.headers["x-auth-token"]);
+      headers: { "x-access-token": token },
+    }).then((res) => {
+      setUser(res.headers["x-auth-token"], null);
     });
-  }
+  }, [api, token, setUser]);
 
-  _getLoginForm() {
-    const { history, loginId } = this.props;
+  const _getLoginForm = useCallback(() => {
     if (loginId)
       return (
         <React.Fragment>
           <Button
             variant="link"
-            style={{textDecoration: "none"}}
+            style={{ textDecoration: "none" }}
             onClick={() => {
-              history.push("/account");
+              props.history.push("/account");
             }}
           >
             Konto
           </Button>
-          <Button variant="link" onClick={this.logout.bind(this)}>
+          <Button variant="link" onClick={logout}>
             <LogOut />
           </Button>
         </React.Fragment>
@@ -48,16 +46,16 @@ class Header extends Component {
       <React.Fragment>
         <Button
           variant="link"
-          style={{textDecoration: "none"}}
+          style={{ textDecoration: "none" }}
           onClick={() => {
-            history.push("/login");
+            props.history.push("/login");
           }}
         >
           Login
         </Button>
         <Button
           onClick={() => {
-            history.push("/register");
+            props.history.push("/register");
           }}
           variant="outline-primary"
         >
@@ -65,75 +63,65 @@ class Header extends Component {
         </Button>
       </React.Fragment>
     );
-  }
+  }, [loginId, logout, props.history]);
 
-  _getNavbarContent() {
-    const { loginId, searchText } = this.props;
-    if (false) {
-      return (<Searchbar searchText={searchText} />)
-    } else {
-      return (
-        <React.Fragment>
-          {loginId ? (
-            <NavLink to={"/favorites"} className="nav-link">
-              Favoriten
-            </NavLink>
-          ) : (
-            ""
-          )}
-          <NavLink to={"/about"} className="nav-link">
-            Über
+  const _getNavbarContent = useCallback(() => {
+    return (
+      <React.Fragment>
+        {loginId ? (
+          <NavLink to={"/favorites"} className="nav-link">
+            Favoriten
           </NavLink>
-        </React.Fragment>
-      )
-    }
-  }
+        ) : (
+          ""
+        )}
+        <NavLink to={"/about"} className="nav-link">
+          Über
+        </NavLink>
+      </React.Fragment>
+    );
+  }, [loginId]);
 
-  render() {
-    const { visible, sticky, theme } = this.props;
-    if (visible)
-      return (
-        <Navbar
-          bg={theme}
-          variant={theme}
-          expand="md"
-          sticky={sticky ? "top" : ""}
-          ref={bar => {
-            this.barElement = bar;
-          }}
-        >
-          <Navbar.Brand as={Link} to={"/"}>
-            MOPS-Y <i><small>Search</small></i>
-          </Navbar.Brand>
-          <Navbar.Toggle 
-            aria-controls="basic-nav-bar-nav" 
-            children={<Menu />}
-          />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="mr-auto">
-              {/* <NavLink to={"/"} className="nav-link">
+  if (visible)
+    return (
+      <Navbar
+        bg={theme}
+        variant={theme}
+        expand="md"
+        sticky={sticky ? "top" : ""}
+        ref={bar}
+      >
+        <Navbar.Brand as={Link} to={"/"}>
+          MOPS-Y{" "}
+          <i>
+            <small>Search</small>
+          </i>
+        </Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-nav-bar-nav" children={<Menu />} />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="mr-auto">
+            {/* <NavLink to={"/"} className="nav-link">
                 <Home />
               </NavLink> */}
-              {this._getNavbarContent()}
-            </Nav>
-            <Nav>
-              <Form inline>
-                {this._getLoginForm()}
-                <Button 
-                  variant="link"
-                  onClick={() => {
-                    this.props.toggleTheme()
-                  }}
-                >
-                  {theme === "dark" ? <Sun /> : <Moon />}
-                </Button>
-              </Form>
-            </Nav>
-          </Navbar.Collapse>
-        </Navbar>
-      );
-    return <React.Fragment></React.Fragment>;
-  }
-}
+            {_getNavbarContent()}
+          </Nav>
+          <Nav>
+            <Form inline>
+              {_getLoginForm()}
+              <Button
+                variant="link"
+                onClick={() => {
+                  toggleTheme();
+                }}
+              >
+                {theme === "dark" ? <Sun /> : <Moon />}
+              </Button>
+            </Form>
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
+    );
+  return <React.Fragment></React.Fragment>;
+};
 
 export default withRouter(Header);

@@ -10,10 +10,13 @@ import "bootstrap-darkmode/dist/darktheme.css";
 import "./styles/index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
+import { GlobalProvider } from "./context";
 
 ReactDOM.render(
   <BrowserRouter>
-    <App />
+    <GlobalProvider props={{api: "/api/v1"}}>
+      <App />
+    </GlobalProvider>
   </BrowserRouter>,
   document.getElementById("root")
 );

@@ -1,78 +1,83 @@
-import React, { Component } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { withRouter } from "react-router-dom";
 import { Table, Spinner, Button } from "react-bootstrap";
 import Axios from "axios";
 import { Trash2, ExternalLink } from "react-feather";
+import { useGlobal } from "../context";
 
-class Favorites extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
+const Favorites = (props) => {
+  const { api, token, loginId, dimensions } = useGlobal();
+
+  const [state, setState] = useState({
+    isFetching: true,
+    data: null,
+    error: null,
+  });
+
+  useEffect(() => {
+    if (!loginId) props.history.push("/");
+  });
+
+  const _fetchData = useCallback(() => {
+    setState({
       isFetching: true,
       data: null,
-      error: null
-    };
-    if (!this.props.loginId) this.props.history.push("/");
-  }
-
-  componentDidMount() {
-    this._fetchData();
-  }
-
-  componentDidUpdate() {
-    if (!this.props.loginId) this.props.history.push("/");
-  }
-
-  _fetchData = () => {
-    const { token, api } = this.props;
-    this.setState({
-      isFetching: true,
-      data: null
+      error: null,
     });
     Axios.get(api + "/favorite", {
-      headers: { "x-access-token": token }
-    }).then(res => {
-      this.setState({
-        isFetching: false,
-        data: res.data,
-        error: null
-      });
-    }).catch(err => {
-      if (err.response)
-        this.setState({error: err.response.data, isFetching: false});
-    });
-  }
-
-  _removeFavorite = DocId => {
-    const { token, api } = this.props;
-    Axios.put(api + "/favorite/" + DocId, {}, {
-      headers: { "x-access-token": token}
-    }).then(() => {
-      this._fetchData();
+      headers: { "x-access-token": token },
     })
-  }
+      .then((res) => {
+        setState({
+          isFetching: false,
+          data: res.data,
+          error: null,
+        });
+      })
+      .catch((err) => {
+        setState({
+          isFetching: false,
+          data: null,
+          error: err.response ? err.response.data?.status?.message : err,
+        });
+      });
+  }, [api, token]);
 
-  _body = () => {
-    const { isFetching, data, error } = this.state;
-    if (isFetching)
+  useEffect(() => {
+    if (loginId) _fetchData();
+  }, [loginId, _fetchData]);
+
+  const _removeFavorite = useCallback(
+    (DocId) => {
+      Axios.put(
+        api + "/favorite/" + DocId,
+        {},
+        {
+          headers: { "x-access-token": token },
+        }
+      ).then(() => {
+        _fetchData();
+      });
+    },
+    [api, token, _fetchData]
+  );
+
+  const _body = useCallback(() => {
+    if (state.isFetching)
       return (
-        <div style={{
-          width: "50px",
-          margin: "0 auto",
-          marginTop: "50px"
-        }}>
-          <Spinner
-            animation="border" 
-            variant="primary" 
-          />
+        <div
+          style={{
+            width: "50px",
+            margin: "0 auto",
+            marginTop: "50px",
+          }}
+        >
+          <Spinner animation="border" variant="primary" />
         </div>
       );
-    if (error)
-      return (
-        <div>{error.status.message}</div>
-      );
+    if (state.error) return <div>{state.error}</div>;
     return (
-      <Table striped hover style={{margin: "0"}}>
+      <Table striped hover style={{ margin: "0" }}>
         <thead>
           <tr>
             <th></th>
@@ -82,48 +87,52 @@ class Favorites extends Component {
           </tr>
         </thead>
         <tbody>
-          {data.map(doc => {return (
-            <tr key={doc.DocId}>
-              <td>
-                <Button
-                  variant="link"
-                  onClick={()=> window.open(doc.link, "_blank")}
-                >
-                  <ExternalLink />
-                </Button>
-              </td>
-              <td>
-                <i>{doc.document}</i>
-                <span> - {doc.title}</span>
-                <br/>
-                <small>{doc.zusatz}</small>
-              </td>
-              <td style={{whiteSpace: "nowrap"}}>{doc.ScanDate}</td>
-              <td>
-                <Button
-                  variant="link" 
-                  onClick={() => {this._removeFavorite(doc.DocId)}}
-                >
-                  <Trash2 />
-                </Button>
-              </td>
-            </tr>
-          )})}
+          {state.data.map((doc) => {
+            return (
+              <tr key={doc.DocId}>
+                <td>
+                  <Button
+                    variant="link"
+                    onClick={() => window.open(doc.link, "_blank")}
+                  >
+                    <ExternalLink />
+                  </Button>
+                </td>
+                <td>
+                  <i>{doc.document}</i>
+                  <span> - {doc.title}</span>
+                  <br />
+                  <small>{doc.zusatz}</small>
+                </td>
+                <td style={{ whiteSpace: "nowrap" }}>{doc.ScanDate}</td>
+                <td>
+                  <Button
+                    variant="link"
+                    onClick={() => {
+                      _removeFavorite(doc.DocId);
+                    }}
+                  >
+                    <Trash2 />
+                  </Button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </Table>
     );
-  }
+  }, [_removeFavorite, state]);
 
-  render() {
-    const { contendHeight } = this.props;
-    return (
-      <div style={{
-        height: contendHeight,
-        overflowY: "auto"
-      }}>
-        {this._body()}
-      </div>)
-  }
-}
+  return (
+    <div
+      style={{
+        height: dimensions.pdfHeight,
+        overflowY: "auto",
+      }}
+    >
+      {_body()}
+    </div>
+  );
+};
 
 export default withRouter(Favorites);
