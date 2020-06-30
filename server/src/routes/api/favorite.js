@@ -1,42 +1,17 @@
 const router = require("express").Router();
-const config = require("../../config");
 const request = require("request");
-const url = require("url");
 const models = require("../../models");
-const jwt = require("jsonwebtoken");
 const auth = require("../../middleware/auth");
 const errors = require("../../middleware/errors");
+const solr = require("../../middleware/solr");
 
-// build solr url for SOLR backend requests
-const solr = url.format({
-  protocol: "http",
-  hostname: config.solr_host,
-  port: config.solr_port,
-  pathname: "solr/" + config.solr_core,
-});
-
-const asyncRequest = (DocId) => {
-  return new Promise(function(resolve, reject) {
-    request.post(
-      {
-        url: solr + "/select",
-        body: {
-          params: {
-            q: "id:" + DocId,
-            fl: "id,document,title,zusatz,ScanDate,link",
-          },
-        },
-        json: true,
-      },
-      (error, res, body) => {
-        if (!error && res.statusCode == 200) {
-          resolve(body.response.docs);
-        } else {
-          reject(error);
-        }
-      }
-    );
-  });
+const requestBody = (docId) => {
+  return {
+    params: {
+      q: "id:" + docId,
+      fl: "id,document,title,zusatz,ScanDate,link",
+    },
+  };
 };
 
 // get favorites of logged in user as Array
@@ -50,7 +25,8 @@ router.get("/", auth, async (req, res, next) => {
     });
     favorites = await Promise.all(
       favorites.map(async (fav) => {
-        const docs = await asyncRequest(fav.DocId);
+        const data = await solr.post("/select", requestBody(fav.DocId));
+        const docs = data.response.docs;
         if (docs.length > 0) {
           return {
             DocId: fav.DocId,
@@ -76,7 +52,6 @@ router.get("/", auth, async (req, res, next) => {
         };
       })
     );
-    // res.status(200).send(favorites.map(fav => fav.DocId));
     res.status(200).send(favorites);
   } catch (err) {
     next(err);

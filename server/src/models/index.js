@@ -8,12 +8,23 @@ const config = require("../config");
 var db = {};
 
 const sequelize = new Sequelize(
-  config.mysql_database,
-  config.mysql_username,
-  config.mysql_password,
+  config.mysql.database,
+  config.mysql.username,
+  config.mysql.password,
   {
-    host: config.mysql_host,
+    host: config.mysql.host,
+    port: config.mysql.port,
     dialect: "mysql",
+    retry: {
+      max: 1000,
+      match: [
+        Sequelize.ConnectionError,
+        Sequelize.ConnectionRefusedError,
+        Sequelize.ConnectionTimedOutError,
+        Sequelize.OptimisticLockError,
+        Sequelize.TimeoutError,
+      ],
+    },
   }
 );
 

@@ -1,7 +1,5 @@
 const router = require("express").Router();
 const config = require("../../config");
-const request = require("request");
-const url = require("url");
 const models = require("../../models");
 const auth = require("../../middleware/auth");
 const errors = require("../../middleware/errors");

@@ -8,9 +8,9 @@ const errors = require("../middleware/errors");
 // build solr url for SOLR backend requests
 const solr = url.format({
   protocol: "http",
-  hostname: config.solr_host,
-  port: config.solr_port,
-  pathname: "solr/" + config.solr_core,
+  hostname: config.solr.host,
+  port: config.solr.port,
+  pathname: "solr/" + config.solr.core,
 });
 
 // promise based request
@@ -24,12 +24,9 @@ const post = (uri, body) => {
       },
       (error, res, body) => {
         if (!error && res.statusCode == 200) {
-          // console.log(body.hasOwnProperty("responseHeader"));
           if (
-            body.hasOwnProperty("responseHeader") &&
-            body.responseHeader.status == 0
+            body?.responseHeader?.status == 0
           ) {
-            // console.log(body);
             resolve(body);
           } else reject(new errors.SolrBackendError());
         } else {

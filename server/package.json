@@ -5,7 +5,7 @@
   "main": "build/server.js",
   "scripts": {
     "start": "node build/server.js",
-    "dev": "nodemon --exec babel-node src/server.js",
+    "dev": "nodemon -r dotenv/config --exec babel-node src/server.js",
     "build": "babel src --out-dir build --copy-files",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -36,6 +36,7 @@
     "@babel/core": "^7.8.4",
     "@babel/node": "^7.8.4",
     "@babel/preset-env": "^7.8.4",
+    "dotenv": "^8.2.0",
     "nodemon": "^2.0.2"
   }
 }

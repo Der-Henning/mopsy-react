@@ -1,0 +1,10 @@
+**/node_modules
+**/npm-debug.log
+
+server/src
+server/.env
+server/.bablerc
+server/.env.example
+
+client/public
+client/src
