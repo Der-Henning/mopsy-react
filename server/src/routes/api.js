@@ -6,6 +6,7 @@ const errors = require("../middleware/errors");
 const searchRouter = require("./api/search");
 const userRouter = require("./api/user");
 const favoriteRouter = require("./api/favorite");
+const crawlerRouter = require("./api/crawler");
 const request = require("request");
 
 router.get("/", function(req, res, next) {
@@ -15,6 +16,7 @@ router.get("/", function(req, res, next) {
 router.use("/search", searchRouter);
 router.use("/user", userRouter);
 router.use("/favorite", favoriteRouter);
+router.use("/crawler", crawlerRouter);
 
 router.use((err, req, res, next) => {
   // console.log(err);
