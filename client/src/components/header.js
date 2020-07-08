@@ -11,6 +11,7 @@ const Header = (props) => {
     api,
     token,
     loginId,
+    admin,
     theme,
     setUser,
     setHeaderHeight,
@@ -83,12 +84,19 @@ const Header = (props) => {
         ) : (
           ""
         )}
+        {admin ? (
+          <NavLink to={"/admin"} className="nav-link">
+            Admin
+          </NavLink>
+        ) : (
+          ""
+        )}
         <NavLink to={"/about"} className="nav-link">
           Über
         </NavLink>
       </React.Fragment>
     );
-  }, [loginId]);
+  }, [loginId, admin]);
 
   if (visible)
     return (

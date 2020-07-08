@@ -6,5 +6,16 @@ import Register from "./Register";
 import Viewer from "./Viewer";
 import About from "./About";
 import Account from "./Account";
+import Admin from "./Admin";
 
-export { Home, Search, Favorites, Login, Register, Viewer, About, Account };
+export {
+  Home,
+  Search,
+  Favorites,
+  Login,
+  Register,
+  Viewer,
+  About,
+  Account,
+  Admin,
+};

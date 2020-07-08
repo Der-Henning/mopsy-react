@@ -40,6 +40,8 @@ router.use((err, req, res, next) => {
     res.status(400).send(errors.error(18, "Doesn't exist"));
   else if (err instanceof sequelize.DatabaseError)
     res.status(500).send(errors.error(21, "Database Error"));
+  else if (err instanceof errors.SolrBackendError)
+    res.status(500).send(errors.error(23, "SOLR Configuration Error"));
   else if (err.code == "ECONNREFUSED")
     res.status(500).send(errors.error(22, "SOLR database offline"));
   else res.status(500).send(errors.error(99, "Internel Server Error"));

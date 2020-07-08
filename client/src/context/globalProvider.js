@@ -52,6 +52,7 @@ const GlobalProvider = ({ children, props }) => {
     var user = {
       token: null,
       loginId: null,
+      admin: false
     };
     if (!cookieToken) {
       Axios.get(api + "/user/newtoken").then((res) => {
@@ -63,7 +64,10 @@ const GlobalProvider = ({ children, props }) => {
         headers: { "x-access-token": cookieToken },
       })
         .then((res) => {
-          if (res?.data?.loginId) user.loginId = res.data.loginId;
+          if (res?.data?.loginId) {
+            user.loginId = res.data.loginId;
+            user.admin = res.data.admin;
+          }
         })
         .catch(() => {
           Axios.get(api + "/user/newtoken").then((res) => {
@@ -103,6 +107,7 @@ const GlobalProvider = ({ children, props }) => {
       api,
       token: user.token,
       loginId: user.loginId,
+      admin: user.admin,
       setUser,
       theme,
       toggleTheme,

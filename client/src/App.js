@@ -10,6 +10,7 @@ import {
   Viewer,
   About,
   Account,
+  Admin
 } from "./pages";
 import { useGlobal, SearchDataProvider } from "./context";
 
@@ -30,6 +31,7 @@ const App = (props) => {
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
           <Route path="/account" component={Account} />
+          <Route path="/admin" component={Admin} />
           <SearchDataProvider>
             <Route path="/search" component={Search} />
             <Route path="/viewer" component={Viewer} />

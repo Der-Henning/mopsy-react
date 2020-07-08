@@ -95,7 +95,7 @@ router.get("/logout", auth, (req, res, next) => {
 
 router.get("/loginid", auth, (req, res, next) => {
   try {
-    res.status(200).send({ loginId: req.LoginId });
+    res.status(200).send({ loginId: req.LoginId, admin: req.Admin });
   } catch (err) {
     next(err);
   }

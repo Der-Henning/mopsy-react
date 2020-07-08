@@ -35,6 +35,8 @@ services:
       MYSQL_ROOT_PASSWORD: mopsy
     ports:
       - '3306:3306'
+    security_opt:
+      - seccomp:unconfined
     volumes:
       - mysql_data:/var/lib/mysql
   solr:
@@ -48,7 +50,7 @@ services:
       - solr_data:/var/solr
       - solr_configset:/opt/solr/server/solr/configsets/myconfig:ro
     command:
-      ["solr-precreate", "mopsy", "/opt/solr/server/solr/configsets/myconfig"]
+      solr-precreate mopsy /opt/solr/server/solr/configsets/myconfig
 volumes:
   mysql_data:
   solr_data:

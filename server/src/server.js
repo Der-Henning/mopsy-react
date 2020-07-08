@@ -12,11 +12,6 @@ const indexRouter = require("./routes/index");
 const config = require("./config");
 const compression = require("compression");
 
-const crawlers = require("./crawlers");
-
-console.log(crawlers);
-crawlers[0].start();
-
 var port = normalizePort(config.port || "4000");
 
 server.use(bodyparser.urlencoded({ extended: true }));

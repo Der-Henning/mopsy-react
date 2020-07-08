@@ -58,6 +58,15 @@
               <lib dir="./lib" />
     -->
 
+  <lib dir="${solr.install.dir:../../../..}/contrib/extraction/lib" regex=".*\.jar" />
+  <lib dir="${solr.install.dir:../../../..}/dist/" regex="solr-cell-\d.*\.jar" />
+
+  <lib dir="${solr.install.dir:../../../..}/contrib/clustering/lib/" regex=".*\.jar" />
+  <lib dir="${solr.install.dir:../../../..}/dist/" regex="solr-clustering-\d.*\.jar" />
+
+  <lib dir="${solr.install.dir:../../../..}/contrib/langid/lib/" regex=".*\.jar" />
+  <lib dir="${solr.install.dir:../../../..}/dist/" regex="solr-langid-\d.*\.jar" />
+
   <!-- A 'dir' option by itself adds any files found in the directory
        to the classpath, this is useful for including all jars in a
        directory.
@@ -72,7 +81,7 @@
        The example below can be used to load a solr-contrib along
        with their external dependencies.
     -->
-    <!-- <lib dir="${solr.install.dir:../../../..}/dist/" regex="solr-ltr-\d.*\.jar" /> -->
+  <!-- <lib dir="${solr.install.dir:../../../..}/dist/" regex="solr-ltr-\d.*\.jar" /> -->
 
   <!-- an exact 'path' can be used instead of a 'dir' to specify a
        specific jar file.  This will cause a serious error to be logged
@@ -105,8 +114,7 @@
 
        solr.RAMDirectoryFactory is memory based and not persistent.
     -->
-  <directoryFactory name="DirectoryFactory"
-                    class="${solr.directoryFactory:solr.NRTCachingDirectoryFactory}"/>
+  <directoryFactory name="DirectoryFactory" class="${solr.directoryFactory:solr.NRTCachingDirectoryFactory}"/>
 
   <!-- The CodecFactory for defining the format of the inverted index.
        The default implementation is SchemaCodecFactory, which is the official Lucene
@@ -416,10 +424,7 @@
                       to occupy. Note that when this option is specified, the size
                       and initialSize parameters are ignored.
       -->
-    <filterCache class="solr.FastLRUCache"
-                 size="512"
-                 initialSize="512"
-                 autowarmCount="0"/>
+    <filterCache class="solr.FastLRUCache" size="512" initialSize="512" autowarmCount="0"/>
 
     <!-- Query Result Cache
 
@@ -429,10 +434,7 @@
             maxRamMB - the maximum amount of RAM (in MB) that this cache is allowed
                        to occupy
       -->
-    <queryResultCache class="solr.LRUCache"
-                      size="512"
-                      initialSize="512"
-                      autowarmCount="0"/>
+    <queryResultCache class="solr.LRUCache" size="512" initialSize="512" autowarmCount="0"/>
 
     <!-- Document Cache
 
@@ -440,18 +442,10 @@
          document).  Since Lucene internal document ids are transient,
          this cache will not be autowarmed.
       -->
-    <documentCache class="solr.LRUCache"
-                   size="512"
-                   initialSize="512"
-                   autowarmCount="0"/>
+    <documentCache class="solr.LRUCache" size="512" initialSize="512" autowarmCount="0"/>
 
     <!-- custom cache currently used by block join -->
-    <cache name="perSegFilter"
-           class="solr.search.LRUCache"
-           size="10"
-           initialSize="0"
-           autowarmCount="10"
-           regenerator="solr.NoOpRegenerator" />
+    <cache name="perSegFilter" class="solr.search.LRUCache" size="10" initialSize="0" autowarmCount="10" regenerator="solr.NoOpRegenerator" />
 
     <!-- Field Value Cache
 
@@ -460,10 +454,7 @@
          even if not configured here.
       -->
     <!--
-       <fieldValueCache class="solr.FastLRUCache"
-                        size="512"
-                        autowarmCount="128"
-                        showItems="32" />
+       <fieldValueCache class="solr.FastLRUCache" size="512" autowarmCount="128" showItems="32" />
       -->
 
     <!-- Custom Cache
@@ -476,13 +467,7 @@
          if autowarming is desired.
       -->
     <!--
-       <cache name="myUserCache"
-              class="solr.LRUCache"
-              size="4096"
-              initialSize="1024"
-              autowarmCount="1024"
-              regenerator="com.mycompany.MyRegenerator"
-              />
+       <cache name="myUserCache" class="solr.LRUCache" size="4096" initialSize="1024" autowarmCount="1024" regenerator="com.mycompany.MyRegenerator" />
       -->
 
 
@@ -613,10 +598,7 @@
          Before enabling remote streaming, you should make sure your
          system has authentication enabled.
 
-    <requestParsers enableRemoteStreaming="false"
-                    multipartUploadLimitInKB="-1"
-                    formdataUploadLimitInKB="-1"
-                    addHttpRequestToContext="false"/>
+    <requestParsers enableRemoteStreaming="false" multipartUploadLimitInKB="-1" formdataUploadLimitInKB="-1" addHttpRequestToContext="false"/>
       -->
 
     <!-- HTTP Caching
@@ -633,11 +615,10 @@
 
          By default, no Cache-Control header is generated.
 
-         You can use the <cacheControl> option even if you have set
-         never304="true"
+         You can use the <cacheControl> option even if you have set never304="true"
       -->
     <!--
-       <httpCaching never304="true" >
+       <httpCaching never304="true">
          <cacheControl>max-age=30, public</cacheControl>
        </httpCaching>
       -->
@@ -656,9 +637,7 @@
          requests) will all be relative to when the current Searcher
          was opened.  You can change it to lastModFrom="dirLastMod" if
          you want the value to exactly correspond to when the physical
-         index was last modified.
-
-         etagSeed="..." is an option you can change to force the ETag
+         index was last modified. etagSeed="..." is an option you can change to force the ETag
          header (and validation against If-None-Match requests) to be
          different even if the index has not changed (ie: when making
          significant changes to your config file)
@@ -667,8 +646,7 @@
          the never304="true" option)
       -->
     <!--
-       <httpCaching lastModifiedFrom="openTime"
-                    etagSeed="Solr">
+       <httpCaching lastModifiedFrom="openTime" etagSeed="Solr">
          <cacheControl>max-age=30, public</cacheControl>
        </httpCaching>
       -->
@@ -733,8 +711,7 @@
 
          In this example, the facet.field and facet.query params would
          be fixed, limiting the facets clients can use.  Faceting is
-         not turned on by default - but if the client does specify
-         facet=true in the request, these are the only facets they
+         not turned on by default - but if the client does specify facet=true in the request, these are the only facets they
          will be able to see counts for; regardless of what other
          facet.field or facet.query params they may specify.
 
@@ -762,6 +739,35 @@
       -->
   </requestHandler>
 
+  <requestHandler name="/search" class="solr.SearchHandler">
+    <lst name="defaults">
+      <str name="echoParams">none</str>
+      <str name="defType">edismax</str>
+      <str name="qf">title_txt_de^2.0 title_txt_en^2.0 authors^2.0 content_txt_de^1.0 content_txt_en^1.0</str>
+      <str name="rows">10</str>
+      <str name="fl">id,title*,authors,score,path,language</str>
+      <str name="wt">json</str>
+      <!-- <str name="hl.fl">page_*,title,zusatz,document,meta_*,data_*</str> -->
+      <str name="hl.simple.post">&lt;/b&gt;</str>
+      <str name="hl.simple.pre">&lt;b&gt;</str>
+      <!-- <str name="hl">on</str> -->
+      <!-- <str name="pf">allText</str> -->
+      <str name="ps">50</str>
+      <str name="qs">4</str>
+      <str name="tie">0.5</str>
+      <!-- <str name="facet.field">keywords</str>
+	   <str name="facet.field">cat_1</str>
+	   <str name="facet.field">cat_2</str>
+	   <str name="facet.field">cat_3</str>
+	   <str name="facet.field">cat_4</str>
+	   <str name="facet.field">cat_5</str> -->
+      <!-- <str name="facet.mincount">1</str>
+	   <str name="facet.limit">30</str>
+	   <str name="facet">on</str> -->
+      <!-- <str name="debug">results</str> -->
+    </lst>
+  </requestHandler>
+
   <!-- A request handler that returns indented JSON by default -->
   <requestHandler name="/query" class="solr.SearchHandler">
     <lst name="defaults">
@@ -777,6 +783,14 @@
     </lst>
   </initParams>
 
+  <requestHandler name="/update/extract" startup="lazy" class="solr.extraction.ExtractingRequestHandler">
+    <lst name="defaults">
+      <str name="lowernames">true</str>
+      <str name="fmap.meta">ignored_</str>
+      <str name="fmap.content">_text_</str>
+    </lst>
+  </requestHandler>
+
   <!-- Search Components
 
        Search components are registered to SolrCore and used by
@@ -784,12 +798,12 @@
 
        By default, the following components are available:
 
-       <searchComponent name="query"     class="solr.QueryComponent" />
-       <searchComponent name="facet"     class="solr.FacetComponent" />
-       <searchComponent name="mlt"       class="solr.MoreLikeThisComponent" />
+       <searchComponent name="query" class="solr.QueryComponent" />
+       <searchComponent name="facet" class="solr.FacetComponent" />
+       <searchComponent name="mlt" class="solr.MoreLikeThisComponent" />
        <searchComponent name="highlight" class="solr.HighlightComponent" />
-       <searchComponent name="stats"     class="solr.StatsComponent" />
-       <searchComponent name="debug"     class="solr.DebugComponent" />
+       <searchComponent name="stats" class="solr.StatsComponent" />
+       <searchComponent name="debug" class="solr.DebugComponent" />
 
        Default configuration in a requestHandler would look like:
 
@@ -907,6 +921,30 @@
     </arr>
   </requestHandler>
 
+  <searchComponent name="suggest" class="solr.SuggestComponent">
+    <lst name="suggester">
+      <str name="name">mySuggester</str>
+      <str name="lookupImpl">BlendedInfixLookupFactory</str>
+      <str name="dictionaryImpl">HighFrequencyDictionaryFactory</str>
+      <str name="field">spellShingle</str>
+      <str name="suggestAnalyzerFieldType">textSpellShingle</str>
+      <str name="buildOnStartup">false</str>
+    </lst>
+  </searchComponent>
+
+  <requestHandler name="/suggest" class="solr.SearchHandler" startup="lazy">
+    <lst name="defaults">
+      <str name="suggest">true</str>
+      <str name="suggest.count">10</str>
+      <str name="suggest.build">false</str>
+      <str name="suggest.dictionary">mySuggester</str>
+    </lst>
+    <arr name="components">
+      <str>suggest</str>
+    </arr>
+  </requestHandler>
+
+
   <!-- Terms Component
 
        http://wiki.apache.org/solr/TermsComponent
@@ -935,9 +973,7 @@
     <highlighting>
       <!-- Configure the standard fragmenter -->
       <!-- This could most likely be commented out in the "default" case -->
-      <fragmenter name="gap"
-                  default="true"
-                  class="solr.highlight.GapFragmenter">
+      <fragmenter name="gap" default="true" class="solr.highlight.GapFragmenter">
         <lst name="defaults">
           <int name="hl.fragsize">100</int>
         </lst>
@@ -946,8 +982,7 @@
       <!-- A regular-expression-based fragmenter
            (for sentence extraction)
         -->
-      <fragmenter name="regex"
-                  class="solr.highlight.RegexFragmenter">
+      <fragmenter name="regex" class="solr.highlight.RegexFragmenter">
         <lst name="defaults">
           <!-- slightly smaller fragsizes work better because of slop -->
           <int name="hl.fragsize">70</int>
@@ -959,9 +994,7 @@
       </fragmenter>
 
       <!-- Configure the standard formatter -->
-      <formatter name="html"
-                 default="true"
-                 class="solr.highlight.HtmlFormatter">
+      <formatter name="html" default="true" class="solr.highlight.HtmlFormatter">
         <lst name="defaults">
           <str name="hl.simple.pre"><![CDATA[<em>]]></str>
           <str name="hl.simple.post"><![CDATA[</em>]]></str>
@@ -969,26 +1002,19 @@
       </formatter>
 
       <!-- Configure the standard encoder -->
-      <encoder name="html"
-               class="solr.highlight.HtmlEncoder" />
+      <encoder name="html" class="solr.highlight.HtmlEncoder" />
 
       <!-- Configure the standard fragListBuilder -->
-      <fragListBuilder name="simple"
-                       class="solr.highlight.SimpleFragListBuilder"/>
+      <fragListBuilder name="simple" class="solr.highlight.SimpleFragListBuilder"/>
 
       <!-- Configure the single fragListBuilder -->
-      <fragListBuilder name="single"
-                       class="solr.highlight.SingleFragListBuilder"/>
+      <fragListBuilder name="single" class="solr.highlight.SingleFragListBuilder"/>
 
       <!-- Configure the weighted fragListBuilder -->
-      <fragListBuilder name="weighted"
-                       default="true"
-                       class="solr.highlight.WeightedFragListBuilder"/>
+      <fragListBuilder name="weighted" default="true" class="solr.highlight.WeightedFragListBuilder"/>
 
       <!-- default tag FragmentsBuilder -->
-      <fragmentsBuilder name="default"
-                        default="true"
-                        class="solr.highlight.ScoreOrderFragmentsBuilder">
+      <fragmentsBuilder name="default" default="true" class="solr.highlight.ScoreOrderFragmentsBuilder">
         <!--
         <lst name="defaults">
           <str name="hl.multiValuedSeparatorChar">/</str>
@@ -997,8 +1023,7 @@
       </fragmentsBuilder>
 
       <!-- multi-colored tag FragmentsBuilder -->
-      <fragmentsBuilder name="colored"
-                        class="solr.highlight.ScoreOrderFragmentsBuilder">
+      <fragmentsBuilder name="colored" class="solr.highlight.ScoreOrderFragmentsBuilder">
         <lst name="defaults">
           <str name="hl.tag.pre"><![CDATA[
                <b style="background:yellow">,<b style="background:lawgreen">,
@@ -1010,17 +1035,14 @@
         </lst>
       </fragmentsBuilder>
 
-      <boundaryScanner name="default"
-                       default="true"
-                       class="solr.highlight.SimpleBoundaryScanner">
+      <boundaryScanner name="default" default="true" class="solr.highlight.SimpleBoundaryScanner">
         <lst name="defaults">
           <str name="hl.bs.maxScan">10</str>
           <str name="hl.bs.chars">.,!? &#9;&#10;&#13;</str>
         </lst>
       </boundaryScanner>
 
-      <boundaryScanner name="breakIterator"
-                       class="solr.highlight.BreakIteratorBoundaryScanner">
+      <boundaryScanner name="breakIterator" class="solr.highlight.BreakIteratorBoundaryScanner">
         <lst name="defaults">
           <!-- type should be one of CHARACTER, WORD(default), LINE and SENTENCE -->
           <str name="hl.bs.type">WORD</str>
@@ -1108,8 +1130,7 @@
   </updateProcessor>
 
   <!-- The update.autoCreateFields property can be turned to false to disable schemaless mode -->
-  <updateRequestProcessorChain name="add-unknown-fields-to-the-schema" default="${update.autoCreateFields:true}"
-           processor="uuid,remove-blank,field-name-mutating,parse-boolean,parse-long,parse-double,parse-date,add-schema-fields">
+  <updateRequestProcessorChain name="add-unknown-fields-to-the-schema" default="${update.autoCreateFields:true}" processor="uuid,remove-blank,field-name-mutating,parse-boolean,parse-long,parse-double,parse-date,add-schema-fields">
     <processor class="solr.LogUpdateProcessorFactory"/>
     <processor class="solr.DistributedUpdateProcessorFactory"/>
     <processor class="solr.RunUpdateProcessorFactory"/>
@@ -1153,9 +1174,7 @@
        overridden...
     -->
   <!--
-     <queryResponseWriter name="xml"
-                          default="true"
-                          class="solr.XMLResponseWriter" />
+     <queryResponseWriter name="xml" default="true" class="solr.XMLResponseWriter" />
      <queryResponseWriter name="json" class="solr.JSONResponseWriter"/>
      <queryResponseWriter name="python" class="solr.PythonResponseWriter"/>
      <queryResponseWriter name="ruby" class="solr.RubyResponseWriter"/>
@@ -1195,8 +1214,7 @@
     -->
   <!-- example of registering a custom function parser  -->
   <!--
-     <valueSourceParser name="myfunc"
-                        class="com.mycompany.MyValueSourceParser" />
+     <valueSourceParser name="myfunc" class="com.mycompany.MyValueSourceParser" />
     -->
 
 
@@ -1205,17 +1223,17 @@
     -->
   <!--
      Could be something like:
-     <transformer name="db" class="com.mycompany.LoadFromDatabaseTransformer" >
+     <transformer name="db" class="com.mycompany.LoadFromDatabaseTransformer">
        <int name="connection">jdbc://....</int>
      </transformer>
 
      To add a constant value to all docs, use:
-     <transformer name="mytrans2" class="org.apache.solr.response.transform.ValueAugmenterFactory" >
+     <transformer name="mytrans2" class="org.apache.solr.response.transform.ValueAugmenterFactory">
        <int name="value">5</int>
      </transformer>
 
      If you want the user to still be able to change it with _value:something_ use this:
-     <transformer name="mytrans3" class="org.apache.solr.response.transform.ValueAugmenterFactory" >
+     <transformer name="mytrans3" class="org.apache.solr.response.transform.ValueAugmenterFactory">
        <double name="defaultValue">5</double>
      </transformer>
 
