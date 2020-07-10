@@ -1027,7 +1027,8 @@
   <field name="content_txt_en" type="text_en" multiValued="true" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_de" type="text_de" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_en" type="text_en" multiValued="false" indexed="true" stored="true"/>
-  <copyField source="*_page" dest="spellShingle"/>
+  <copyField source="*_page_txt_de" dest="spellShingle"/>
+  <copyField source="*_page_txt_en" dest="spellShingle"/>
   <copyField source="*_page_txt_de" dest="content_txt_de"/>
   <copyField source="*_page_txt_en" dest="content_txt_en"/>
 </schema>

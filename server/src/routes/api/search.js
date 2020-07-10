@@ -171,14 +171,19 @@ router.get("/suggest", auth, async (req, res, next) => {
 
   try {
     if (!q) return next(new errors.MissingParameterError());
+    const { data } = await axios.post(
+      solr + "/suggest",
+      qs.stringify({q})
+    );
     // const data = await solr.post("/suggest", { params: { q } });
-    // res.send(
-    //   data.suggest.mySuggester[q].suggestions.map((t) =>
-    //     t.term.replace(/<(.|\n)*?>/g, "")
-    //   )
-    // );
-    res.send([]);
+    res.send(
+      data.suggest.mySuggester[q].suggestions.map((t) =>
+        t.term.replace(/<(.|\n)*?>/g, "")
+      )
+    );
+    // res.send(data);
   } catch (err) {
+    console.log(err);
     next(err);
   }
 });

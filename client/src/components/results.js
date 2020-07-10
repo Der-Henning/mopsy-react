@@ -120,8 +120,7 @@ const Results = (props) => {
                 backgroundColor: "transparent",
               }}
             >
-              <i>{_getVal(doc, "document")}</i>
-              <span> - {_getVal(doc, "title")}</span>
+              <span>{_getVal(doc, "title")}</span>
             </Accordion.Toggle>
             <ExternalLink
               size="30"

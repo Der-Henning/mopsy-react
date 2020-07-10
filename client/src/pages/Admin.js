@@ -1,15 +1,14 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { withRouter } from "react-router-dom";
-import { Form, Button, NavbarBrand } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import Axios from "axios";
-import qs from "qs";
-import { Spinner } from "react-bootstrap";
 import { useGlobal } from "../context";
 
 const Admin = (props) => {
-  const { api, token, loginId, admin } = useGlobal();
+  const { api, token, admin } = useGlobal();
 
   const [crawlers, setCrawlers] = useState([]);
+  // const [interval, setInterval] = useState(null);
 
   useEffect(() => {
     if (!admin) props.history.push("/");
@@ -21,7 +20,7 @@ const Admin = (props) => {
       headers: { "x-access-token": token },
     })
       .then((res) => {
-        setCrawlers((prevState) => res.data);
+        setCrawlers([...res.data]);
       })
       .catch((err) => {
         console.log(err);
@@ -33,16 +32,17 @@ const Admin = (props) => {
       });
   }, [api, token]);
 
-  const refresh = useCallback(
-    (i, f) => {
-      if (crawlers[i].status == "running" || f) {
-        _fetchData();
-        console.log("refresh");
-        setTimeout(refresh(i, false), 500);
-      }
-    },
-    [crawlers]
-  );
+  // const refresh = useCallback(
+  //   (i, f) => {
+  //     console.log(crawlers);
+  //     if (crawlers[i].status === "running" || f) {
+  //       _fetchData();
+  //       console.log("refresh");
+  //       setTimeout(refresh(i, false), 500);
+  //     }
+  //   },
+  //   [crawlers, _fetchData]
+  // );
 
   const start = useCallback(
     (i) => {
@@ -51,7 +51,8 @@ const Admin = (props) => {
       })
         .then((res) => {
           console.log("started");
-          refresh(i, true);
+
+          // setTimeout(refresh(i, false), 500);
         })
         .catch((err) => {
           console.log(err);
@@ -61,7 +62,10 @@ const Admin = (props) => {
   );
 
   useEffect(() => {
-    if (admin) _fetchData();
+    // if (admin) _fetchData();
+    var interval = null;
+    if (admin) interval = setInterval(() => {_fetchData()}, 1000);
+    return () => clearInterval(interval);
   }, [admin, _fetchData]);
 
   if (crawlers) {
