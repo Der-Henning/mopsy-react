@@ -2,11 +2,12 @@
 
 const router = require("express").Router();
 const sequelize = require("sequelize");
-const errors = require("../middleware/errors");
-const searchRouter = require("./api/search");
-const userRouter = require("./api/user");
-const favoriteRouter = require("./api/favorite");
-const crawlerRouter = require("./api/crawler");
+const errors = require("../../../middleware/errors");
+const searchRouter = require("./search");
+const userRouter = require("./user");
+const favoriteRouter = require("./favorite");
+const crawlerRouter = require("./crawler");
+const pdfRouter = require("./pdf");
 const request = require("request");
 
 router.get("/", function(req, res, next) {
@@ -17,6 +18,7 @@ router.use("/search", searchRouter);
 router.use("/user", userRouter);
 router.use("/favorite", favoriteRouter);
 router.use("/crawler", crawlerRouter);
+router.use("/pdf", pdfRouter);
 
 router.use((err, req, res, next) => {
   // console.log(err);
@@ -38,6 +40,8 @@ router.use((err, req, res, next) => {
     res.status(400).send(errors.error(15, err.errors[0].message));
   else if (err instanceof sequelize.ForeignKeyConstraintError)
     res.status(400).send(errors.error(18, "Doesn't exist"));
+  else if (err instanceof errors.InvalidTokenError)
+    res.status(400).send(errors.error(19, "Invalid Token"));
   else if (err instanceof sequelize.DatabaseError)
     res.status(500).send(errors.error(21, "Database Error"));
   else if (err instanceof errors.SolrBackendError)

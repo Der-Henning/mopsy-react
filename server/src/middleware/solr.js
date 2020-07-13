@@ -1,10 +1,10 @@
 "use strict";
 
 const config = require("../config");
-const request = require("request");
 const url = require("url");
-const errors = require("../middleware/errors");
 const axios = require("axios");
+const qs = require("qs");
+const errors = require("./errors");
 
 // build solr url for SOLR backend requests
 const solr = url.format({
@@ -14,38 +14,20 @@ const solr = url.format({
   pathname: "solr/" + config.solr.core,
 });
 
-const post = async (uri, body) => {
-  const response = await axios.post(solr + uri, {
-    data: body
-  })
-  
-}
-
-// promise based request
-// const post = (uri, body) => {
-//   console.log(body);
-//   return new Promise((resolve, reject) => {
-//     request.post(
-//       {
-//         url: solr + uri,
-//         body: body,
-//         json: true,
-//       },
-//       (error, res, body) => {
-//         console.log(body);
-//         if (!error && res.statusCode == 200) {
-//           if (body?.responseHeader?.status == 0) {
-//             resolve(body);
-//           } else reject(new errors.SolrBackendError());
-//         } else {
-//           if (error) reject(error);
-//           else reject(new errors.SolrBackendError());
-//         }
-//       }
-//     );
-//   });
-// };
-
-module.exports = {
-  post,
+const post = (requestHandler, body) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { data } = await axios.post(
+        solr + requestHandler,
+        qs.stringify(body)
+      );
+      if (data?.responseHeader && data.responseHeader.status == 0)
+        resolve(data);
+      reject(new errors.SolrBackendError());
+    } catch (err) {
+      reject(err);
+    }
+  });
 };
+
+module.exports = { post };

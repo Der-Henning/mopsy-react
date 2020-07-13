@@ -54,7 +54,6 @@ const SearchDataProvider = ({ children }) => {
         })
         .catch((err) => {
           setData(null);
-          console.log(err);
         })
         .finally(() => {
           setIsFetchingDocs(false);
@@ -122,7 +121,6 @@ const SearchDataProvider = ({ children }) => {
   );
 
   const activeDocumentData = useCallback(() => {
-    console.log(activeDocument);
     if (activeDocument) {
       let doc = documents.filter((doc) => {
         return doc.id === activeDocument;

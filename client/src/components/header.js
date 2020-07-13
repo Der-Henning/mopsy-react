@@ -29,7 +29,7 @@ const Header = (props) => {
     Axios.get(api + "/user/logout", {
       headers: { "x-access-token": token },
     }).then((res) => {
-      setUser(res.headers["x-auth-token"], null);
+      setUser({token: res.headers["x-auth-token"], loginId: null, admin: false});
     });
   }, [api, token, setUser]);
 

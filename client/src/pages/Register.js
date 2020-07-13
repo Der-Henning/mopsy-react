@@ -45,7 +45,10 @@ const Register = (props) => {
         { headers: { "x-access-token": token } }
       )
         .then((res) => {
-          setUser(res.headers["x-auth-token"], res?.data?.loginId);
+          setUser({
+            token: res.headers["x-auth-token"],
+            loginId: res?.data?.loginId,
+          });
         })
         .catch((err) => {
           setError(err.response ? err.response.data?.status?.message : err);

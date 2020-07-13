@@ -6,15 +6,11 @@ module.exports = (sequelize, type) => {
         type: type.STRING,
         allowNull: false,
       },
-      document: {
-        type: type.STRING,
-        allowNull: true,
-      },
       title: {
         type: type.STRING,
         allowNull: true,
       },
-      zusatz: {
+      subtitle: {
         type: type.STRING,
         allowNull: true,
       },

@@ -40,6 +40,13 @@ class UnauthorizedError extends DomainError {
   }
 }
 
+class InvalidTokenError extends DomainError {
+  constructor() {
+    super(`Invalid Token`);
+    this.data = {};
+  }
+}
+
 class SolrBackendError extends DomainError {
   constructor() {
     super(`SOLR backend error`);
@@ -80,6 +87,7 @@ module.exports = {
   ResourceNotFoundError,
   InternalError,
   MissingParameterError,
+  InvalidTokenError,
   AuthenticationError,
   UnauthorizedError,
   SolrBackendError,

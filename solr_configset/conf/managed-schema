@@ -1022,7 +1022,13 @@
     -->
   <field name="spellShingle" type="textSpellShingle" multiValued="true" indexed="true" stored="true"/>
   <field name="language" type="string" multiValued="false" stored="true" indexed="true"/>
+  <field name="source" type="string" multiValued="false" stored="true" indexed="true"/>
+  <field name="md5" type="string" multiValued="false" stored="true" indexed="false"/>
   <field name="authors" type="string" multiValued="true" stored="true" indexed="true"/>
+  <field name="tags" type="string" multiValued="true" stored="true" indexed="true"/>
+  <field name="rating" type="pint" multiValued="false" stored="true" indexed="true"/>
+  <field name="file" type="string" multiValued="false" stored="true" indexed="false"/>
+  <field name="link" type="string" multiValued="false" stored="true" indexed="false"/>
   <field name="content_txt_de" type="text_de" multiValued="true" indexed="true" stored="true"/>
   <field name="content_txt_en" type="text_en" multiValued="true" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_de" type="text_de" multiValued="false" indexed="true" stored="true"/>

@@ -1,64 +1,42 @@
 const router = require("express").Router();
-const config = require("../../config");
-const models = require("../../models");
-const auth = require("../../middleware/auth");
-const errors = require("../../middleware/errors");
-// const solr = require("../../middleware/solr");
-const axios = require("axios");
-const url = require("url");
-const qs = require("qs");
+const config = require("../../../config");
+const models = require("../../../models");
+const auth = require("../../../middleware/auth");
+const errors = require("../../../middleware/errors");
+const solr = require("../../../middleware/solr");
 
-// build solr url for SOLR backend requests
-const solr = url.format({
-  protocol: "http",
-  hostname: config.solr.host,
-  port: config.solr.port,
-  pathname: "solr/" + config.solr.core,
-});
-
-// const searchParams = {
-//   echoParams: "none",
-//   defType: "dismax",
-//   qf: "title^2.0 authors^2.0 publishers^2.0 tags^3.0",
-//   rows: 10,
-//   fl: "id,title,authors,page_*,score,path",
-//   wt: "json",
-//   ps: 50,
-//   qs: 4,
-//   tie: 0.5,
-//   "hl.simple.post": "</b>",
-//   "hl.simple.pre": "<b>"
-// }
+const apiVersion = "v1";
 
 const searchBody = (q, page, fq) => {
   return {
-    params: {
-      // ...searchParams,
-      q: q,
-      rows: 10,
-      start: (page - 1) * 10,
-      fq: fq,
-      hl: "on",
-      "hl.snippets": 1,
-      "hl.fl": "title_*",
-      "hl.fragsize": 0,
-      facet: "off",
-    },
+    q: q,
+    rows: 10,
+    start: (page - 1) * 10,
+    fq: fq,
+    hl: "on",
+    "hl.snippets": 1,
+    "hl.fl": "title_*",
+    "hl.fragsize": 0,
+    facet: "off",
   };
 };
 
 const searchPagesBody = (q, DocId) => {
   return {
-    params: {
-      // ...searchParams,
-      q: q,
-      rows: 1,
-      fq: "id:" + DocId,
-      hl: "on",
-      "hl.fl": "*_page_*",
-      "hl.snippets": 10,
-      facet: "off",
-    },
+    q: q,
+    rows: 1,
+    fq: "id:" + DocId,
+    hl: "on",
+    "hl.fl": "*_page_*",
+    "hl.snippets": 10,
+    facet: "off",
+  };
+};
+
+const selectPage = (DocId, Page) => {
+  return {
+    q: `id:${DocId}`,
+    fl: `p_${Page}_page_*`,
   };
 };
 
@@ -82,11 +60,7 @@ router.get("/", auth, async (req, res, next) => {
         fq = fq.concat("id:(" + favorites.join(" OR ") + ")");
       }
     }
-    // const data = await solr.post("/select", searchBody(q, page, fq));
-    const { data } = await axios.post(
-      solr + "/search",
-      qs.stringify(searchBody(q, page, fq).params)
-    );
+    const data = await solr.post("/search", searchBody(q, page, fq));
     if (req.LoginId) {
       data.response.docs = await Promise.all(
         data.response.docs.map(async (doc) => ({
@@ -95,6 +69,7 @@ router.get("/", auth, async (req, res, next) => {
           authors: doc.authors,
           language: doc.language,
           path: doc.path,
+          link: doc.link || `/api/${apiVersion}/pdf/${doc.id}`,
           isFavorite: (await models.Favorite.findOne({
             where: {
               LoginId: req.LoginId,
@@ -171,19 +146,13 @@ router.get("/suggest", auth, async (req, res, next) => {
 
   try {
     if (!q) return next(new errors.MissingParameterError());
-    const { data } = await axios.post(
-      solr + "/suggest",
-      qs.stringify({q})
-    );
-    // const data = await solr.post("/suggest", { params: { q } });
+    const data = await solr.post("/suggest", { q });
     res.send(
       data.suggest.mySuggester[q].suggestions.map((t) =>
         t.term.replace(/<(.|\n)*?>/g, "")
       )
     );
-    // res.send(data);
   } catch (err) {
-    console.log(err);
     next(err);
   }
 });
@@ -194,11 +163,7 @@ router.get("/:DocId", auth, async (req, res, next) => {
   const DocId = req.params.DocId;
 
   try {
-    // const data = await solr.post("/search", searchPagesBody(q, DocId));
-    const { data } = await axios.post(
-      solr + "/search",
-      qs.stringify(searchPagesBody(q, DocId).params)
-    );
+    const data = await solr.post("/search", searchPagesBody(q, DocId));
     Object.keys(data.highlighting).forEach((d) => {
       Object.keys(data.highlighting[d]).forEach((f) => {
         if (RegExp("p_[0-9]*_page_txt_[a-z]*").test(f)) {
@@ -215,7 +180,24 @@ router.get("/:DocId", auth, async (req, res, next) => {
 
     res.status(200).send(data);
   } catch (err) {
-    console.log(err);
+    next(err);
+  }
+});
+
+// get page of document
+router.get("/:DocId/:page", auth, async (req, res, next) => {
+  const { DocId, page } = req.params;
+  try {
+    const data = await solr.post("/select", selectPage(DocId, page));
+    if ((data.response.numFound = 0))
+        return next(new errors.SolrDocumentDoesntExistError());
+    var doc = data.response.docs[0];
+    Object.keys(doc).forEach((p) => {
+      doc[p.split("_")[1]] = doc[p];
+      delete doc[p];
+    });
+    res.status(200).send(doc);
+  } catch (err) {
     next(err);
   }
 });
@@ -223,7 +205,7 @@ router.get("/:DocId", auth, async (req, res, next) => {
 // proxy /select request to SOLR backend
 router.post("/select", auth, async (req, res, next) => {
   try {
-    const data = await solr.post("/select", { params: req.body });
+    const data = await solr.post("/select", req.body);
     res.status(200).send(data);
   } catch (err) {
     next(err);
@@ -234,7 +216,7 @@ router.post("/select", auth, async (req, res, next) => {
 router.post("/select/:DocId", auth, async (req, res, next) => {
   const { DocId } = req.params;
   try {
-    const data = await solr.post("/select", { params: { q: "id:" + DocId } });
+    const data = await solr.post("/select", { q: "id:" + DocId });
     res.send(data);
   } catch (err) {
     next(err);

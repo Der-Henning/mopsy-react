@@ -14,6 +14,7 @@ const GlobalProvider = ({ children, props }) => {
   const [user, _setUser] = useState({
     token: null,
     loginId: null,
+    admin: false,
   });
   const [theme, setTheme] = useState("light");
   const [dimensions, setDimensions] = useState({
@@ -46,40 +47,56 @@ const GlobalProvider = ({ children, props }) => {
     return () => window.removeEventListener("resize", _updateDimensions);
   }, [_updateDimensions]);
 
+  const setUser = useCallback((user) => {
+    const cookies = new Cookies();
+    _setUser(() => user);
+    cookies.set("token", user.token, {
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    });
+  }, []);
+
+  useEffect(() => {
+    const cookies = new Cookies();
+    setTheme(cookies.get("theme") || "light");
+  }, []);
+
   useEffect(() => {
     const cookies = new Cookies();
     const cookieToken = cookies.get("token");
     var user = {
       token: null,
       loginId: null,
-      admin: false
+      admin: false,
     };
     if (!cookieToken) {
-      Axios.get(api + "/user/newtoken").then((res) => {
-        user.token = res.headers["x-auth-token"];
-      });
+      Axios.get(api + "/user/newtoken")
+        .then((res) => {
+          user.token = res.headers["x-auth-token"];
+        })
+        .finally(() => {
+          setUser(user);
+        });
     } else {
       user.token = cookieToken;
       Axios.get(api + "/user/loginid", {
         headers: { "x-access-token": cookieToken },
       })
         .then((res) => {
-          if (res?.data?.loginId) {
-            user.loginId = res.data.loginId;
-            user.admin = res.data.admin;
-          }
+          // if (res?.data?.loginId) {
+          user.loginId = res?.data?.loginId || null;
+          user.admin = res?.data?.admin || false;
+          // }
         })
-        .catch(() => {
-          Axios.get(api + "/user/newtoken").then((res) => {
+        .catch(async () => {
+          await Axios.get(api + "/user/newtoken").then((res) => {
             user.token = res.headers["x-auth-token"];
           });
         })
         .finally(() => {
-          _setUser(user);
+          setUser(user);
         });
     }
-    setTheme(cookies.get("theme") || "light");
-  }, [api]);
+  }, [api, setUser]);
 
   const toggleTheme = useCallback(() => {
     const cookies = new Cookies();
@@ -89,14 +106,6 @@ const GlobalProvider = ({ children, props }) => {
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     });
   }, [theme]);
-
-  const setUser = useCallback((token = null, loginId = null) => {
-    const cookies = new Cookies();
-    _setUser({ token, loginId });
-    cookies.set("token", token, {
-      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-    });
-  }, []);
 
   useEffect(() => {
     _updateDimensions();

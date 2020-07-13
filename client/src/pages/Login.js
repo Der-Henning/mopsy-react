@@ -48,7 +48,11 @@ const Login = (props) => {
         }
       )
         .then((res) => {
-          setUser(res.headers["x-auth-token"], res?.data?.loginId);
+          setUser({
+            token: res.headers["x-auth-token"],
+            loginId: res?.data?.loginId,
+            admin: res?.data?.admin,
+          });
         })
         .catch((err) => {
           setState((prevState) => ({

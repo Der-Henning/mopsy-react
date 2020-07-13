@@ -7,6 +7,7 @@ const md5File = require("md5-file");
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 const sqlite3 = require("sqlite3").verbose();
+const axios = require("axios");
 
 const solr = url.format({
   protocol: "http",
@@ -14,6 +15,8 @@ const solr = url.format({
   port: config.solr.port,
   pathname: "solr/" + config.solr.core,
 });
+
+var stopped = false;
 
 const solrExtractData = (file) => {
   return new Promise((resolve, reject) => {
@@ -83,63 +86,64 @@ const getMeta = (data) => {
   return meta;
 };
 
-const index = async (document) => {
-  try {
-    var md5 = null;
-    const check = await solrGetDoc(document.id);
-    if (check && check.response && check.response.docs.length > 0) {
-      md5 = check.response.docs[0].md5;
-    }
-
-    document = {
-      ...document,
-      md5: await md5File(document.path),
-    };
-    if (md5 != document["md5"]) {
-      console.log("new Doc");
-      const response = await solrExtractData(document.path);
-
+const index = (document) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      var md5 = null;
+      const check = await solrGetDoc(document.id);
+      if (check && check.response && check.response.docs.length > 0) {
+        md5 = check.response.docs[0].md5;
+      }
+      const filename = path.join(
+        document.path,
+        document.file + "." + document.formats[0]
+      );
       document = {
-        ...getMeta(
-          response[
-            document.name + "." + document.format.toLowerCase() + "_metadata"
-          ]
-        ),
         ...document,
+        md5: await md5File(filename),
       };
+      if (md5 != document["md5"]) {
+        console.log("new Doc");
+        const response = await solrExtractData(filename);
 
-      document.language = document.language.toLowerCase();
+        document = {
+          ...getMeta(
+            response[document.file + "." + document.formats[0] + "_metadata"]
+          ),
+          ...document,
+        };
 
-      var doc = {
-        id: document.id,
-        source: "calibre",
-        ["title_txt_" + document.language]: document.title,
-        authors: document.authors,
-        md5: document.md5,
-        format: document.format,
-        language: document.language,
-      };
-      console.log(doc);
+        document.language = document.language.toLowerCase();
+        solr_language = document["language"] ? document["language"] : "general";
 
-      const file =
-        response[document.name + "." + document.format.toLowerCase()];
-      const dom = new JSDOM(file);
-      const pages = dom.window.document.querySelectorAll(".page");
-      pages.forEach((p, i) => {
-        let page =
-          "p_" +
-          (i + 1) +
-          "_page_txt_" +
-          (document["language"] ? document["language"] : "general");
-        doc[page] = p.textContent;
-      });
-      await solrPostData(doc);
-      console.log("commited");
-    } else console.log("no changes");
-  } catch (err) {
-    console.log("error");
-    console.log(err);
-  }
+        var doc = {
+          id: "calibre_" + document.id,
+          source: "calibre",
+          ["title_txt_" + solr_language]: document.title,
+          authors: document.authors,
+          md5: document.md5,
+          formats: document.formats,
+          language: document.language,
+          tags: document.tags,
+          rating: document.rating,
+          file: filename
+        };
+
+        const file = response[document.file + "." + document.formats[0]];
+        const dom = new JSDOM(file);
+        const pages = dom.window.document.querySelectorAll(".page");
+        pages.forEach((p, i) => {
+          let page = `p_${i + 1}_page_txt_${solr_language}`;
+          doc[page] = p.textContent;
+        });
+        await solrPostData(doc);
+        console.log("commited document");
+      } else console.log("no changes");
+      resolve();
+    } catch (err) {
+      reject(err);
+    }
+  });
 };
 
 const readDB = (calibre_path) => {
@@ -199,6 +203,7 @@ const readDB = (calibre_path) => {
             file: data.map((d) => d.name)[0],
             rating: ratings.map((r) => r.rating)[0],
             identifiers: identifiers.map((i) => ({ type: i.type, val: i.val })),
+            path: path.join(calibre_path, doc.path),
           };
         })
       );
@@ -210,7 +215,9 @@ const readDB = (calibre_path) => {
   });
 };
 
-module.exports = async (postData) => {
+const start = async (postData) => {
+  stopped = false;
+
   postData({
     message: "started Calibre crawler",
     progress: 0,
@@ -218,92 +225,43 @@ module.exports = async (postData) => {
   });
 
   const calibre_path = process.env.CALIBRE_SOLE_CALIBRE_LIBRARY;
-
   const documents = await readDB(calibre_path);
 
-  documents.forEach(async (doc, i) => {
+  for (let i = 0; i < documents.length; i++) {
+    if (stopped) {
+      postData({
+        message: "stopped by user",
+        progress: i / documents.length,
+        timeleft: undefined,
+      });
+      return;
+    };
     postData({
-      message: doc.title,
+      message: documents[i].title,
       progress: i / documents.length,
       timeleft: undefined,
     });
-    console.log(doc.title);
-    if (doc.formats) await index(doc);
+    console.log(documents[i].title);
+    if (documents[i].formats) await index(documents[i]);
+  }
+
+  postData({
+    message: "building dictionary ...",
+    progress: 1,
+    timeleft: 0,
   });
 
-  // console.log(documents);
-  // let db = new sqlite3.Database(
-  //   calibre_path + "/metadata.db",
-  //   sqlite3.OPEN_READONLY,
-  //   (err) => {
-  //     if (err) {
-  //       console.error(err.message);
-  //     }
-  //     console.log("Connected to the calibre database.");
-  //   }
-  // );
+  await axios.get(solr + "/suggest?suggest.build=true");
 
-  // var documents = [];
-
-  // db.serialize(() => {
-  //   db.all(
-  //     `SELECT books.id, title, format, name, path, isbn, pubdate,
-  //     (SELECT name FROM books_authors_link AS bal JOIN authors ON(author = authors.id) WHERE book = books.id) authors,
-  //     (SELECT name FROM publishers WHERE publishers.id IN (SELECT publisher from books_publishers_link WHERE book=books.id)) publishers,
-  //     (SELECT rating FROM ratings WHERE ratings.id IN (SELECT rating from books_ratings_link WHERE book=books.id)) rating,
-  //     (SELECT name FROM tags WHERE tags.id IN (SELECT tag from books_tags_link WHERE book=books.id)) tags
-  //     FROM books
-  //     LEFT JOIN data ON books.id=data.book`,
-  //     [],
-  //     (err, rows) => {
-  //       if (err) {
-  //         console.error(err.message);
-  //       }
-  //       documents = rows.map((row) => ({
-  //         ...row,
-  //         id: "calibre_" + row.id,
-  //         path: path.join(
-  //           calibre_path,
-  //           row.path,
-  //           row.name + "." + row.format.toLowerCase()
-  //         ),
-  //       }));
-  //       documents.forEach((doc, i) => {
-  //         db.all(
-  //           `SELECT name FROM books_authors_link LEFT JOIN authors ON author = authors.id WHERE book = ${
-  //             doc["id"].split("_")[1]
-  //           }`,
-  //           [],
-  //           (err, rows) => {
-  //             if (err) console.log(err.message);
-  //             documents[i] = { ...documents[i], rows };
-  //           }
-  //         );
-  //       });
-  //     }
-  //   );
-  // });
-
-  // db.close(async (err) => {
-  //   if (err) {
-  //     console.error(err.message);
-  //   }
-  //   console.log("Close the database connection.");
-  //   for (let i = 0; i < documents.length; i++) {
-  //     var document = documents[i];
-  //     postData({
-  //       message: document.name,
-  //       progress: i / documents.length,
-  //       timeleft: undefined,
-  //     });
-  //     console.log(document.title);
-  //     await index(document);
-  //   }
-
-  //   postData({
-  //     message: "finished Calibre crawler",
-  //     progress: 1,
-  //     timeleft: 0,
-  //   });
-  // });
+  postData({
+    message: "finished",
+    progress: 1,
+    timeleft: 0,
+  });
 };
+
+const stop = () => {
+  stopped = true;
+};
+
+module.exports = { start, stop };

@@ -11,7 +11,6 @@ if (isMainThread) {
   const fs = require("fs");
   const path = require("path");
   const basename = path.basename(__filename);
-  const config = require("../config");
   var crawlers = {};
 
   fs.readdirSync(__dirname)
@@ -24,33 +23,39 @@ if (isMainThread) {
       crawlers = {
         ...crawlers,
         [file.slice(0, -3)]: {
-          output: [],
-          status: "stopped",
+          message: "",
+          status: "idle",
           progress: 0,
           timeleft: undefined,
           path: path.join(__dirname, file),
           start: function() {
             this.status = "running";
-            const solr = require("../middleware/solr");
             const worker = new Worker(__filename, {
               workerData: {
                 path: this.path,
               },
             });
+            var stop = () => {
+              this.status = "stopped";
+              worker.postMessage("stop");
+            };
             worker.on("message", (data) => {
-              if (data.message) this.output.push(data.message);
+              if (data.message) this.message = data.message;
               if (data.progress) this.progress = data.progress;
               if (data.timeleft) this.timeleft = data.timeleft;
             });
             worker.on("error", (err) => {
               this.status = "error";
-              this.output.push(err);
+              this.message = err.message;
+              stop = null;
             });
             worker.on("exit", (code) => {
-              this.output.push(`Worker stopped with exit code ${code}`);
-              if (code === 0) this.status = "finished";
-              console.log(this.output);
+              this.message = `Crawler stopped with exit code ${code}`;
+              this.status = "idle";
+              stop = null;
             });
+            
+            return stop;
           },
         },
       };
@@ -63,5 +68,8 @@ if (isMainThread) {
     parentPort.postMessage(data);
   };
   const crawler = require(path);
-  crawler(postData);
+  parentPort.on("message", (message) => {
+    if (message === "stop") crawler.stop();
+  });
+  crawler.start(postData);
 }

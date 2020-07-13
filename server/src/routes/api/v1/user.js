@@ -1,10 +1,10 @@
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const models = require("../../models");
-const config = require("../../config");
-const auth = require("../../middleware/auth");
-const errors = require("../../middleware/errors");
+const models = require("../../../models");
+const config = require("../../../config");
+const auth = require("../../../middleware/auth");
+const errors = require("../../../middleware/errors");
 const nodemailer = require("nodemailer");
 const { smtp } = config;
 const transporter = nodemailer.createTransport({
@@ -74,7 +74,7 @@ router.post("/login", auth, async (req, res, next) => {
     res
       .status(200)
       .header("x-auth-token", token)
-      .send({ loginId: login.id });
+      .send({ loginId: login.id, admin: login.admin });
   } catch (err) {
     next(err);
   }

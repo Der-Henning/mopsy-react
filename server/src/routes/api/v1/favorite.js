@@ -1,16 +1,13 @@
 const router = require("express").Router();
-const request = require("request");
-const models = require("../../models");
-const auth = require("../../middleware/auth");
-const errors = require("../../middleware/errors");
-const solr = require("../../middleware/solr");
+const models = require("../../../models");
+const auth = require("../../../middleware/auth");
+const errors = require("../../../middleware/errors");
+const solr = require("../../../middleware/solr");
 
 const requestBody = (docId) => {
   return {
-    params: {
-      q: "id:" + docId,
-      fl: "id,document,title,zusatz,ScanDate,link",
-    },
+    q: "id:" + docId,
+    fl: "id,title_*,subtitle_*,ScanDate,link,language",
   };
 };
 
@@ -28,13 +25,15 @@ router.get("/", auth, async (req, res, next) => {
         const data = await solr.post("/select", requestBody(fav.DocId));
         const docs = data.response.docs;
         if (docs.length > 0) {
+          const doc = docs[0];
+          const lang = doc.language.toLowerCase();
           return {
             DocId: fav.DocId,
-            document: docs[0].document,
-            title: docs[0].title,
-            zusatz: docs[0].zusatz,
-            ScanDate: docs[0].ScanDate.split("T")[0],
-            link: docs[0].link,
+            document: doc.document,
+            title: doc[`title_txt_${lang}`],
+            subtitle: doc[`subtitle_txt_${lang}`],
+            date: doc.ScanDate?.split("T")[0],
+            link: doc.link,
           };
         }
         const doc = await models.DeletedDocs.findOne({
@@ -45,9 +44,8 @@ router.get("/", auth, async (req, res, next) => {
         return {
           DocId: fav.DocId,
           title: doc.title,
-          document: doc.document,
-          zusatz: doc.zusatz,
-          ScanDate: doc.deletedOn,
+          subtitle: doc.subtitle,
+          date: doc.deletedOn,
           link: null,
         };
       })
@@ -87,30 +85,17 @@ router.put("/:DocId", auth, async (req, res, next) => {
       await fav.destroy();
       res.status(200).send(false);
     } else {
-      request.post(
-        {
-          url: solr + "/select",
-          body: {
-            params: {
-              q: "id:" + DocId,
-              fl: "id",
-            },
-          },
-          json: true,
-        },
-        async (err, httpResponse, body) => {
-          if (err) return next(new errors.InternalError(err));
-          if (body.responseHeader.status != 0)
-            return next(new errors.SolrBackendError());
-          if ((body.response.numFound = 0))
-            return next(new errors.SolrDocumentDoesntExistError());
-          await models.Favorite.create({
-            DocId: DocId,
-            LoginId: req.LoginId,
-          });
-          res.status(200).send(true);
-        }
-      );
+      const data = await solr.post("/select", {
+        q: "id:" + DocId,
+        fl: "id",
+      });
+      if ((data.response.numFound = 0))
+        return next(new errors.SolrDocumentDoesntExistError());
+      await models.Favorite.create({
+        DocId: DocId,
+        LoginId: req.LoginId,
+      });
+      res.status(200).send(true);
     }
   } catch (err) {
     next(err);

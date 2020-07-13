@@ -27,11 +27,11 @@
     "lodash": "^4.17.15",
     "md5-file": "^5.0.0",
     "mysql2": "^2.1.0",
+    "node-cron": "^2.0.3",
     "nodemailer": "^6.4.8",
     "path": "^0.12.7",
     "qs": "^6.9.4",
     "regenerator-runtime": "^0.13.3",
-    "request": "^2.88.0",
     "sequelize": "^5.21.4",
     "sqlite3": "^5.0.0",
     "url": "^0.11.0"

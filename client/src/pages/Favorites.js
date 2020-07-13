@@ -99,12 +99,11 @@ const Favorites = (props) => {
                   </Button>
                 </td>
                 <td>
-                  <i>{doc.document}</i>
-                  <span> - {doc.title}</span>
+                  <span>{doc.title}</span>
                   <br />
-                  <small>{doc.zusatz}</small>
+                  <small>{doc.subtitle}</small>
                 </td>
-                <td style={{ whiteSpace: "nowrap" }}>{doc.ScanDate}</td>
+                <td style={{ whiteSpace: "nowrap" }}>{doc.date}</td>
                 <td>
                   <Button
                     variant="link"

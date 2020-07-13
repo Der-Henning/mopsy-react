@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { withRouter } from "react-router-dom";
 import { Search } from "react-feather";
 import styles from "../styles/searchbar.module.css";
@@ -37,6 +37,7 @@ const stateUpdaters = {
 const Searchbar = (props) => {
   const { autofocus, q } = props;
   const { api, token } = useGlobal();
+  const mountedRef = useRef(true)
 
   const [state, setState] = useState({
     searchText: q || "",
@@ -44,6 +45,12 @@ const Searchbar = (props) => {
     renderSuggestions: [],
     activeSuggestion: null,
   });
+
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
 
   useEffect(() => {
     setState(stateUpdaters.resetState(q));
@@ -82,7 +89,7 @@ const Searchbar = (props) => {
             headers: { "x-access-token": token },
           }).then((res) => {
             const suggestions = res.data;
-            if (suggestions) {
+            if (mountedRef.current && suggestions) {
               setState(
                 stateUpdaters.setSuggestions(
                   suggestions,

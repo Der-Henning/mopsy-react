@@ -12,10 +12,12 @@ module.exports = async (req, res, next) => {
   try {
     //if can verify the token, set req.user and pass to next middleware
     const decoded = jwt.verify(token, config.myprivatekey);
+    const user = await models.User.findByPk(decoded.UserId);
+    if (!user) return next(new errors.InvalidTokenError());
     req.UserId = decoded.UserId;
     if (decoded.LoginId) {
       const login = await models.Login.findByPk(decoded.LoginId);
-      if (!login) return next(new errors.UnauthorizedError());
+      if (!login) return next(new errors.InvalidTokenError());
       req.Admin = login.admin;
       req.LoginId = decoded.LoginId;
     }
