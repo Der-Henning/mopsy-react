@@ -2,25 +2,28 @@ import React, { useState, useCallback, useEffect } from "react";
 import { withRouter } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import Axios from "axios";
+import { Spinner } from "react-bootstrap";
 import { useGlobal } from "../context";
 
 const styles = {
   border: "solid 1px grey",
   borderRadius: "10px",
   margin: "20px",
-  padding: "10px"
-}
+  padding: "10px",
+};
 
 const Admin = (props) => {
   const { api, token, admin } = useGlobal();
 
   const [crawlers, setCrawlers] = useState([]);
+  const [state, setState] = useState({ loading: true });
 
   useEffect(() => {
     if (!admin) props.history.push("/");
   }, [admin, props.history]);
 
   const _fetchData = useCallback(() => {
+    // setState((prevState) => ({ ...prevState, loading: true }));
     Axios.get(api + "/crawler", {
       headers: { "x-access-token": token },
     })
@@ -29,6 +32,9 @@ const Admin = (props) => {
       })
       .catch((err) => {
         console.log(err);
+      })
+      .finally(() => {
+        setState((prevState) => ({ ...prevState, loading: false }));
       });
   }, [api, token]);
 
@@ -95,6 +101,19 @@ const Admin = (props) => {
     return () => clearInterval(interval);
   }, [admin, _fetchData]);
 
+  if (state.loading)
+    return (
+      <div
+        style={{
+          display: "flex",
+          height: "100%",
+          justifyContent: "center",
+          paddingTop: "50px",
+        }}
+      >
+        <Spinner animation="border" variant="primary" />
+      </div>
+    );
   if (crawlers) {
     return (
       <div>
@@ -110,7 +129,7 @@ const Admin = (props) => {
       </div>
     );
   } else {
-    return <div></div>;
+    return <div>Error</div>;
   }
 };
 

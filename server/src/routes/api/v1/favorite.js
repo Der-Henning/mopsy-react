@@ -4,6 +4,8 @@ const auth = require("../../../middleware/auth");
 const errors = require("../../../middleware/errors");
 const solr = require("../../../middleware/solr");
 
+const apiVersion = "v1";
+
 const requestBody = (docId) => {
   return {
     q: "id:" + docId,
@@ -33,7 +35,7 @@ router.get("/", auth, async (req, res, next) => {
             title: doc[`title_txt_${lang}`],
             subtitle: doc[`subtitle_txt_${lang}`],
             date: doc.ScanDate?.split("T")[0],
-            link: doc.link,
+            link: doc.link || `/api/${apiVersion}/pdf/${doc.id}`,
           };
         }
         const doc = await models.DeletedDocs.findOne({

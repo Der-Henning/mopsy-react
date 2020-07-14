@@ -1,0 +1,27 @@
+html
+    head
+        title test
+        style(type='text/css').
+            body {
+                background-color: white;
+            }
+            pre {
+                white-space: pre-wrap;  
+                background-color: lightgrey;
+                padding: 10px;
+                //- font-size: 2vw;
+            }
+            .page {
+                padding: 5px;
+                border-bottom: 1px solid black;
+            }
+            p {
+                text-align: center;
+                margin: 0;
+            }
+
+    body
+        each page, index in pages
+            div(id=(index + 1)).page
+                p Page #{index + 1}
+                pre #{page}

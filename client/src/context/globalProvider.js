@@ -82,10 +82,8 @@ const GlobalProvider = ({ children, props }) => {
         headers: { "x-access-token": cookieToken },
       })
         .then((res) => {
-          // if (res?.data?.loginId) {
           user.loginId = res?.data?.loginId || null;
           user.admin = res?.data?.admin || false;
-          // }
         })
         .catch(async () => {
           await Axios.get(api + "/user/newtoken").then((res) => {
@@ -102,7 +100,7 @@ const GlobalProvider = ({ children, props }) => {
     const cookies = new Cookies();
     var newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
-    cookies.set("theme", theme, {
+    cookies.set("theme", newTheme, {
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     });
   }, [theme]);

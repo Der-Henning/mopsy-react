@@ -5,6 +5,7 @@ import styles from "../styles/results.module.css";
 import { Star, ExternalLink } from "react-feather";
 import Axios from "axios";
 import { useGlobal, useSearchData } from "../context";
+import { withRouter } from "react-router-dom";
 
 const Results = (props) => {
   const { api, token } = useGlobal();
@@ -125,7 +126,12 @@ const Results = (props) => {
             <ExternalLink
               size="30"
               style={{ cursor: "pointer", margin: "3px" }}
-              onClick={() => window.open(doc.link, "_blank")}
+              // onClick={() => window.open(doc.link, "_blank")}
+              onClick={() =>
+                props.history.push(
+                  `/viewer?url=${doc.link}`
+                )
+              }
             />
             <Star
               size="30"
@@ -157,7 +163,7 @@ const Results = (props) => {
         </Accordion.Collapse>
       </Card>
     ));
-  }, [documents, _cardBody, _getVal, _starKlickHandler, _toggleActiveDocument]);
+  }, [documents, _cardBody, _getVal, _starKlickHandler, _toggleActiveDocument, props.history]);
 
   if (documents.length > 0) {
     return (
@@ -168,4 +174,4 @@ const Results = (props) => {
   } else return <React.Fragment></React.Fragment>;
 };
 
-export default Results;
+export default withRouter(Results);

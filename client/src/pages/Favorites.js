@@ -93,7 +93,11 @@ const Favorites = (props) => {
                 <td>
                   <Button
                     variant="link"
-                    onClick={() => window.open(doc.link, "_blank")}
+                    onClick={() =>
+                      props.history.push(
+                        `/viewer?url=${doc.link}`
+                      )
+                    }
                   >
                     <ExternalLink />
                   </Button>
@@ -120,7 +124,7 @@ const Favorites = (props) => {
         </tbody>
       </Table>
     );
-  }, [_removeFavorite, state]);
+  }, [_removeFavorite, state, props.history]);
 
   return (
     <div

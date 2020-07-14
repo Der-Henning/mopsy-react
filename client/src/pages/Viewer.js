@@ -1,7 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 import { PDFViewer } from "../components";
-
 import { useGlobal } from "../context";
 
 function useQuery() {
@@ -19,6 +18,7 @@ const Viewer = () => {
       page={page}
       width={"100%"}
       height={dimensions.pdfHeight}
+      format={"pdf"}
     />
   );
 };

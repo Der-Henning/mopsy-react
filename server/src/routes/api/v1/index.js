@@ -21,7 +21,7 @@ router.use("/crawler", crawlerRouter);
 router.use("/pdf", pdfRouter);
 
 router.use((err, req, res, next) => {
-  // console.log(err);
+  console.log(err);
   if (err instanceof sequelize.ConnectionRefusedError)
     res.status(500).send(errors.error(20, "Database offline"));
   else if (err instanceof errors.MissingParameterError)

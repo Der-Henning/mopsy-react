@@ -8,18 +8,28 @@ const path = require("path");
 const server = express();
 const models = require("./models");
 const apiRouter = require("./routes/api/v1");
-const indexRouter = require("./routes/index");
+// const indexRouter = require("./routes/index");
 const config = require("./config");
 const compression = require("compression");
 
 var port = normalizePort(config.port || "4000");
 
+const apiVersion = "v1";
+
+server.set("view engine", "pug");
+server.set("views", path.join(__dirname, `routes/api/${apiVersion}/views`));
+
 server.use(bodyparser.urlencoded({ extended: true }));
 server.use(compression());
 
-server.use("/api/v1", apiRouter);
+server.use(`/api/${apiVersion}`, apiRouter);
+// server.use(
+//   express.Router().get("/test", (req, res) => {
+//     res.render("index");
+//   })
+// );
 server.use(express.static(path.join(__dirname, "../../client/build")));
-server.use("/*", indexRouter);
+// server.use("/*", indexRouter);
 
 server.use(function(err, req, res, next) {
   console.error(err.stack);
