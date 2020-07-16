@@ -5,15 +5,17 @@ FROM node:12
 WORKDIR /usr/mopsy
 
 # Copy package informations
-COPY package*.json ./
-COPY client/package*.json ./client/
-COPY server/package*.json ./server/
+#COPY package*.json ./
+#COPY client/package*.json ./client/
+#COPY server/package*.json ./server/
 
 # Install NodeJS modules
-RUN npm ci --only=production
+COPY . .
+RUN npm ci
+RUN npm build
 
 # Copy Production build (.gitignore)
-COPY . .
+#COPY . .
 
 # Expose App at port 8080
 EXPOSE 8080
