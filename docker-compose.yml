@@ -9,6 +9,7 @@ services:
       - db
     volumes:
       - solr_configset:/usr/mopsy/solr_configset
+      - /books:/mnt/books:ro
     environment:
       CALIBRE_SOLR_APP_NAME: Calibre-Solr
       CALIBRE_SOLR_JSON_IDENTATION: 4
@@ -24,6 +25,7 @@ services:
       CALIBRE_SOLR_SESSIONKEY: myprivatekey
       CALIBRE_SOLR_SALT_ROUNDS: 10
       CALIBRE_SOLR_HITS_PER_PAGE: 10
+      CALIBRE_SOLR_CALIBRE_LIBRARY: "/mnt/books"
   db:
     image: mysql
     restart: always

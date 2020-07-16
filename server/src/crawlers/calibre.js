@@ -126,7 +126,7 @@ const index = (document) => {
           language: document.language,
           tags: document.tags,
           rating: document.rating,
-          file: filename
+          file: filename,
         };
 
         const file = response[document.file + "." + document.formats[0]];
@@ -224,7 +224,7 @@ const start = async (postData) => {
     timeleft: undefined,
   });
 
-  const calibre_path = process.env.CALIBRE_SOLE_CALIBRE_LIBRARY;
+  const calibre_path = process.env.CALIBRE_SOLR_CALIBRE_LIBRARY;
   const documents = await readDB(calibre_path);
 
   for (let i = 0; i < documents.length; i++) {
@@ -235,14 +235,18 @@ const start = async (postData) => {
         timeleft: undefined,
       });
       return;
-    };
+    }
     postData({
       message: documents[i].title,
       progress: i / documents.length,
       timeleft: undefined,
     });
     console.log(documents[i].title);
-    if (documents[i].formats) await index(documents[i]);
+    try {
+      if (documents[i].formats) await index(documents[i]);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   postData({
