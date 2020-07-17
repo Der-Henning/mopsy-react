@@ -12,7 +12,7 @@ WORKDIR /usr/mopsy
 # Install NodeJS modules
 COPY . .
 RUN npm ci
-RUN npm build
+RUN npm run build
 
 # Copy Production build (.gitignore)
 #COPY . .
