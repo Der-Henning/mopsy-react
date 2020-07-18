@@ -1,3 +1,5 @@
+![Node.js CI](https://github.com/Der-Henning/mopsy-react/workflows/Node.js%20CI/badge.svg?branch=master)
+
 # mopsy-react
 
 ## Quickstart
