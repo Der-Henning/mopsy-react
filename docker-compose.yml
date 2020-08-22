@@ -1,58 +1,9 @@
-version: '3'
+version: "3"
 services:
-  web:
+  mopsy:
     build: .
-    restart: always
+    container_name: node-docker
     ports:
-      - "5000:4000"
-    depends_on:
-      - db
+      - 8080:3000
     volumes:
-      - solr_configset:/usr/mopsy/solr_configset
-      - /books:/mnt/books:ro
-    environment:
-      CALIBRE_SOLR_APP_NAME: Calibre-Solr
-      CALIBRE_SOLR_JSON_IDENTATION: 4
-      CALIBRE_SOLR_MYSQL_DATABASE: mopsy
-      CALIBRE_SOLR_MYSQL_HOST: db
-      CALIBRE_SOLR_MYSQL_PORT: 3306
-      CALIBRE_SOLR_MYSQL_USERNAME: mopsy
-      CALIBRE_SOLR_MYSQL_PASSWORD: mopsy
-      CALIBRE_SOLR_SOLR_HOST: localhost
-      CALIBRE_SOLR_SOLR_PORT: 8983
-      CALIBRE_SOLR_SOLR_CORE: dvcore
-      CALIBRE_SOLR_MYPRIVATEKEY: myprivatekey
-      CALIBRE_SOLR_SESSIONKEY: myprivatekey
-      CALIBRE_SOLR_SALT_ROUNDS: 10
-      CALIBRE_SOLR_HITS_PER_PAGE: 10
-      CALIBRE_SOLR_CALIBRE_LIBRARY: "/mnt/books"
-  db:
-    image: mysql
-    restart: always
-    environment:
-      MYSQL_DATABASE: mopsy
-      MYSQL_USER: mopsy
-      MYSQL_PASSWORD: mopsy
-      MYSQL_ROOT_PASSWORD: mopsy
-    ports:
-      - '3306:3306'
-    security_opt:
-      - seccomp:unconfined
-    volumes:
-      - mysql_data:/var/lib/mysql
-  solr:
-    image: solr:8
-    restart: always
-    ports:
-      - "8983:8983"
-    depends_on: 
-      - web
-    volumes:
-      - solr_data:/var/solr
-      - solr_configset:/opt/solr/server/solr/configsets/myconfig:ro
-    command:
-      solr-precreate mopsy /opt/solr/server/solr/configsets/myconfig
-volumes:
-  mysql_data:
-  solr_data:
-  solr_configset:
+      - ./:/home/app
