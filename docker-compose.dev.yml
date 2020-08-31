@@ -1,16 +1,19 @@
-version: '3'
+version: "3"
 volumes:
-  db:
-  solr:
+  db-dev:
+  solr-dev:
 services:
-  web:
-    build: .
-    restart: always
+  mopsy:
+    image: node:12
     ports:
-      - "8080:4000"
+      - 1234:3000
+    command: npm run dev
     volumes:
-      - /books:/mnt/books:ro
+      - ./:/home/app
+      - /volume1/media/books:/mnt/books:ro
+    working_dir: /home/app
     environment:
+      DANGEROUSLY_DISABLE_HOST_CHECK: "true"
       MOPSY_APP_NAME: MOPSY Search
       MOPSY_JSON_IDENTATION: 4
       MOPSY_MYSQL_DATABASE: mopsy
@@ -20,7 +23,7 @@ services:
       MOPSY_MYSQL_PASSWORD: mopsy
       MOPSY_SOLR_HOST: solr
       MOPSY_SOLR_PORT: 8983
-      MOPSY_SOLR_CORE: dvcore
+      MOPSY_SOLR_CORE: mopsy
       MOPSY_MYPRIVATEKEY: myprivatekey
       MOPSY_SESSIONKEY: myprivatekey
       MOPSY_SALT_ROUNDS: 10
@@ -30,17 +33,18 @@ services:
     image: mariadb
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     volumes:
-      - db:/var/lib/mysql
+      - db-dev:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=mopsy
       - MYSQL_PASSWORD=mopsy
       - MYSQL_DATABASE=mopsy
       - MYSQL_USER=mopsy
   solr:
-    image: solr:8
-    restart: always
+    image: solr:8.5
+    ports:
+      - 1235:8983
     volumes:
-      - solr:/var/solr
+      - solr-dev:/var/solr
       - ./solr_configset:/opt/solr/server/solr/configsets/myconfig:ro
     command:
       solr-precreate mopsy /opt/solr/server/solr/configsets/myconfig

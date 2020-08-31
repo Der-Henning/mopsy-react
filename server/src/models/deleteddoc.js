@@ -1,6 +1,6 @@
 module.exports = (sequelize, type) => {
-  var DeletedDocs = sequelize.define(
-    "DeletedDocs",
+  var DeletedDoc = sequelize.define(
+    "DeletedDoc",
     {
       DocId: {
         type: type.STRING,
@@ -29,5 +29,5 @@ module.exports = (sequelize, type) => {
     }
   );
 
-  return DeletedDocs;
+  return DeletedDoc;
 };

@@ -1,9 +1,16 @@
+# Use NodeJS v12 as base image
 FROM node:12
 
-WORKDIR /home/app
-USER node
-ENV PORT 3000
+# Set Working directory
+WORKDIR /usr/mopsy
 
-EXPOSE 3000
+# Install NodeJS modules and build app
+COPY . .
+RUN npm ci
+RUN npm run build
 
-ENTRYPOINT /bin/bash
+# Expose App at port 8080
+EXPOSE 8080
+
+# Start Server
+CMD ["npm", "start"]

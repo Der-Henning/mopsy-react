@@ -285,6 +285,7 @@
 	       (empty by default), and down cases.  At query time only, it
 	       also applies synonyms.
 	  -->
+  <dynamicField name="*_txt_other" type="text_general" indexed="true" stored="true" multiValued="false"/>
   <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100" multiValued="true">
     <analyzer type="index">
       <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -1029,12 +1030,16 @@
   <field name="rating" type="pint" multiValued="false" stored="true" indexed="true"/>
   <field name="file" type="string" multiValued="false" stored="true" indexed="false"/>
   <field name="link" type="string" multiValued="false" stored="true" indexed="false"/>
+  <field name="content_txt_other" type="text_general" multiValued="true" indexed="true" stored="true"/>
   <field name="content_txt_de" type="text_de" multiValued="true" indexed="true" stored="true"/>
   <field name="content_txt_en" type="text_en" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_page_txt_other" type="text_general" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_de" type="text_de" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_en" type="text_en" multiValued="false" indexed="true" stored="true"/>
+  <copyField source="*_page_txt_other" dest="spellShingle"/>
   <copyField source="*_page_txt_de" dest="spellShingle"/>
   <copyField source="*_page_txt_en" dest="spellShingle"/>
+  <copyField source="*_page_txt_other" dest="content_txt_other"/>
   <copyField source="*_page_txt_de" dest="content_txt_de"/>
   <copyField source="*_page_txt_en" dest="content_txt_en"/>
 </schema>
