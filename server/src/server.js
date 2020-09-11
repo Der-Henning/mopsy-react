@@ -11,6 +11,7 @@ const apiRouter = require("./routes/api/v1");
 // const indexRouter = require("./routes/index");
 const config = require("./config");
 const compression = require("compression");
+const crawlers = require("./crawlers")
 
 var port = normalizePort(config.port || "4000");
 
@@ -39,6 +40,7 @@ server.use(function(err, req, res, next) {
 models.sequelize.sync().then(() => {
   server.listen(port, () => {
     models.Login.createAdmin(models);
+    crawlers.init();
     console.log("Express server listening on port " + port);
   });
 });

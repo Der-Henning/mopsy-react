@@ -1,7 +1,4 @@
 version: '2'
-volumes:
-  db:
-  solr:
 services:
   base:
     image: node:12

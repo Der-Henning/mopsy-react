@@ -6,7 +6,6 @@ const config = require("../config");
 const md5File = require("md5-file");
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
-const sqlite3 = require("sqlite3").verbose();
 const axios = require("axios");
 
 const solr = url.format({
@@ -15,12 +14,6 @@ const solr = url.format({
   port: config.solr.port,
   pathname: "solr/" + config.solr.core,
 });
-
-const shortLangCode = code => {
-  if (code == "deu") return "de";
-  if (code == "eng") return "en";
-  return "other";
-}
 
 var stopped = false;
 
@@ -35,12 +28,9 @@ const solrExtractData = (file) => {
         json: true,
       },
       (error, res, body) => {
-        if (!error && res.statusCode == 200) {
-          resolve(body);
-        } else {
-          console.log(body);
-          reject(error);
-        }
+        if (error) reject(error);
+        if (res.statusCode == 200) resolve(body);
+        reject(body);
       }
     );
   });
@@ -55,11 +45,9 @@ const solrPostData = (data) => {
         json: true,
       },
       (error, res, body) => {
-        if (!error && res.statusCode == 200) {
-          resolve(body);
-        } else {
-          reject(error);
-        }
+        if (error) reject(error);
+        if (res.statusCode == 200) resolve(body);
+        reject(body);
       }
     );
   });
@@ -73,12 +61,9 @@ const solrGetDoc = (docId) => {
         json: true,
       },
       (error, res, body) => {
-        if (!error && res.statusCode == 200) {
-          resolve(body);
-        } else {
-          console.log(body);
-          reject(error);
-        }
+        if (error) reject(error);
+        if (res.statusCode == 200) resolve(body);
+        reject(body);
       }
     );
   });
@@ -94,7 +79,7 @@ const getMeta = (data) => {
   return meta;
 };
 
-const index = (document) => {
+const index = (document, source) => {
   return new Promise(async (resolve, reject) => {
     try {
       var md5 = null;
@@ -122,15 +107,10 @@ const index = (document) => {
           ...document,
         };
 
-        document["language"] = document["language"]
-          ? document["language"].toLowerCase()
-          : "other";
-        solr_language = document["language"];
-
         var doc = {
           id: "calibre_" + document.id,
-          source: "calibre",
-          ["title_txt_" + solr_language]: document.title,
+          source: source,
+          ["title_txt_" + document.language]: document.title,
           authors: document.authors,
           md5: document.md5,
           formats: document.formats,
@@ -144,7 +124,7 @@ const index = (document) => {
         const dom = new JSDOM(file);
         const pages = dom.window.document.querySelectorAll(".page");
         pages.forEach((p, i) => {
-          let page = `p_${i + 1}_page_txt_${solr_language}`;
+          let page = `p_${i + 1}_page_txt_${document.language}`;
           doc[page] = p.textContent;
         });
         await solrPostData(doc);
@@ -157,92 +137,19 @@ const index = (document) => {
   });
 };
 
-const readDB = (calibre_path) => {
-  return new Promise(async (resolve, reject) => {
-    const getData = (sql) => {
-      return new Promise((resolve, reject) => {
-        db.all(sql, (err, rows) => {
-          if (err) reject(err);
-          else resolve(rows);
-        });
-      });
-    };
-    const db = new sqlite3.Database(
-      calibre_path + "/metadata.db",
-      sqlite3.OPEN_READONLY,
-      (err) => {
-        if (err) reject(err);
-        console.log("connected to Calibre Database");
-      }
-    );
-    var documents = [];
-    try {
-      documents = await getData(
-        `SELECT id, title, pubdate, path, isbn FROM books`
-      );
-      documents = await Promise.all(
-        documents.map(async (doc) => {
-          [
-            authors,
-            publishers,
-            data,
-            tags,
-            ratings,
-            identifiers,
-            languages,
-          ] = await Promise.all([
-            getData(
-              `SELECT name FROM books_authors_link LEFT JOIN authors ON author=authors.id WHERE book=${doc.id}`
-            ),
-            getData(
-              `SELECT name FROM books_publishers_link LEFT JOIN publishers ON publisher=publishers.id WHERE book=${doc.id}`
-            ),
-            getData(`SELECT format, name FROM data WHERE book=${doc.id}`),
-            getData(
-              `SELECT name FROM books_tags_link LEFT JOIN tags ON tag=tags.id WHERE book=${doc.id}`
-            ),
-            getData(
-              `SELECT ratings.rating FROM books_ratings_link LEFT JOIN ratings ON books_ratings_link.rating=ratings.id WHERE book=${doc.id}`
-            ),
-            getData(`SELECT type, val FROM identifiers WHERE book=${doc.id}`),
-            getData(
-              `SELECT languages.lang_code FROM books_languages_link LEFT JOIN languages ON books_languages_link.lang_code=languages.id WHERE book=${doc.id}`
-            ),
-          ]);
-          return {
-            ...doc,
-            authors: authors.map((a) => a.name),
-            publishers: publishers.map((p) => p.name),
-            formats: data.map((d) => d.format),
-            tags: tags.map((t) => t.name),
-            file: data.map((d) => d.name)[0],
-            rating: ratings.map((r) => r.rating)[0],
-            identifiers: identifiers.map((i) => ({ type: i.type, val: i.val })),
-            path: path.join(calibre_path, doc.path),
-            language: shortLangCode(languages.map((l) => l.lang_code)[0]),
-          };
-        })
-      );
-    } catch (err) {
-      reject(err);
-    }
-    db.close();
-    resolve(documents);
-  });
-};
+const start = async (arguments) => {
+  const { name, postData, module, args } = arguments;
+  const { crawler, async } = require("./" + module);
 
-const start = async (postData) => {
   stopped = false;
-
   postData({
-    message: "started Calibre crawler",
+    message: "started",
     progress: 0,
     timeleft: undefined,
   });
-
-  const calibre_path = process.env.CALIBRE_SOLR_CALIBRE_LIBRARY;
-  const documents = await readDB(calibre_path);
-
+  const documents = async
+    ? await crawler(JSON.parse(args))
+    : crawler(JSON.parse(args));
   for (let i = 0; i < documents.length; i++) {
     if (stopped) {
       postData({
@@ -257,9 +164,8 @@ const start = async (postData) => {
       progress: i / documents.length,
       timeleft: undefined,
     });
-    console.log(documents[i].title);
     try {
-      if (documents[i].formats) await index(documents[i]);
+      if (documents[i].formats) await index(documents[i], name);
     } catch (err) {
       console.log(err);
     }

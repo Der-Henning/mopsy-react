@@ -9,8 +9,12 @@ module.exports = (sequelize, type) => {
       type: type.STRING,
       allowNull: true,
     },
-    iterator: {
-      type: type.TEXT,
+    module: {
+      type: type.STRING,
+      allowNull: false,
+    },
+    args: {
+      type: type.STRING,
       allowNull: true,
     },
     compareMethod: {
@@ -18,7 +22,7 @@ module.exports = (sequelize, type) => {
       allowNull: false,
       defaultValue: "md5",
       validate: {
-        isIn: [["md5", "last change date"]],
+        isIn: [["md5", "lcd"]],
       },
     },
   });

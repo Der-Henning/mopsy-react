@@ -1,34 +1,40 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { withRouter } from "react-router-dom";
-import { Button } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
 import Axios from "axios";
 import { Spinner } from "react-bootstrap";
 import { useGlobal } from "../context";
+import qs from "qs";
 
 const styles = {
   border: "solid 1px grey",
+  maxWidth: "500px",
   borderRadius: "10px",
   margin: "20px",
   padding: "10px",
 };
 
 const Admin = (props) => {
-  const { api, token, admin } = useGlobal();
+  const { api, token, admin, dimensions } = useGlobal();
 
   const [crawlers, setCrawlers] = useState([]);
+  const [modules, setModules] = useState([]);
   const [state, setState] = useState({ loading: true });
+  const [form, setForm] = useState({ active: false, crawler: null });
 
   useEffect(() => {
     if (!admin) props.history.push("/");
+    _fetchModules();
   }, [admin, props.history]);
 
-  const _fetchData = useCallback(() => {
+  const _fetchCrawlers = useCallback(() => {
     // setState((prevState) => ({ ...prevState, loading: true }));
     Axios.get(api + "/crawler", {
       headers: { "x-access-token": token },
     })
       .then((res) => {
         setCrawlers(() => res.data);
+        console.log(res.data);
       })
       .catch((err) => {
         console.log(err);
@@ -38,9 +44,42 @@ const Admin = (props) => {
       });
   }, [api, token]);
 
+  const _fetchModules = useCallback(() => {
+    Axios.get(api + "/crawler/modules", {
+      headers: { "x-access-token": token },
+    })
+      .then((res) => {
+        setModules(() => res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  });
+
+  const _addCrawler = useCallback((e) => {
+    e.preventDefault();
+    const data = {
+      name: e.target.name.value,
+      module: e.target.module.value,
+      cron: e.target.cron.value,
+      args: e.target.args.value,
+      compareMethod: e.target.compareMethod.value,
+    };
+
+    Axios.post(api + "/crawler", qs.stringify({ data }), {
+      headers: { "x-access-token": token },
+    })
+      .then((res) => {
+        _fetchCrawlers();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  });
+
   const start = useCallback(
     (i) => {
-      Axios.get(`${api}/crawler/${crawlers[i].name}/start`, {
+      Axios.get(`${api}/crawler/${i}/start`, {
         headers: { "x-access-token": token },
       })
         .then((res) => {
@@ -55,7 +94,7 @@ const Admin = (props) => {
 
   const stop = useCallback(
     (i) => {
-      Axios.get(`${api}/crawler/${crawlers[i].name}/stop`, {
+      Axios.get(`${api}/crawler/${i}/stop`, {
         headers: { "x-access-token": token },
       })
         .then((res) => {
@@ -92,14 +131,54 @@ const Admin = (props) => {
     return str;
   }, []);
 
+  const crawlerForm = useCallback((crawler) => {
+    return (
+      <Form onSubmit={_addCrawler}>
+        <Form.Group>
+          <Form.Label>Crawler Name</Form.Label>
+          <Form.Control type="text" name="name" />
+        </Form.Group>
+        <Form.Group>
+          <Form.Label>Modul</Form.Label>
+          <Form.Control as="select" name="module">
+            {modules.map((m) => (
+              <option key={m.file} value={m.file}>
+                {m.name} - Version {m.version}
+              </option>
+            ))}
+          </Form.Control>
+        </Form.Group>
+        <Form.Group>
+          <Form.Label>Argumente</Form.Label>
+          <Form.Control type="text" name="args" />
+        </Form.Group>
+        <Form.Group>
+          <Form.Label>Vergleichsmethode</Form.Label>
+          <Form.Control as="select" name="compareMethod">
+            <option value="md5">md5</option>
+            <option value="lcd">last change date</option>
+          </Form.Control>
+        </Form.Group>
+        <Form.Group>
+          <Form.Label>Cron</Form.Label>
+          <Form.Control type="text" name="cron" />
+        </Form.Group>
+        <Button variant="outline-success" type="submit">
+          Speichern
+        </Button>
+      </Form>
+    );
+  });
+
   useEffect(() => {
     var interval = null;
+    _fetchCrawlers();
     if (admin)
       interval = setInterval(() => {
-        _fetchData();
+        _fetchCrawlers();
       }, 2000);
     return () => clearInterval(interval);
-  }, [admin, _fetchData]);
+  }, [admin, _fetchCrawlers]);
 
   if (state.loading)
     return (
@@ -114,16 +193,24 @@ const Admin = (props) => {
         <Spinner animation="border" variant="primary" />
       </div>
     );
+  if (form.active) {
+    return crawlerForm(form.crawler);
+  }
   if (crawlers) {
     return (
-      <div>
-        {crawlers.map((c, i) => (
-          <div key={i} style={styles}>
-            <p>{c.name}</p>
-            <p>Status: {c.status}</p>
-            <p>{progress(c.progress)}</p>
-            <p>{c.message || ""}</p>
-            <p>{startStopBtn(i)}</p>
+      <div
+        style={{
+          height: dimensions.pdfHeight,
+          overflowY: "auto",
+        }}
+      >
+        {Object.keys(crawlers).map((key) => (
+          <div key={key} style={styles}>
+            <p>{crawlers[key].name}</p>
+            <p>Status: {crawlers[key].status}</p>
+            <p>{progress(crawlers[key].progress)}</p>
+            <p>{crawlers[key].message || ""}</p>
+            <p>{startStopBtn(key)}</p>
           </div>
         ))}
       </div>

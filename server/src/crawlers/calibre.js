@@ -1,6 +1,16 @@
 const sqlite3 = require("sqlite3").verbose();
+const langs = require("langs");
+const path = require("path");
 
-module.exports = (calibre_path) => async () => {
+const name = "Calibre";
+const version = "1.0";
+const async = true;
+
+const crawler = async (args) => {
+  const { calibre_path } = args;
+
+console.log( calibre_path);
+
   const db = new sqlite3.Database(
     calibre_path + "/metadata.db",
     sqlite3.OPEN_READONLY,
@@ -53,17 +63,18 @@ module.exports = (calibre_path) => async () => {
             `SELECT languages.lang_code FROM books_languages_link LEFT JOIN languages ON books_languages_link.lang_code=languages.id WHERE book=${doc.id}`
           ),
         ]);
+        const language = languages ? langs.where("2", languages.map(l => l.lang_code)[0]) : undefined;
         return {
           ...doc,
           authors: authors.map((a) => a.name),
           publishers: publishers.map((p) => p.name),
           formats: data.map((d) => d.format),
           tags: tags.map((t) => t.name),
-          file: data ?? data.map((d) => d.name)[0],
-          rating: ratings ?? ratings.map((r) => r.rating)[0],
+          file: data ? data.map((d) => d.name)[0] : null,
+          rating: ratings ? ratings.map((r) => r.rating)[0] : null,
           identifiers: identifiers.map((i) => ({ type: i.type, val: i.val })),
           path: path.join(calibre_path, doc.path),
-          language: languages ? shortLangCode(languages.map((l) => l.lang_code)[0]) : "other",
+          language: language ? language["1"] : "other",
         };
       })
     );
@@ -74,3 +85,5 @@ module.exports = (calibre_path) => async () => {
     return documents;
   }
 };
+
+module.exports = { name, version, async, crawler };

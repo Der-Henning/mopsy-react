@@ -30,6 +30,10 @@ make start
 make stop
 ````
 
+App is exposed on Port 1234
+Solr is exposed on Port 1235
+Backend is exposed on Port 1236
+
 ### Reset Volumes
 
 ````

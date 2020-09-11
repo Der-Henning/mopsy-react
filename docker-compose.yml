@@ -9,7 +9,7 @@ services:
     ports:
       - "8080:4000"
     volumes:
-      - /books:/mnt/books:ro
+      - /volume1/media/books:/mnt/books:ro
     environment:
       MOPSY_APP_NAME: MOPSY Search
       MOPSY_JSON_IDENTATION: 4
@@ -25,7 +25,6 @@ services:
       MOPSY_SESSIONKEY: myprivatekey
       MOPSY_SALT_ROUNDS: 10
       MOPSY_HITS_PER_PAGE: 10
-      MOPSY_CALIBRE_LIBRARY: "/mnt/books"
   db:
     image: mariadb
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
