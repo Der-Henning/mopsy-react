@@ -22,11 +22,6 @@ const Admin = (props) => {
   const [state, setState] = useState({ loading: true });
   const [form, setForm] = useState({ active: false, crawler: null });
 
-  useEffect(() => {
-    if (!admin) props.history.push("/");
-    _fetchModules();
-  }, [admin, props.history]);
-
   const _fetchCrawlers = useCallback(() => {
     // setState((prevState) => ({ ...prevState, loading: true }));
     Axios.get(api + "/crawler", {
@@ -54,28 +49,39 @@ const Admin = (props) => {
       .catch((err) => {
         console.log(err);
       });
-  });
+  }, [api, token]);
 
-  const _addCrawler = useCallback((e) => {
-    e.preventDefault();
-    const data = {
-      name: e.target.name.value,
-      module: e.target.module.value,
-      cron: e.target.cron.value,
-      args: e.target.args.value,
-      compareMethod: e.target.compareMethod.value,
-    };
+  useEffect(() => {
+    if (!admin) props.history.push("/");
+    _fetchModules();
+  }, [admin, props.history, _fetchModules]);
 
-    Axios.post(api + "/crawler", qs.stringify({ data }), {
-      headers: { "x-access-token": token },
-    })
-      .then((res) => {
-        _fetchCrawlers();
+  const _addCrawler = useCallback(
+    (e) => {
+      e.preventDefault();
+      const data = {
+        name: e.target.name.value,
+        module: e.target.module.value,
+        cron: e.target.cron.value,
+        args: e.target.args.value,
+        compareMethod: e.target.compareMethod.value,
+      };
+
+      Axios.post(api + "/crawler", qs.stringify({ data }), {
+        headers: { "x-access-token": token },
       })
-      .catch((err) => {
-        console.log(err);
-      });
-  });
+        .then((res) => {
+          _fetchCrawlers();
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          setForm({ ...form, active: false, crawler: null });
+        });
+    },
+    [api, token, _fetchCrawlers, form]
+  );
 
   const start = useCallback(
     (i) => {
@@ -131,44 +137,47 @@ const Admin = (props) => {
     return str;
   }, []);
 
-  const crawlerForm = useCallback((crawler) => {
-    return (
-      <Form onSubmit={_addCrawler}>
-        <Form.Group>
-          <Form.Label>Crawler Name</Form.Label>
-          <Form.Control type="text" name="name" />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Modul</Form.Label>
-          <Form.Control as="select" name="module">
-            {modules.map((m) => (
-              <option key={m.file} value={m.file}>
-                {m.name} - Version {m.version}
-              </option>
-            ))}
-          </Form.Control>
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Argumente</Form.Label>
-          <Form.Control type="text" name="args" />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Vergleichsmethode</Form.Label>
-          <Form.Control as="select" name="compareMethod">
-            <option value="md5">md5</option>
-            <option value="lcd">last change date</option>
-          </Form.Control>
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Cron</Form.Label>
-          <Form.Control type="text" name="cron" />
-        </Form.Group>
-        <Button variant="outline-success" type="submit">
-          Speichern
-        </Button>
-      </Form>
-    );
-  });
+  const crawlerForm = useCallback(
+    (crawler) => {
+      return (
+        <Form onSubmit={_addCrawler}>
+          <Form.Group>
+            <Form.Label>Crawler Name</Form.Label>
+            <Form.Control type="text" name="name" />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Modul</Form.Label>
+            <Form.Control as="select" name="module">
+              {modules.map((m) => (
+                <option key={m.file} value={m.file}>
+                  {m.name} - Version {m.version}
+                </option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Argumente</Form.Label>
+            <Form.Control type="text" name="args" />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Vergleichsmethode</Form.Label>
+            <Form.Control as="select" name="compareMethod">
+              <option value="md5">md5</option>
+              <option value="lcd">last change date</option>
+            </Form.Control>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Cron</Form.Label>
+            <Form.Control type="text" name="cron" />
+          </Form.Group>
+          <Button variant="outline-success" type="submit">
+            Speichern
+          </Button>
+        </Form>
+      );
+    },
+    [_addCrawler, modules]
+  );
 
   useEffect(() => {
     var interval = null;
@@ -204,6 +213,9 @@ const Admin = (props) => {
           overflowY: "auto",
         }}
       >
+        <Button onClick={() => setForm({ ...form, active: true, crawler: null })}>
+          new Crawler
+        </Button>
         {Object.keys(crawlers).map((key) => (
           <div key={key} style={styles}>
             <p>{crawlers[key].name}</p>

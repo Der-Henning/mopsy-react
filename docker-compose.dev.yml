@@ -1,10 +1,15 @@
 version: "3"
+networks:
+  dev:
 volumes:
   db-dev:
   solr-dev:
+  redis-dev:
 services:
   mopsy:
     image: node:12
+    networks:
+      dev:
     ports:
       - 1234:3000
       - 1236:4000
@@ -31,6 +36,8 @@ services:
       MOPSY_HITS_PER_PAGE: 10
   db:
     image: mariadb
+    networks:
+      dev:
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     volumes:
       - db-dev:/var/lib/mysql
@@ -39,12 +46,22 @@ services:
       - MYSQL_PASSWORD=mopsy
       - MYSQL_DATABASE=mopsy
       - MYSQL_USER=mopsy
+  redis:
+    image: redis:6
+    networks:
+      dev:
+    volumes:
+      - redis-dev:/data
   adminer:
     image: adminer
+    networks:
+      dev:
     ports:
       - 1237:8080
   solr:
     image: solr:8.5
+    networks:
+      dev:
     ports:
       - 1235:8983
     volumes:

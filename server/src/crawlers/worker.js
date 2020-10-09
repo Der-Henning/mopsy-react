@@ -137,8 +137,8 @@ const index = (document, source) => {
   });
 };
 
-const start = async (arguments) => {
-  const { name, postData, module, args } = arguments;
+const start = async (_arguments) => {
+  const { name, postData, module, args } = _arguments;
   const { crawler, async } = require("./" + module);
 
   stopped = false;

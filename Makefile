@@ -3,7 +3,7 @@ install:
 start:
 	docker-compose -f docker-compose.dev.yml up
 stop:
-	docker-compose -f docker-compose.dev.yml down
+	docker-compose -f docker-compose.dev.yml down --remove-orphans
 build:
 	docker-compose -f docker-compose.builder.yml run --rm build
 bash:
