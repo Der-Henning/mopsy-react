@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Axios from "axios";
 import { useGlobal } from "../context";
+// import pdfjs from "pdfjs-dist";
+
 
 const styles = {
   height: "100%",
@@ -11,7 +13,7 @@ const styles = {
 
 const PDFViewer = (props) => {
   const { token } = useGlobal();
-  const { url, format, width, height, page } = props;
+  const { url, format, width, height, page, fullscreen } = props;
 
   const [state, setState] = useState({
     pdfExists: false,
@@ -19,7 +21,13 @@ const PDFViewer = (props) => {
     document: null,
   });
 
-  const _loadDocument = useCallback(() => {
+
+  const _loadDocument = useCallback(async () => {
+    
+    const pdfjs = await import('pdfjs-dist/build/pdf');
+    const pdfjsWorker = await import('pdfjs-dist/build/pdf.worker.entry');
+    
+    pdfjs.workerSrc = pdfjsWorker;
     setState((prevState) => ({
       ...prevState,
       pdfExists: false,
@@ -27,33 +35,43 @@ const PDFViewer = (props) => {
       document: null,
     }));
     if (url) {
-      Axios.get(url, {
-        params: {
-          format: format,
-        },
-        responseType: "arraybuffer",
-        headers: { "x-access-token": token },
-      })
-        .then((res) => {
+      console.log(url);
+      pdfjs.getDocument(url).promise
+        .then(doc => {
           setState((prevState) => ({
             ...prevState,
             pdfExists: true,
             loading: false,
-            document: URL.createObjectURL(
-              new Blob([res.data], {
-                type: res.headers["content-type"],
-              })
-            ),
-          }));
-        })
-        .catch((err) => {
-          setState((prevState) => ({
-            ...prevState,
-            pdfExists: false,
-            loading: false,
-            document: null,
+            document: doc
           }));
         });
+      // Axios.get(url, {
+      //   params: {
+      //     format: format,
+      //   },
+      //   responseType: "arraybuffer",
+      //   headers: { "x-access-token": token },
+      // })
+      //   .then((res) => {
+      //     setState((prevState) => ({
+      //       ...prevState,
+      //       pdfExists: true,
+      //       loading: false,
+      //       document: window.URL.createObjectURL(
+      //         new Blob([res.data], {
+      //           type: res.headers["content-type"],
+      //         })
+      //       ),
+      //     }));
+      //   })
+      //   .catch((err) => {
+      //     setState((prevState) => ({
+      //       ...prevState,
+      //       pdfExists: false,
+      //       loading: false,
+      //       document: null,
+      //     }));
+      //   });
     }
   }, [format, token, url]);
 
@@ -61,18 +79,26 @@ const PDFViewer = (props) => {
     const { pdfExists, loading, document } = state;
     if (loading) return <div style={styles}>Loading ...</div>;
     if (!pdfExists) return <div style={styles}>PDF missing!</div>;
+    //if (!window.Blob) return <div style={styles}>Blob not supported!</div>
 
     return (
-      <iframe
-        title="PDFViewer"
-        src={`${document}${
-          format === "txt"
-            ? `#${page}`
-            : `#toolbar=0&navpanes=0&view=Fit&page=${page}`
-        }`}
-        style={{ width: "100%", height: "100%", border: "0" }}
-      />
-    );
+      <canvas id="pdf">
+        {document.getPage(page)}
+      </canvas>
+    )
+
+    //if (fullscreen) window.open(document, "_self");
+    // return (
+    //   <iframe
+    //     title="PDFViewer"
+    //     src={`${url}${
+    //       format === "txt"
+    //         ? `#${page}`
+    //         : `#toolbar=0&navpanes=0&view=Fit&page=${page}`
+    //     }`}
+    //     style={{ width: "100%", height: "100%", border: "0" }}
+    //   />
+    // );
   }, [state, format, page]);
 
   useEffect(() => {

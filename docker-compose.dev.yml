@@ -5,6 +5,12 @@ volumes:
   db-dev:
   solr-dev:
   redis-dev:
+  books:
+    driver: local
+    driver_opts:
+      type: none
+      device: /mnt/books
+      o: bind
 services:
   mopsy:
     image: node:12
@@ -16,7 +22,7 @@ services:
     command: npm run dev
     volumes:
       - ./:/home/app
-      - /volume1/media/books:/mnt/books:ro
+      - books:/mnt/books:ro
     working_dir: /home/app
     environment:
       DANGEROUSLY_DISABLE_HOST_CHECK: "true"

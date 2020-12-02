@@ -19,6 +19,7 @@ const Viewer = () => {
       width={"100%"}
       height={dimensions.pdfHeight}
       format={"pdf"}
+      fullscreen={true}
     />
   );
 };
