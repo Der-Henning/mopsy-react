@@ -28,11 +28,11 @@ const GlobalProvider = ({ children, props }) => {
   const { api } = props;
 
   const _updateDimensions = useCallback(() => {
-    let windowWidth = typeof window !== "undefined" ? window.innerWidth : 0;
-    let windowHeight = typeof window !== "undefined" ? window.innerHeight : 0;
-    let pdfHeight = windowHeight - headerHeight;
-    let pdfWidth = Math.ceil(pdfHeight / 1.4);
-    let showPdfViewer = pdfWidth / windowWidth < 0.6 ? true : false;
+    const windowWidth = typeof window !== "undefined" ? window.innerWidth : 0;
+    const windowHeight = typeof window !== "undefined" ? window.innerHeight : 0;
+    const pdfHeight = windowHeight - headerHeight;
+    const pdfWidth = Math.ceil(pdfHeight / 1.4) - 25;
+    const showPdfViewer = pdfWidth / windowWidth < 0.6 ? true : false;
     setDimensions({
       windowWidth,
       windowHeight,
@@ -107,7 +107,7 @@ const GlobalProvider = ({ children, props }) => {
 
   useEffect(() => {
     _updateDimensions();
-  }, [headerHeight, _updateDimensions]);
+  }, [_updateDimensions]);
 
   const data = useMemo(
     () => ({

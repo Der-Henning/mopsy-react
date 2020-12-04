@@ -10,6 +10,7 @@
     "bootstrap": "^4.5.2",
     "bootstrap-darkmode": "^0.6.0",
     "html-react-parser": "^0.10.5",
+    "pdfjs-dist": "^2.5.207",
     "qs": "^6.9.4",
     "react": "^16.13.1",
     "react-app-polyfill": "^1.0.6",
@@ -17,9 +18,8 @@
     "react-dom": "^16.13.1",
     "react-feather": "^2.0.8",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "^3.4.3",
+    "react-scripts": "4.0.1",
     "universal-cookie": "^4.0.3",
-    "url": "^0.11.0",
     "url-search-params-polyfill": "^8.1.0"
   },
   "scripts": {
@@ -35,7 +35,8 @@
     "production": [
       ">0.2%",
       "not dead",
-      "not op_mini all"
+      "not op_mini all",
+      "ie >= 11"
     ],
     "development": [
       "last 1 chrome version",

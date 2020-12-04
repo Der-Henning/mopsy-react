@@ -126,12 +126,12 @@ const Results = (props) => {
             <ExternalLink
               size="30"
               style={{ cursor: "pointer", margin: "3px" }}
-              // onClick={() => window.open(doc.link, "_blank")}
-              onClick={() =>
-                props.history.push(
-                  `/viewer?url=${doc.link}`
-                )
-              }
+              onClick={() => window.open(doc.link, "_blank")}
+            // onClick={() =>
+            //   props.history.push(
+            //     `/viewer?url=${doc.link}`
+            //   )
+            // }
             />
             <Star
               size="30"
@@ -163,7 +163,7 @@ const Results = (props) => {
         </Accordion.Collapse>
       </Card>
     ));
-  }, [documents, _cardBody, _getVal, _starKlickHandler, _toggleActiveDocument, props.history]);
+  }, [documents, _cardBody, _getVal, _starKlickHandler, _toggleActiveDocument]);
 
   if (documents.length > 0) {
     return (
