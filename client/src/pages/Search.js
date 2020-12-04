@@ -160,13 +160,13 @@ const Search = (props) => {
         {_body()}
       </div>
       <div style={{ minWidth: dimensions.pdfWidth }}>
-        {!isFetchingDocs ? (
+        {!isFetchingDocs && activeDocument ? (
           <PDFViewer
             url={activeDocument ? activeDocumentData().link : null}
             page={activeDocumentPage}
-            width={dimensions.pdfWidth}
-            height={dimensions.pdfHeight}
+
             format={"pdf"}
+            style={{width:dimensions.pdfWidth, height:dimensions.pdfHeight}}
           />
         ) : (
           ""

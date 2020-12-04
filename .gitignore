@@ -3,5 +3,7 @@ npm-debug.log
 node_modules
 build
 config.json
-.env
 .data
+.eslintcache
+
+server/.env

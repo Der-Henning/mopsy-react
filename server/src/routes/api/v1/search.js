@@ -61,15 +61,18 @@ router.get("/", auth, async (req, res, next) => {
       }
     }
     const data = await solr.post("/search", searchBody(q, page, fq));
+    data.response.docs = data.response.docs.map((doc) => ({
+        id: doc.id,
+        title: doc["title_txt_" + doc.language],
+        authors: doc.authors,
+        language: doc.language,
+        path: doc.path,
+        link: doc.link || `/api/${apiVersion}/pdf/${doc.id}`,
+    }));
     if (req.LoginId) {
       data.response.docs = await Promise.all(
         data.response.docs.map(async (doc) => ({
-          id: doc.id,
-          title: doc["title_txt_" + doc.language],
-          authors: doc.authors,
-          language: doc.language,
-          path: doc.path,
-          link: doc.link || `/api/${apiVersion}/pdf/${doc.id}`,
+          ...doc,
           isFavorite: (await models.Favorite.findOne({
             where: {
               LoginId: req.LoginId,

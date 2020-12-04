@@ -20,6 +20,10 @@ const SearchDataProvider = ({ children }) => {
     dpp: 10,
   });
 
+  useEffect(() => {
+    setActiveDocumentPage(1);
+  }, [activeDocument])
+
   const setData = useCallback(
     (data) => {
       const docs = data?.response?.docs || [];

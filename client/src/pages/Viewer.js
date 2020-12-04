@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { PDFViewer } from "../components";
 import { useGlobal } from "../context";
@@ -12,16 +12,20 @@ const Viewer = () => {
   const page = useQuery().get("page");
   const { dimensions } = useGlobal();
 
-  return (
-    <PDFViewer
-      url={url}
-      page={page}
-      width={"100%"}
-      height={dimensions.pdfHeight}
-      format={"pdf"}
-      fullscreen={true}
-    />
-  );
+  const render = useCallback(() => {
+    return (
+      <div style={{ width: dimensions.windowWidth, height: dimensions.pdfHeight }}>
+        <PDFViewer
+          url={url}
+          page={page}
+          format={"pdf"}
+          fullscreen={true}
+        />
+      </div>
+    );
+  }, [dimensions, url, page])
+
+  return render();
 };
 
 export default Viewer;
