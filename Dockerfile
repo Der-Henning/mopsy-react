@@ -16,17 +16,15 @@ ENV NODE_ENV=production
 RUN mkdir /server
 RUN mkdir /client
 
-COPY ./server/package.json server/
-COPY ./server/package-lock.json server/
+COPY ./server/package.json ./server/
+COPY ./server/package-lock.json ./server/
+COPY ./solr_configset ./solr_configset
 COPY --from=builder /usr/mopsy/client/build client/build
 COPY --from=builder /usr/mopsy/server/build server/build
 
 WORKDIR /usr/mopsy/server
 
 RUN npm ci
-
-# Expose App at port 8080
-EXPOSE 8080
 
 # Start Server
 CMD ["npm", "start"]
