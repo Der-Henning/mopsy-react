@@ -15,7 +15,7 @@ const searchBody = (q, page, fq) => {
     fq: fq,
     hl: "on",
     "hl.snippets": 1,
-    "hl.fl": "title_*",
+    "hl.fl": "title_*,subtitle_*",
     "hl.fragsize": 0,
     facet: "off",
   };
@@ -25,6 +25,7 @@ const searchPagesBody = (q, DocId) => {
   return {
     q: q,
     rows: 1,
+    fl: "id",
     fq: "id:" + DocId,
     hl: "on",
     "hl.fl": "*_page_*",
@@ -64,8 +65,12 @@ router.get("/", auth, async (req, res, next) => {
     data.response.docs = data.response.docs.map((doc) => ({
         id: doc.id,
         title: doc["title_txt_" + doc.language],
+        subtitle: doc["subtitle_txt_" + doc.language],
         authors: doc.authors,
         language: doc.language,
+        creationDate: doc.creationDate,
+        scanDate: doc.scanDate,
+        data: doc.data,
         path: doc.path,
         link: doc.link || `/api/${apiVersion}/pdf/${doc.id}`,
     }));

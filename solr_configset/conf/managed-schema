@@ -1022,24 +1022,36 @@
      </similarity>
     -->
   <field name="spellShingle" type="textSpellShingle" multiValued="true" indexed="true" stored="true"/>
+
   <field name="language" type="string" multiValued="false" stored="true" indexed="true"/>
+  <field name="document" type="string" multiValued="false" stored="true" indexed="true"/>
   <field name="source" type="string" multiValued="false" stored="true" indexed="true"/>
   <field name="md5" type="string" multiValued="false" stored="true" indexed="false"/>
   <field name="authors" type="string" multiValued="true" stored="true" indexed="true"/>
-  <field name="tags" type="string" multiValued="true" stored="true" indexed="true"/>
   <field name="rating" type="pint" multiValued="false" stored="true" indexed="true"/>
   <field name="file" type="string" multiValued="false" stored="true" indexed="false"/>
   <field name="link" type="string" multiValued="false" stored="true" indexed="false"/>
+  <field name="scanDate" type="pdate" docValues="false" indexed="true" stored="true"/>
+  <field name="creationDate" type="pdate" docValues="false" indexed="true" stored="true"/>
+  <field name="data" type="string" multiValued="true" stored="true" indexed="true"/>
+
   <field name="content_txt_other" type="text_general" multiValued="true" indexed="true" stored="true"/>
   <field name="content_txt_de" type="text_de" multiValued="true" indexed="true" stored="true"/>
   <field name="content_txt_en" type="text_en" multiValued="true" indexed="true" stored="true"/>
+
+  <field name="tags_txt_other" type="text_general" multiValued="true" indexed="true" stored="true"/>
+  <field name="tags_txt_de" type="text_de" multiValued="true" indexed="true" stored="true"/>
+  <field name="tags_txt_en" type="text_en" multiValued="true" indexed="true" stored="true"/>
+
   <dynamicField name="*_page_txt_other" type="text_general" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_de" type="text_de" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_en" type="text_en" multiValued="false" indexed="true" stored="true"/>
-  <copyField source="*_page_txt_other" dest="spellShingle"/>
-  <copyField source="*_page_txt_de" dest="spellShingle"/>
-  <copyField source="*_page_txt_en" dest="spellShingle"/>
+
   <copyField source="*_page_txt_other" dest="content_txt_other"/>
   <copyField source="*_page_txt_de" dest="content_txt_de"/>
   <copyField source="*_page_txt_en" dest="content_txt_en"/>
+
+  <copyField source="*_txt_other" dest="spellShingle"/>
+  <copyField source="*_txt_de" dest="spellShingle"/>
+  <copyField source="*_txt_en" dest="spellShingle"/>
 </schema>

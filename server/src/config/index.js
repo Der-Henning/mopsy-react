@@ -7,6 +7,7 @@ const finalConfig = {
   salt_rounds: process.env.MOPSY_SALT_ROUNDS || 10,
   hits_per_page: process.env.MOPSY_HITS_PER_PAGE || 10,
   pdf_dummy: process.env.MOPSY_PDF_DUMMY || null,
+  crawlers: (process.env.MOPSY_CRAWLERS || "").split(","),
   solr: {
     host: process.env.MOPSY_SOLR_HOST || "localhost",
     port: process.env.MOPSY_SOLR_PORT || 8983,

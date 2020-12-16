@@ -7,7 +7,8 @@
     "start": "node build/server.js",
     "dev": "nodemon -r dotenv/config --exec babel-node src/server.js",
     "build": "babel src --out-dir build --copy-files",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "migrate": "babel-node src/scripts/migration.js"
   },
   "author": "Henning Merklinger",
   "license": "ISC",

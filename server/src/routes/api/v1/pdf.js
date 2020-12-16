@@ -40,9 +40,9 @@ router.get("/:DocId", async (req, res, next) => {
       if ((data.response.numFound = 0))
         return next(new errors.SolrDocumentDoesntExistError());
       const doc = data.response.docs[0];
-      doc.formats = doc.formats.map((f) => f.toLowerCase());
-      if (!doc.formats.includes(format))
-        return next(new errors.ResourceNotFoundError("Format"));
+      // doc.formats = doc.formats.map((f) => f.toLowerCase());
+      // if (!doc.formats.includes(format))
+      //   return next(new errors.ResourceNotFoundError("Format"));
       if (doc.file) {
         const file = fs.readFileSync(doc.file);
         res.contentType("application/pdf");

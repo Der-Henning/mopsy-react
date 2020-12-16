@@ -743,9 +743,9 @@
     <lst name="defaults">
       <str name="echoParams">none</str>
       <str name="defType">edismax</str>
-      <str name="qf">tags^3.0 title_txt_other^2.0 title_txt_de^2.0 title_txt_en^2.0 authors^2.0 content_txt_de^1.0 content_txt_en^1.0 content_txt_other^1.0</str>
+      <str name="qf">tags_txt_other^3.0 tags_txt_de^3.0 tags_txt_en^3.0 title_txt_other^2.0 title_txt_de^2.0 title_txt_en^2.0 subtitle_txt_other^2.0 subtitle_txt_de^2.0 subtitle_txt_en^2.0 authors^2.0 content_txt_de^1.0 content_txt_en^1.0 content_txt_other^1.0</str>
       <str name="rows">10</str>
-      <str name="fl">id,title*,authors,score,path,language,file,link</str>
+      <str name="fl">id,title_*,subtitle_*,data_*,tags_*,authors,score,path,language,file,link,scanDate,creationDate</str>
       <str name="wt">json</str>
       <!-- <str name="hl.fl">page_*,title,zusatz,document,meta_*,data_*</str> -->
       <str name="hl.simple.post">&lt;/b&gt;</str>
@@ -1131,10 +1131,40 @@
 
   <!-- The update.autoCreateFields property can be turned to false to disable schemaless mode -->
   <updateRequestProcessorChain name="add-unknown-fields-to-the-schema" default="${update.autoCreateFields:true}" processor="uuid,remove-blank,field-name-mutating,parse-boolean,parse-long,parse-double,parse-date,add-schema-fields">
+    <!-- <processor class="org.apache.solr.update.processor.TikaLanguageIdentifierUpdateProcessorFactory">
+      <str name="langid.fl">*_page,title_txt,subject,description</str>
+      <str name="langid.map">true</str>
+      <str name="langid.langField">language</str>
+      <str name="langid.fallback">en</str>
+    </processor> -->
+    
     <processor class="solr.LogUpdateProcessorFactory"/>
     <processor class="solr.DistributedUpdateProcessorFactory"/>
     <processor class="solr.RunUpdateProcessorFactory"/>
   </updateRequestProcessorChain>
+
+<!-- Language identification
+
+       This example update chain identifies the language of the incoming
+       documents using the langid contrib. The detected language is
+       written to field language_s. No field name mapping is done.
+       The fields used for detection are text, title, subject and description,
+       making this example suitable for detecting languages form full-text
+       rich documents injected via ExtractingRequestHandler.
+       See more about langId at http://wiki.apache.org/solr/LanguageDetection
+    -->
+    
+  <!-- <updateRequestProcessorChain name="langid">
+    <processor class="org.apache.solr.update.processor.TikaLanguageIdentifierUpdateProcessorFactory">
+      <str name="langid.fl">*_page,title,subject,description</str>
+      <str name="langid.map">true</str>
+      <str name="langid.langField">language</str>
+      <str name="langid.fallback">en</str>
+    </processor>
+    <processor class="solr.LogUpdateProcessorFactory" />
+    <processor class="solr.RunUpdateProcessorFactory" />
+  </updateRequestProcessorChain> -->
+   
 
   <!-- Deduplication
 

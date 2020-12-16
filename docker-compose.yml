@@ -4,7 +4,7 @@ volumes:
   solr:
 services:
   web:
-    build: .
+    image: derhenning/mopsy:latest
     restart: always
     ports:
       - "8080:4000"
@@ -25,6 +25,7 @@ services:
       MOPSY_SESSIONKEY: myprivatekey
       MOPSY_SALT_ROUNDS: 10
       MOPSY_HITS_PER_PAGE: 10
+      MOPSY_CRAWLERS: calibre
   db:
     image: mariadb
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
@@ -43,3 +44,21 @@ services:
       - ./solr_configset:/opt/solr/server/solr/configsets/myconfig:ro
     command:
       solr-precreate mopsy /opt/solr/server/solr/configsets/myconfig
+  calibre:
+    image: derhenning/mopsy-crawler:latest
+    volumes:
+      - /volume1/media/books:/mnt/books:ro
+    environment:
+      CRAWLER_TYPE: calibre
+      CRAWLER_NAME: Calibre V1.0
+      CALIBRE_PATH: /mnt/books
+      CRAWLER_NAME: Calibre
+      MOPSY_MYSQL_DATABASE: mopsy
+      MOPSY_MYSQL_HOST: db
+      MOPSY_MYSQL_PORT: 3306
+      MOPSY_MYSQL_USERNAME: mopsy
+      MOPSY_MYSQL_PASSWORD: mopsy
+      MOPSY_SOLR_HOST: solr
+      MOPSY_SOLR_PORT: 8983
+      MOPSY_SOLR_CORE: mopsy
+      MOPSY_SOLR_PREFIX: calibre
