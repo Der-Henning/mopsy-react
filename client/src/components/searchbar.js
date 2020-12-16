@@ -24,7 +24,14 @@ const stateUpdaters = {
       ...prevState,
       searchText: words.join(" "),
       activeSuggestion,
+      activeSuggestionMarker: activeSuggestion,
     };
+  },
+  setActiveSuggestionMarker: (activeSuggestionMarker) => (prevState) => {
+    return {
+      ...prevState,
+      activeSuggestionMarker
+    }
   },
   resetState: (searchText) => () => ({
     searchText: searchText,
@@ -44,6 +51,7 @@ const Searchbar = (props) => {
     suggestions: [],
     renderSuggestions: [],
     activeSuggestion: null,
+    activeSuggestionMarker: null,
   });
 
   useEffect(() => {
@@ -72,7 +80,8 @@ const Searchbar = (props) => {
   };
 
   const _mouseEnterHandler = useCallback((i) => {
-    setState(stateUpdaters.setActiveSuggestion(i));
+    // setState(stateUpdaters.setActiveSuggestion(i));
+    setState(stateUpdaters.setActiveSuggestionMarker(i));
   }, []);
 
   const _changeHandler = useCallback(
@@ -127,7 +136,7 @@ const Searchbar = (props) => {
         (e.keyCode === 38 || e.keyCode === 40) &&
         maxKey >= 0
       ) {
-        var newActiveSuggestion = state.activeSuggestion;
+        var newActiveSuggestion = state.activeSuggestionMarker;
         e.preventDefault();
         switch (e.keyCode) {
           case 38:
@@ -149,7 +158,7 @@ const Searchbar = (props) => {
         setState(stateUpdaters.setActiveSuggestion(newActiveSuggestion));
       }
     },
-    [state.activeSuggestion, state.searchText, state.suggestions.length]
+    [state.activeSuggestionMarker, state.searchText, state.suggestions.length]
   );
 
   return (
@@ -175,7 +184,7 @@ const Searchbar = (props) => {
                 <div
                   key={i}
                   className={
-                    i === state.activeSuggestion ? styles.activeSugg : ""
+                    i === state.activeSuggestionMarker ? styles.activeSugg : ""
                   }
                 >
                   {s}
