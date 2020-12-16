@@ -40,7 +40,7 @@ services:
       - MYSQL_DATABASE=mopsy
       - MYSQL_USER=mopsy
   solr:
-    image: solr:8
+    image: solr:8.6
     restart: always
     environment:
       - SOLR_HEAP=1g

@@ -54,7 +54,7 @@ services:
     ports:
       - 1237:8080
   solr:
-    image: solr:8.5
+    image: solr:8.6
     networks:
       dev:
     ports:
