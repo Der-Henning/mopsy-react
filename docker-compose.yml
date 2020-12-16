@@ -2,16 +2,19 @@ version: '3'
 volumes:
   db:
   solr:
+  solr_config:
 services:
   web:
     image: derhenning/mopsy:latest
     restart: always
     ports:
-      - "8080:4000"
+      - 4321:80
     volumes:
+      - solr_config:/usr/mopsy/solr_configset
       - /volume1/media/books:/mnt/books:ro
     environment:
       MOPSY_APP_NAME: MOPSY Search
+      MOPSY_PORT: 80
       MOPSY_JSON_IDENTATION: 4
       MOPSY_MYSQL_DATABASE: mopsy
       MOPSY_MYSQL_HOST: db
@@ -20,7 +23,7 @@ services:
       MOPSY_MYSQL_PASSWORD: mopsy
       MOPSY_SOLR_HOST: solr
       MOPSY_SOLR_PORT: 8983
-      MOPSY_SOLR_CORE: dvcore
+      MOPSY_SOLR_CORE: mopsy
       MOPSY_MYPRIVATEKEY: myprivatekey
       MOPSY_SESSIONKEY: myprivatekey
       MOPSY_SALT_ROUNDS: 10
@@ -37,11 +40,13 @@ services:
       - MYSQL_DATABASE=mopsy
       - MYSQL_USER=mopsy
   solr:
-    image: solr:8
+    image: solr:8.6
     restart: always
+    environment:
+      - SOLR_HEAP=1g
     volumes:
       - solr:/var/solr
-      - ./solr_configset:/opt/solr/server/solr/configsets/myconfig:ro
+      - solr_config:/opt/solr/server/solr/configsets/myconfig:ro
     command:
       solr-precreate mopsy /opt/solr/server/solr/configsets/myconfig
   calibre:
@@ -52,12 +57,6 @@ services:
       CRAWLER_TYPE: calibre
       CRAWLER_NAME: Calibre V1.0
       CALIBRE_PATH: /mnt/books
-      CRAWLER_NAME: Calibre
-      MOPSY_MYSQL_DATABASE: mopsy
-      MOPSY_MYSQL_HOST: db
-      MOPSY_MYSQL_PORT: 3306
-      MOPSY_MYSQL_USERNAME: mopsy
-      MOPSY_MYSQL_PASSWORD: mopsy
       MOPSY_SOLR_HOST: solr
       MOPSY_SOLR_PORT: 8983
       MOPSY_SOLR_CORE: mopsy
