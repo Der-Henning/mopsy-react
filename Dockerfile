@@ -1,5 +1,5 @@
 # Use NodeJS v12 as base image
-FROM node:12
+FROM node:12 AS builder
 
 # Set Working directory
 WORKDIR /usr/mopsy
@@ -8,6 +8,22 @@ WORKDIR /usr/mopsy
 COPY . .
 RUN npm ci
 RUN npm run build
+
+FROM node:12-alpine
+WORKDIR /usr/mopsy
+ENV NODE_ENV=production
+
+RUN mkdir /server
+RUN mkdir /client
+
+COPY ./server/package.json server/
+COPY ./server/package-lock.json server/
+COPY --from=builder /usr/mopsy/client/build client/build
+COPY --from=builder /usr/mopsy/server/build server/build
+
+WORKDIR /usr/mopsy/server
+
+RUN npm ci
 
 # Expose App at port 8080
 EXPOSE 8080
