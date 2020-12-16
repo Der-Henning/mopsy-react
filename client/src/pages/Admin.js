@@ -4,7 +4,7 @@ import { Form, Button } from "react-bootstrap";
 import Axios from "axios";
 import { Spinner } from "react-bootstrap";
 import { useGlobal } from "../context";
-import qs from "qs";
+// import qs from "qs";
 
 const styles = {
   border: "solid 1px grey",
@@ -18,9 +18,9 @@ const Admin = (props) => {
   const { api, token, admin, dimensions } = useGlobal();
 
   const [crawlers, setCrawlers] = useState([]);
-  const [modules, setModules] = useState([]);
+  // const [modules, setModules] = useState([]);
   const [state, setState] = useState({ loading: true });
-  const [form, setForm] = useState({ active: false, crawler: null });
+  // const [form, setForm] = useState({ active: false, crawler: null });
 
   const _fetchCrawlers = useCallback(() => {
     // setState((prevState) => ({ ...prevState, loading: true }));
@@ -39,49 +39,49 @@ const Admin = (props) => {
       });
   }, [api, token]);
 
-  const _fetchModules = useCallback(() => {
-    Axios.get(api + "/crawler/modules", {
-      headers: { "x-access-token": token },
-    })
-      .then((res) => {
-        setModules(() => res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, [api, token]);
+  // const _fetchModules = useCallback(() => {
+  //   Axios.get(api + "/crawler/modules", {
+  //     headers: { "x-access-token": token },
+  //   })
+  //     .then((res) => {
+  //       setModules(() => res.data);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // }, [api, token]);
 
-  useEffect(() => {
-    if (!admin) props.history.push("/");
-    _fetchModules();
-  }, [admin, props.history, _fetchModules]);
+  // useEffect(() => {
+  //   if (!admin) props.history.push("/");
+  //   _fetchModules();
+  // }, [admin, props.history, _fetchModules]);
 
-  const _addCrawler = useCallback(
-    (e) => {
-      e.preventDefault();
-      const data = {
-        name: e.target.name.value,
-        module: e.target.module.value,
-        cron: e.target.cron.value,
-        args: e.target.args.value,
-        compareMethod: e.target.compareMethod.value,
-      };
+  // const _addCrawler = useCallback(
+  //   (e) => {
+  //     e.preventDefault();
+  //     const data = {
+  //       name: e.target.name.value,
+  //       module: e.target.module.value,
+  //       cron: e.target.cron.value,
+  //       args: e.target.args.value,
+  //       compareMethod: e.target.compareMethod.value,
+  //     };
 
-      Axios.post(api + "/crawler", qs.stringify({ data }), {
-        headers: { "x-access-token": token },
-      })
-        .then((res) => {
-          _fetchCrawlers();
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          setForm({ ...form, active: false, crawler: null });
-        });
-    },
-    [api, token, _fetchCrawlers, form]
-  );
+  //     Axios.post(api + "/crawler", qs.stringify({ data }), {
+  //       headers: { "x-access-token": token },
+  //     })
+  //       .then((res) => {
+  //         _fetchCrawlers();
+  //       })
+  //       .catch((err) => {
+  //         console.log(err);
+  //       })
+  //       .finally(() => {
+  //         setForm({ ...form, active: false, crawler: null });
+  //       });
+  //   },
+  //   [api, token, _fetchCrawlers, form]
+  // );
 
   const start = useCallback(
     (i) => {
@@ -115,14 +115,10 @@ const Admin = (props) => {
 
   const startStopBtn = useCallback(
     (i) => {
-      if (crawlers[i].status === "running") {
-        return <Button onClick={() => stop(i)}>stop</Button>;
+      if (crawlers[i].startable) {
+        return <Button onClick={() => start(i)}>start</Button>;
       } else {
-        return (
-          <Button onClick={() => start(i)}>
-            {crawlers[i].status === "stopped" ? "restart" : "start"}
-          </Button>
-        );
+        return <Button onClick={() => stop(i)}>stop</Button>;
       }
     },
     [start, stop, crawlers]
@@ -131,53 +127,53 @@ const Admin = (props) => {
   const progress = useCallback((p) => {
     const chars = 40;
     if (!p) p = 0;
-    const left = Math.floor(p * chars);
+    const left = Math.floor(p / 100 * chars);
     var str = "#".repeat(left) + "-".repeat(chars - left);
-    str = `[${str}] ${p * 100} %`;
+    str = `[${str}] ${p} %`;
     return str;
   }, []);
 
-  const crawlerForm = useCallback(
-    (crawler) => {
-      return (
-        <Form onSubmit={_addCrawler}>
-          <Form.Group>
-            <Form.Label>Crawler Name</Form.Label>
-            <Form.Control type="text" name="name" />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Modul</Form.Label>
-            <Form.Control as="select" name="module">
-              {modules.map((m) => (
-                <option key={m.file} value={m.file}>
-                  {m.name} - Version {m.version}
-                </option>
-              ))}
-            </Form.Control>
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Argumente</Form.Label>
-            <Form.Control type="text" name="args" />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Vergleichsmethode</Form.Label>
-            <Form.Control as="select" name="compareMethod">
-              <option value="md5">md5</option>
-              <option value="lcd">last change date</option>
-            </Form.Control>
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Cron</Form.Label>
-            <Form.Control type="text" name="cron" />
-          </Form.Group>
-          <Button variant="outline-success" type="submit">
-            Speichern
-          </Button>
-        </Form>
-      );
-    },
-    [_addCrawler, modules]
-  );
+  // const crawlerForm = useCallback(
+  //   (crawler) => {
+  //     return (
+  //       <Form onSubmit={_addCrawler}>
+  //         <Form.Group>
+  //           <Form.Label>Crawler Name</Form.Label>
+  //           <Form.Control type="text" name="name" />
+  //         </Form.Group>
+  //         <Form.Group>
+  //           <Form.Label>Modul</Form.Label>
+  //           <Form.Control as="select" name="module">
+  //             {modules.map((m) => (
+  //               <option key={m.file} value={m.file}>
+  //                 {m.name} - Version {m.version}
+  //               </option>
+  //             ))}
+  //           </Form.Control>
+  //         </Form.Group>
+  //         <Form.Group>
+  //           <Form.Label>Argumente</Form.Label>
+  //           <Form.Control type="text" name="args" />
+  //         </Form.Group>
+  //         <Form.Group>
+  //           <Form.Label>Vergleichsmethode</Form.Label>
+  //           <Form.Control as="select" name="compareMethod">
+  //             <option value="md5">md5</option>
+  //             <option value="lcd">last change date</option>
+  //           </Form.Control>
+  //         </Form.Group>
+  //         <Form.Group>
+  //           <Form.Label>Cron</Form.Label>
+  //           <Form.Control type="text" name="cron" />
+  //         </Form.Group>
+  //         <Button variant="outline-success" type="submit">
+  //           Speichern
+  //         </Button>
+  //       </Form>
+  //     );
+  //   },
+  //   [_addCrawler, modules]
+  // );
 
   useEffect(() => {
     var interval = null;
@@ -202,9 +198,9 @@ const Admin = (props) => {
         <Spinner animation="border" variant="primary" />
       </div>
     );
-  if (form.active) {
-    return crawlerForm(form.crawler);
-  }
+  // if (form.active) {
+  //   return crawlerForm(form.crawler);
+  // }
   if (crawlers) {
     return (
       <div
@@ -213,15 +209,16 @@ const Admin = (props) => {
           overflowY: "auto",
         }}
       >
-        <Button onClick={() => setForm({ ...form, active: true, crawler: null })}>
+        {/* <Button onClick={() => setForm({ ...form, active: true, crawler: null })}>
           new Crawler
-        </Button>
+        </Button> */}
         {Object.keys(crawlers).map((key) => (
           <div key={key} style={styles}>
             <p>{crawlers[key].name}</p>
             <p>Status: {crawlers[key].status}</p>
             <p>{progress(crawlers[key].progress)}</p>
             <p>{crawlers[key].message || ""}</p>
+            <p>{crawlers[key].text || ""}</p>
             <p>{startStopBtn(key)}</p>
           </div>
         ))}

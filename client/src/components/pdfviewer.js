@@ -68,15 +68,22 @@ const PDFViewer = (props) => {
             content: null
         }));
         if (url) {
-            const doc = await pdfjs.getDocument({
-                url: url,
-                cMapUrl: CMAP_URL,
-                cMapPacked: CMAP_PACKED,
-            }).promise
-            setDocument(() => ({
-                loading: false,
-                content: doc
-            }));
+            try {
+                const doc = await pdfjs.getDocument({
+                    url: url,
+                    cMapUrl: CMAP_URL,
+                    cMapPacked: CMAP_PACKED,
+                }).promise
+                setDocument(() => ({
+                    loading: false,
+                    content: doc
+                }));
+            } catch {
+                setDocument(() => ({
+                    loading: false,
+                    content: null
+                }));
+            }
         }
     }, [url]);
 

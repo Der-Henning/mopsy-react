@@ -34,6 +34,7 @@ services:
       MOPSY_SESSIONKEY: myprivatekey
       MOPSY_SALT_ROUNDS: 10
       MOPSY_HITS_PER_PAGE: 10
+      MOPSY_CRAWLERS: calibre
   db:
     image: mariadb
     networks:
@@ -46,12 +47,6 @@ services:
       - MYSQL_PASSWORD=mopsy
       - MYSQL_DATABASE=mopsy
       - MYSQL_USER=mopsy
-  redis:
-    image: redis:6
-    networks:
-      dev:
-    volumes:
-      - redis-dev:/data
   adminer:
     image: adminer
     networks:
@@ -67,5 +62,27 @@ services:
     volumes:
       - solr-dev:/var/solr
       - ./solr_configset:/opt/solr/server/solr/configsets/myconfig:ro
+    environment:
+      - SOLR_HEAP=1g
     command:
       solr-precreate mopsy /opt/solr/server/solr/configsets/myconfig
+  calibre:
+    image: derhenning/mopsy-crawler:latest
+    networks:
+      dev:
+    volumes:
+      - /volume1/media/books:/mnt/books:ro
+    environment:
+      DEBUG: 'true'
+      CRAWLER_TYPE: calibre
+      CRAWLER_NAME: Calibre V1.0
+      CALIBRE_PATH: /mnt/books
+      MOPSY_MYSQL_DATABASE: mopsy
+      MOPSY_MYSQL_HOST: db
+      MOPSY_MYSQL_PORT: 3306
+      MOPSY_MYSQL_USERNAME: mopsy
+      MOPSY_MYSQL_PASSWORD: mopsy
+      MOPSY_SOLR_HOST: solr
+      MOPSY_SOLR_PORT: 8983
+      MOPSY_SOLR_CORE: mopsy
+      MOPSY_SOLR_PREFIX: calibre
