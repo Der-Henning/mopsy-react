@@ -4,7 +4,6 @@ networks:
 volumes:
   db-dev:
   solr-dev:
-  redis-dev:
 services:
   mopsy:
     image: node:12
@@ -35,6 +34,8 @@ services:
       MOPSY_SALT_ROUNDS: 10
       MOPSY_HITS_PER_PAGE: 10
       MOPSY_CRAWLERS: calibre
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
   db:
     image: mariadb
     networks:
@@ -47,6 +48,10 @@ services:
       - MYSQL_PASSWORD=mopsy
       - MYSQL_DATABASE=mopsy
       - MYSQL_USER=mopsy
+  redis:
+    image: redis
+    networks:
+      dev:
   adminer:
     image: adminer
     networks:

@@ -3,6 +3,7 @@ import pdfjsWorker from 'pdfjs-dist/es5/build/pdf.worker.entry';
 import * as pdfjsViewer from 'pdfjs-dist/es5/web/pdf_viewer';
 import * as pdfjs from "pdfjs-dist/es5/build/pdf";
 import 'pdfjs-dist/es5/web/pdf_viewer.css';
+// import PerfectScrollbar from 'perfect-scrollbar';
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 const CMAP_URL = "../../node_modules/pdfjs-dist/cmaps/";
@@ -108,17 +109,19 @@ const PDFViewer = (props) => {
             <div style={{ height: "100%", width: "100%" }}>
                 <div style={{ ...styles, display: loading ? "flex" : "none" }}><span>Loading ...</span></div>
                 <div style={{ ...styles, display: !content && !loading ? "flex" : "none" }}>PDF missing!</div>
-                <div
-                    ref={viewerContainer}
-                    onWheel={(e) => wheelEvent(e)}
-                    style={{
-                        ...styles,
-                        backgroundColor: "lightgrey",
-                        overflow: "hidden",
-                        display: content && !loading ? "flex" : "none"
-                    }}>
-                    <div ref={viewer} style={{ position: "relative", width: "100%", height: "100%" }}></div>
-                </div>
+                {/* <PerfectScrollbar> */}
+                    <div
+                        ref={viewerContainer}
+                        onWheel={(e) => wheelEvent(e)}
+                        style={{
+                            ...styles,
+                            backgroundColor: "lightgrey",
+                            overflow: "hidden",
+                            display: content && !loading ? "flex" : "none"
+                        }}>
+                        <div ref={viewer} style={{ position: "relative", width: "100%", height: "100%" }}></div>
+                    </div>
+                {/* </PerfectScrollbar> */}
             </div>)
     }, [document, wheelEvent]);
 

@@ -38,6 +38,7 @@ const stateUpdaters = {
     suggestions: [],
     renderSuggestions: [],
     activeSuggestion: null,
+    activeSuggestionMarker: null,
   }),
 };
 
@@ -98,7 +99,7 @@ const Searchbar = (props) => {
             headers: { "x-access-token": token },
           }).then((res) => {
             const suggestions = res.data;
-            if (mountedRef.current && suggestions) {
+            if (mountedRef.current && suggestions && state.searchText) {
               setState(
                 stateUpdaters.setSuggestions(
                   suggestions,
@@ -125,7 +126,7 @@ const Searchbar = (props) => {
         }
       }
     },
-    [_mouseEnterHandler, _search, api, token]
+    [_mouseEnterHandler, _search, api, token, state.searchText]
   );
 
   const _keyPressHandler = useCallback(

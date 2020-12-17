@@ -8,7 +8,7 @@ services:
     image: derhenning/mopsy:latest
     restart: always
     ports:
-      - 4321:80
+      - 80:80
     volumes:
       - solr_config:/usr/mopsy/solr_configset
       - /volume1/media/books:/mnt/books:ro
@@ -29,6 +29,8 @@ services:
       MOPSY_SALT_ROUNDS: 10
       MOPSY_HITS_PER_PAGE: 10
       MOPSY_CRAWLERS: calibre
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
   db:
     image: mariadb
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
@@ -39,6 +41,10 @@ services:
       - MYSQL_PASSWORD=mopsy
       - MYSQL_DATABASE=mopsy
       - MYSQL_USER=mopsy
+  redis:
+    image: redis
+    networks:
+      dev:
   solr:
     image: solr:8.6
     restart: always

@@ -72,7 +72,8 @@ router.get("/", auth, async (req, res, next) => {
         scanDate: doc.scanDate,
         data: doc.data,
         path: doc.path,
-        link: doc.link || `/api/${apiVersion}/pdf/${doc.id}`,
+        // link: doc.link || `/api/${apiVersion}/pdf/${doc.id}`,
+        link: `/api/${apiVersion}/pdf/${doc.id}`,
     }));
     if (req.LoginId) {
       data.response.docs = await Promise.all(
