@@ -12,7 +12,7 @@ RUN npm run build
 FROM node:12-alpine
 
 # Install python
-RUN apt-get update || : && apt-get install python -y
+RUN apt-get update && apt-get install python -y
 
 WORKDIR /usr/mopsy
 ENV NODE_ENV=production
