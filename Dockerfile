@@ -22,7 +22,7 @@ COPY ./server/package-lock.json ./server/
 COPY ./solr_configset ./solr_configset
 COPY --from=builder /usr/mopsy/client/build ./client/build
 COPY --from=builder /usr/mopsy/server/build ./server/build
-COPY --from=builder /usr/mopsy/server/node-modules ./server/
+COPY --from=builder /usr/mopsy/server/node_modules ./server/
 
 WORKDIR /usr/mopsy/server
 
