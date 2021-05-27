@@ -1,9 +1,6 @@
 # Use NodeJS v12 as base image
 FROM node:12 AS builder
 
-# Install python
-RUN apt-get update || : && apt-get install python -y
-
 # Set Working directory
 WORKDIR /usr/mopsy
 
@@ -13,6 +10,10 @@ RUN npm ci
 RUN npm run build
 
 FROM node:12-alpine
+
+# Install python
+RUN apt-get update || : && apt-get install python -y
+
 WORKDIR /usr/mopsy
 ENV NODE_ENV=production
 
