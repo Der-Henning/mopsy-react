@@ -1,6 +1,9 @@
 # Use NodeJS v12 as base image
 FROM node:12 AS builder
 
+# Install python
+RUN apt-get update || : && apt-get install python -y
+
 # Set Working directory
 WORKDIR /usr/mopsy
 
