@@ -11,9 +11,6 @@ RUN npm run build
 
 FROM node:12-alpine
 
-# Install python
-RUN apt-get update && apt-get install python -y
-
 WORKDIR /usr/mopsy
 ENV NODE_ENV=production
 
@@ -23,12 +20,11 @@ RUN mkdir /client
 COPY ./server/package.json ./server/
 COPY ./server/package-lock.json ./server/
 COPY ./solr_configset ./solr_configset
-COPY --from=builder /usr/mopsy/client/build client/build
-COPY --from=builder /usr/mopsy/server/build server/build
+COPY --from=builder /usr/mopsy/client/build ./client/build
+COPY --from=builder /usr/mopsy/server/build ./server/build
+COPY --from=builder /usr/mopsy/server/node-modules ./server/
 
 WORKDIR /usr/mopsy/server
-
-RUN npm ci
 
 # Start Server
 CMD ["npm", "start"]
