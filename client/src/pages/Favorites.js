@@ -81,7 +81,7 @@ const Favorites = (props) => {
         <thead>
           <tr>
             <th></th>
-            <th>Regelung</th>
+            <th>Dokument</th>
             <th>Stand</th>
             <th></th>
           </tr>

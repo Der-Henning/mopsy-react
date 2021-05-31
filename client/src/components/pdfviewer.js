@@ -197,7 +197,7 @@ const PDFViewer = () => {
         }
         if (e.deltaY > 0) {
             setActiveDocumentPage((() => {
-                if (activeDocumentPage + 1 < pdfViewer.pagesCount) return activeDocumentPage + 1
+                if (activeDocumentPage + 1 <= pdfViewer.pagesCount) return activeDocumentPage + 1
                 return activeDocumentPage
             })());
         }

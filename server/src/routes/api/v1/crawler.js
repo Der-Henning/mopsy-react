@@ -41,4 +41,14 @@ router.get("/:crawler/stop", auth, async (req, res, next) => {
   }
 });
 
+router.get("/:crawler/toggleAutorestart", auth, async (req, res, next) => {
+  const { crawler } = req.params;
+  try {
+    const response = await Axios.post(`http://${crawler}/toggleAutorestart`)
+    res.status(200).send(response.data)
+  } catch (err) {
+    next(err);
+  }
+})
+
 module.exports = router;

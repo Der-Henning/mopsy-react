@@ -72,15 +72,18 @@ services:
     command:
       solr-precreate mopsy /opt/solr/server/solr/configsets/myconfig
   calibre:
-    image: derhenning/mopsy-crawler:latest
+    #image: derhenning/mopsy-crawler:latest
+    image: crawler:dev
     networks:
       dev:
     volumes:
-      - /volume1/media/books:/mnt/books:ro
+      # - /volume1/media/books:/mnt/books:ro
+      - /volume1/media/bib:/mnt/books:ro
     environment:
       DEBUG: 'true'
       CRAWLER_TYPE: calibre
       CRAWLER_NAME: Calibre V1.0
+      CRAWLER_AUTORESTART: 'true'
       CALIBRE_PATH: /mnt/books
       MOPSY_SOLR_HOST: solr
       MOPSY_SOLR_PORT: 8983

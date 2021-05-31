@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { withRouter } from "react-router-dom";
-import { Button } from "react-bootstrap";
+import { Button, ToggleButton } from "react-bootstrap";
 import Axios from "axios";
 import { Spinner } from "react-bootstrap";
 import { useGlobal } from "../context";
@@ -66,6 +66,21 @@ const Admin = (props) => {
     [api, token, crawlers]
   );
 
+  const toggleAutorestart = useCallback(
+    (i) => {
+      Axios.get(`${api}/crawler/${i}/toggleAutorestart`, {
+        headers: { "x-access-token": token },
+      })
+      .then((res) => {
+        console.log(`toggled autorestart for ${crawlers[i].name}`);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+    },
+    [api, token, crawlers]
+  )
+
   const startStopBtn = useCallback(
     (i) => {
       if (crawlers[i].startable) {
@@ -76,6 +91,18 @@ const Admin = (props) => {
     },
     [start, stop, crawlers]
   );
+
+  const toggleAutostartBtn = useCallback(
+    (i) => {
+      return <ToggleButton
+        type="checkbox"
+        checked={crawlers[i].autorestart}
+        onChange={() => toggleAutorestart(i)}>
+        Autorestart
+      </ToggleButton>
+    },
+    [toggleAutorestart, crawlers]
+  )
 
   const progress = useCallback((p) => {
     const chars = 40;
@@ -124,7 +151,7 @@ const Admin = (props) => {
             <p>{progress(crawlers[key].progress)}</p>
             <p>{crawlers[key].message || ""}</p>
             <p>{crawlers[key].text || ""}</p>
-            <p>{startStopBtn(key)}</p>
+            <p>{startStopBtn(key)} {toggleAutostartBtn(key)}</p>
           </div>
         ))}
       </div>
