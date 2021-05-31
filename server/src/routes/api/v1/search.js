@@ -9,13 +9,14 @@ const apiVersion = "v1";
 
 const searchBody = (q, page, fq) => {
   return {
-    q: q,
+    ...config.solr.searchParams,
+    q,
     rows: 10,
     start: (page - 1) * 10,
-    fq: fq,
+    fq,
     hl: "on",
     "hl.snippets": 1,
-    "hl.fl": "title_*,subtitle_*",
+    "hl.fl": "document,title_*,subtitle_*,tags_*,authors",
     "hl.fragsize": 0,
     facet: "off",
   };
@@ -23,7 +24,8 @@ const searchBody = (q, page, fq) => {
 
 const searchPagesBody = (q, DocId) => {
   return {
-    q: q,
+    ...config.solr.searchParams,
+    q,
     rows: 1,
     fl: "id",
     fq: "id:" + DocId,
@@ -64,12 +66,15 @@ router.get("/", auth, async (req, res, next) => {
     const data = await solr.post("/search", searchBody(q, page, fq));
     data.response.docs = data.response.docs.map((doc) => ({
         id: doc.id,
+        document: doc.document,
         title: doc["title_txt_" + doc.language],
         subtitle: doc["subtitle_txt_" + doc.language],
         authors: doc.authors,
         language: doc.language,
         creationDate: doc.creationDate,
         scanDate: doc.scanDate,
+        publicationDate: doc.publicationDate,
+        modificationDate: doc.modificationDate,
         data: doc.data,
         path: doc.path,
         // link: doc.link || `/api/${apiVersion}/pdf/${doc.id}`,
@@ -103,16 +108,6 @@ router.get("/", auth, async (req, res, next) => {
         }
       });
     });
-
-    // insert dummy pdf for external developement
-    if (config.pdf_dummy) {
-      data.response.docs = data.response.docs.map((doc) => ({
-        ...doc,
-        link: config.pdf_dummy,
-      }));
-    }
-    // -----------
-
     res.status(200).send(data);
     next();
   } catch (err) {
@@ -174,10 +169,12 @@ router.get("/:DocId", auth, async (req, res, next) => {
   try {
     const data = await solr.post("/search", searchPagesBody(q, DocId));
     Object.keys(data.highlighting).forEach((d) => {
+      data.highlighting[d]["pages"] = {};
       Object.keys(data.highlighting[d]).forEach((f) => {
         if (RegExp("p_[0-9]*_page_txt_[a-z]*").test(f)) {
           data.highlighting[d]["page_" + f.split("_")[1]] =
             data.highlighting[d][f];
+          data.highlighting[d]["pages"][parseInt(f.split("_")[1])] = data.highlighting[d][f];
           delete data.highlighting[d][f];
         }
         if (RegExp("[a-z]*_txt_[a-z]*").test(f)) {

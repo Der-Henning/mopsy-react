@@ -1033,6 +1033,8 @@
   <field name="link" type="string" multiValued="false" stored="true" indexed="false"/>
   <field name="scanDate" type="pdate" docValues="false" indexed="true" stored="true"/>
   <field name="creationDate" type="pdate" docValues="false" indexed="true" stored="true"/>
+  <field name="modificationDate" type="pdate" docValues="false" indexed="true" stored="true"/>
+  <field name="publicationDate" type="pdate" docValues="false" indexed="true" stored="true"/>
   <field name="data" type="string" multiValued="true" stored="true" indexed="true"/>
 
   <field name="content_txt_other" type="text_general" multiValued="true" indexed="true" stored="true"/>

@@ -121,7 +121,9 @@ const Results = (props) => {
                 backgroundColor: "transparent",
               }}
             >
-              <span>{_getVal(doc, "title")}</span>
+              {doc["document"] && <span style={{ marginRight: "5px" }}>{_getVal(doc, "document")}</span>}
+              {doc["title"] && <span style={{ marginRight: "5px" }}>{_getVal(doc, "title")}</span>}
+              {doc["subtitle"] && <span style={{ marginRight: "5px" }}><i>{_getVal(doc, "subtitle")}</i></span>}
             </Accordion.Toggle>
             <ExternalLink
               size="30"

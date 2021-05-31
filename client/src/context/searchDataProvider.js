@@ -13,15 +13,18 @@ const SearchDataProvider = ({ children }) => {
   const [isFetchingDocs, setIsFetchingDocs] = useState(false);
   const [isFetchingHighs, setIsFetchingHighs] = useState(false);
   const [activeDocument, setActiveDocument] = useState(null);
-  const [activeDocumentPage, setActiveDocumentPage] = useState(1);
+  const [activeDocumentPage, _setActiveDocumentPage] = useState(1);
   const [params, setParams] = useState({
     searchText: null,
     page: 1,
     dpp: 10,
   });
 
+  const setActiveDocumentPage = useCallback(newPage => {
+    _setActiveDocumentPage(parseInt(newPage))}, [])
+
   useEffect(() => {
-    setActiveDocumentPage(1);
+    _setActiveDocumentPage(1);
   }, [activeDocument])
 
   const setData = useCallback(
@@ -35,7 +38,7 @@ const SearchDataProvider = ({ children }) => {
       setDocuments(() => [...docs]);
       setHighlighting(() => ({ ...highs }));
       setInfo(info);
-      setActiveDocumentPage(1);
+      _setActiveDocumentPage(1);
       if (docs.length > 0) setActiveDocument(docs[0].id);
       if (docs && params.page === 1)
         setParams((prevParams) => ({
