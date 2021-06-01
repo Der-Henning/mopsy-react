@@ -67,7 +67,7 @@ const PDFViewer = () => {
     const [swipeStart, setSwipeStart] = useState(0);
     const [swipeStop, setSwipeStop] = useState(0);
     const [marks, setMarks] = useState([]);
-    const [error, setError] = useState(null);
+    // const [error, setError] = useState(null);
 
     // const [zoom, setZoom] = useState(1);
     // const [spring, setSpring] = useSpring(() => ({
@@ -151,9 +151,7 @@ const PDFViewer = () => {
                         highlightMatches(docID, pageNum);
                     })
                 }
-            } catch(e) {
-                setError(e);
-            }
+            } catch {}
         }
     }, [document, activeDocument, activeDocumentPage, pdfViewerLoaded, highlightMatches])
 
@@ -281,6 +279,7 @@ const PDFViewer = () => {
                     ...styles,
                     backgroundColor: "lightgrey",
                     overflow: "hidden",
+                    position: "absolute",
                     display: document.content && !document.loading ? "flex" : "none"
                 }}>
                 <div ref={viewer} style={{

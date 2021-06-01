@@ -128,7 +128,7 @@ const Results = (props) => {
             <ExternalLink
               size="30"
               style={{ cursor: "pointer", margin: "3px" }}
-              onClick={() => window.open(doc.link, "_blank")}
+              onClick={() => window.open(doc.externallink || doc.link, "_blank")}
             // onClick={() =>
             //   props.history.push(
             //     `/viewer?url=${doc.link}`

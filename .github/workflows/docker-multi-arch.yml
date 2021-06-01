@@ -1,4 +1,4 @@
-name: '[builder] CI for releases'
+name: Publish multi-arch Docker images
 
 on:
     push:
