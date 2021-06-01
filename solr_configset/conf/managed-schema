@@ -1031,6 +1031,7 @@
   <field name="rating" type="pint" multiValued="false" stored="true" indexed="true"/>
   <field name="file" type="string" multiValued="false" stored="true" indexed="false"/>
   <field name="link" type="string" multiValued="false" stored="true" indexed="false"/>
+  <field name="externallink" type="string" multiValued="false" stored="true" indexed="false"/>
   <field name="scanDate" type="pdate" docValues="false" indexed="true" stored="true"/>
   <field name="creationDate" type="pdate" docValues="false" indexed="true" stored="true"/>
   <field name="modificationDate" type="pdate" docValues="false" indexed="true" stored="true"/>
