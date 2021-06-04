@@ -23,3 +23,6 @@ services:
     stdin_open: true
     tty: true
     command: /bin/bash
+  schema:
+    image: crawler:dev
+    command: python buildSchema.py

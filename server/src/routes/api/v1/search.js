@@ -4,42 +4,77 @@ const models = require("../../../models");
 const auth = require("../../../middleware/auth");
 const errors = require("../../../middleware/errors");
 const solr = require("../../../middleware/solr");
+const Axios = require("axios")
 
 const apiVersion = "v1";
 
-const searchBody = (q, page, fq) => {
+const facetFields = async () => {
+  var facet = {
+    Keywords: {
+      type: "terms",
+      field: "Keywords_facet"
+    },
+    Authors: {
+      type: "terms",
+      field: "Authors_facet"
+    },
+    Publishers: {
+      type: "terms",
+      field: "Publishers_facet"
+    },
+    Creation: {
+      field: "creationDate"
+    }
+  }
+
+  await Promise.all(config.crawlers.map(async crawler => {
+    try {
+      const c = await Axios.get(`http://${crawler}/fieldList`)
+      facet = {...facet, ...c.data.facet}
+    } catch (err) {
+      console.log(err);
+    }
+  }))
+
+  return facet
+}
+
+const searchBody = async (q, page, fq) => {
   return {
     ...config.solr.searchParams,
-    q,
-    rows: 10,
-    start: (page - 1) * 10,
-    fq,
-    hl: "on",
-    "hl.snippets": 1,
-    "hl.fl": "document,title_*,subtitle_*,tags_*,authors",
-    "hl.fragsize": 0,
-    facet: "off",
+    query: q,
+    limit: 10,
+    offset: (page - 1) * 10,
+    filter: fq,
+    params: {
+      hl: "on",
+      "hl.snippets": 1,
+      "hl.fl": "document,title_*,subtitle_*,tags_*,authors",
+      "hl.fragsize": 0
+    },
+    facet: await facetFields(),
   };
 };
 
 const searchPagesBody = (q, DocId) => {
   return {
     ...config.solr.searchParams,
-    q,
-    rows: 1,
-    fl: "id",
-    fq: "id:" + DocId,
-    hl: "on",
-    "hl.fl": "*_page_*",
-    "hl.snippets": 10,
-    facet: "off",
+    query: q,
+    limit: 1,
+    fields: "id",
+    filter: ["id:" + DocId],
+    params: {
+      hl: "on",
+      "hl.fl": "*_page_*",
+      "hl.snippets": 10,
+    }
   };
 };
 
 const selectPage = (DocId, Page) => {
   return {
-    q: `id:${DocId}`,
-    fl: `p_${Page}_page_*`,
+    query: `id:${DocId}`,
+    fields: `p_${Page}_page_*`,
   };
 };
 
@@ -63,7 +98,7 @@ router.get("/", auth, async (req, res, next) => {
         fq = fq.concat("id:(" + favorites.join(" OR ") + ")");
       }
     }
-    const data = await solr.post("/search", searchBody(q, page, fq));
+    const data = await solr.post("/search", await searchBody(q, page, fq));
     data.response.docs = data.response.docs.map((doc) => ({
         id: doc.id,
         document: doc.document,
@@ -150,7 +185,7 @@ router.get("/suggest", auth, async (req, res, next) => {
 
   try {
     if (!q) return next(new errors.MissingParameterError());
-    const data = await solr.post("/suggest", { q });
+    const data = await solr.post("/suggest", { query: q });
     res.send(
       data.suggest.mySuggester[q].suggestions.map((t) =>
         t.term.replace(/<(.|\n)*?>/g, "")
@@ -222,7 +257,7 @@ router.post("/select", auth, async (req, res, next) => {
 router.post("/select/:DocId", auth, async (req, res, next) => {
   const { DocId } = req.params;
   try {
-    const data = await solr.post("/select", { q: "id:" + DocId });
+    const data = await solr.post("/select", { query: "id:" + DocId });
     res.send(data);
   } catch (err) {
     next(err);

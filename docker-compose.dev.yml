@@ -4,6 +4,7 @@ networks:
 volumes:
   db-dev:
   solr-dev:
+  data-dev:
 services:
   mopsy:
     image: node:12
@@ -15,7 +16,9 @@ services:
     command: npm run dev
     volumes:
       - ./:/home/app
-      - /volume1/media/books:/mnt/books:ro
+      # - /volume1/media/books:/mnt/books:ro
+      - /volume1/media/bib:/mnt/books:ro
+      - data-dev:/mnt/data
     working_dir: /home/app
     environment:
       DANGEROUSLY_DISABLE_HOST_CHECK: "true"
@@ -76,9 +79,12 @@ services:
     image: crawler:dev
     networks:
       dev:
+    ports:
+      - 1238:80
     volumes:
       # - /volume1/media/books:/mnt/books:ro
       - /volume1/media/bib:/mnt/books:ro
+      - data-dev:/mnt/data
     environment:
       DEBUG: 'true'
       CRAWLER_TYPE: calibre

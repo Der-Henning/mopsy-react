@@ -18,8 +18,7 @@ const post = (requestHandler, body) => {
   return new Promise(async (resolve, reject) => {
     try {
       const { data } = await axios.post(
-        solr + requestHandler,
-        qs.stringify(body)
+        solr + requestHandler, body
       );
       if (data?.responseHeader && data.responseHeader.status == 0)
         resolve(data);
@@ -30,4 +29,17 @@ const post = (requestHandler, body) => {
   });
 };
 
-module.exports = { post };
+const get = (requestHandler) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { data } = await axios.get(solr + requestHandler);
+      if (data?.responseHeader && data.responseHeader.status == 0)
+        resolve(data);
+      reject(new errors.SolrBackendError());
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+module.exports = { post, get };

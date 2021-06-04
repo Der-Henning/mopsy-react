@@ -31,8 +31,8 @@ router.get("/:DocId", async (req, res, next) => {
   try {
     if (format === "txt") {
       const data = await solr.post("/select", {
-        q: `id:${DocId}`,
-        fl: `*_page_*`,
+        query: `id:${DocId}`,
+        fields: `*_page_*`,
       });
       if ((data.response.numFound = 0))
         return next(new errors.SolrDocumentDoesntExistError());
@@ -49,8 +49,8 @@ router.get("/:DocId", async (req, res, next) => {
         if (err) console.log(err);
         if (!doc) {
           const data = await solr.post("/select", {
-            q: `id:${DocId}`,
-            fl: `link,file`,
+            query: `id:${DocId}`,
+            fields: `link,file`,
           });
           if ((data.response.numFound = 0))
             return next(new errors.SolrDocumentDoesntExistError());
@@ -58,7 +58,6 @@ router.get("/:DocId", async (req, res, next) => {
           redisClient.set(`link_${DocId}`, JSON.stringify(doc), 'EX', 60, (err, reply) => {
             if (err) console.log(err);
           });
-
         } else {
           doc = JSON.parse(doc);
         }
@@ -69,25 +68,32 @@ router.get("/:DocId", async (req, res, next) => {
         if (doc.file) {
           res.sendFile(doc.file);
         } else if (doc.link) {
-          const cacheFile = `${config.pdfCache}/${DocId}`;
-          fs.stat(cacheFile, (err, stats) => {
-            if (err) {
-              axios({
-                method: 'get',
-                url: doc.link,
-                responseType: 'stream',
-              }).then((response) => {
-                response.data.pipe(res);
-                const fileWriteStream = fs.createWriteStream(cacheFile);
-                response.data.pipe(fileWriteStream);
-                fileWriteStream.on('error', (err) => {
-                  console.log(err);
-                });
-              })
-            } else {
-              res.sendFile(cacheFile);
-            }
+          axios({
+            method: 'get',
+            url: doc.link,
+            responseType: 'stream',
+          }).then((response) => {
+            response.data.pipe(res);
           })
+          // const cacheFile = `${config.pdfCache}/${DocId}`;
+          // fs.stat(cacheFile, (err, stats) => {
+          //   if (err) {
+          //     axios({
+          //       method: 'get',
+          //       url: doc.link,
+          //       responseType: 'stream',
+          //     }).then((response) => {
+          //       response.data.pipe(res);
+          //       const fileWriteStream = fs.createWriteStream(cacheFile);
+          //       response.data.pipe(fileWriteStream);
+          //       fileWriteStream.on('error', (err) => {
+          //         console.log(err);
+          //       });
+          //     })
+          //   } else {
+          //     res.sendFile(cacheFile);
+          //   }
+          // })
         } else if (config.pdf_dummy) {
           res.sendFile(config.pdf_dummy);
         } else {
