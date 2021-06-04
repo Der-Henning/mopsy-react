@@ -30,7 +30,7 @@ const facetFields = async () => {
   await Promise.all(config.crawlers.map(async crawler => {
     try {
       const c = await Axios.get(`http://${crawler}/fieldList`)
-      facet = {...facet, ...c.data.facet}
+      facet = {...facet, ...c.data.facets}
     } catch (err) {
       console.log(err);
     }
