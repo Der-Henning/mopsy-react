@@ -112,6 +112,7 @@ router.get("/", auth, async (req, res, next) => {
         modificationDate: doc.modificationDate,
         data: doc.data,
         path: doc.path,
+        externallink: doc.externallink,
         // link: doc.link || `/api/${apiVersion}/pdf/${doc.id}`,
         link: `/api/${apiVersion}/pdf/${doc.id}`,
     }));
