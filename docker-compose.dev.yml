@@ -90,6 +90,7 @@ services:
       CRAWLER_TYPE: calibre
       CRAWLER_NAME: Calibre V1.0
       CALIBRE_PATH: /mnt/books
+      CRAWLER_SLEEP_TIME: 10
       MOPSY_SOLR_HOST: solr
       MOPSY_SOLR_PORT: 8983
       MOPSY_SOLR_CORE: mopsy

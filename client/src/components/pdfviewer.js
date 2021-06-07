@@ -3,16 +3,11 @@ import pdfjsWorker from 'pdfjs-dist/es5/build/pdf.worker.entry';
 import * as pdfjsViewer from 'pdfjs-dist/es5/web/pdf_viewer';
 import * as pdfjs from "pdfjs-dist/es5/build/pdf";
 import 'pdfjs-dist/es5/web/pdf_viewer.css';
-// import { CircularProgress } from '@material-ui/core';
 import { LinearProgress, Slider } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-// import { useGesture } from 'react-use-gesture';
-// import { useSpring, animated } from 'react-spring'
 import { useSearchData } from "../context";
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
-// pdfjs.disableAutoFetch = true;
-// pdfjs.disableStream = true;
 const CMAP_URL = "../../node_modules/pdfjs-dist/cmaps/";
 const CMAP_PACKED = true;
 const DEFAULT_SCALE = 1.0;
@@ -25,9 +20,6 @@ const pdfAnnotationLayer = new pdfjsViewer.DefaultAnnotationLayerFactory();
 
 var pdfViewer = null;
 var loadingTask = null;
-
-// document.addEventListener('gesturestart', (e) => e.preventDefault())
-// document.addEventListener('gesturechange', (e) => e.preventDefault())
 
 const styles = {
     height: "100%",
@@ -68,19 +60,6 @@ const PDFViewer = () => {
     const [swipeStop, setSwipeStop] = useState(0);
     const [marks, setMarks] = useState([]);
     const [currentDoc, setCurrentDoc] = useState(0);
-    // const [error, setError] = useState(null);
-
-    // const [zoom, setZoom] = useState(1);
-    // const [spring, setSpring] = useSpring(() => ({
-    //     rotateX: 0,
-    //     rotateY: 0,
-    //     rotateZ: 0,
-    //     scale: 1,
-    //     zoom: 0,
-    //     x: 0,
-    //     y: 0,
-    //     config: { mass: 5, tension: 350, friction: 40 }
-    //   }))
 
     useEffect(() => {
         if (highlighting?.[activeDocument]?.pages) {
@@ -153,22 +132,23 @@ const PDFViewer = () => {
                 })()
                 if (currentDoc !== docNum) {
                     setCurrentDoc(docNum)
-                }
-                const pdfPage = await content[docNum].getPage(pageNum);
-                if (viewerContainer.current) {
-                    const viewport = pdfPage.getViewport({ scale: DEFAULT_SCALE });
-                    let scale = viewerContainer.current.clientWidth / (viewport.width * CSS_UNITS);
-                    if (scale * viewport.height * CSS_UNITS > viewerContainer.current.clientHeight) {
-                        scale = viewerContainer.current.clientHeight / (viewport.height * CSS_UNITS);
-                        viewer.current.style.width = `${scale * viewport.width * CSS_UNITS}px`;
-                    } else {
-                        viewer.current.style.height = `${scale * viewport.height * CSS_UNITS}px`;
+                } else {
+                    const pdfPage = await content[docNum].getPage(pageNum);
+                    if (viewerContainer.current) {
+                        const viewport = pdfPage.getViewport({ scale: DEFAULT_SCALE });
+                        let scale = viewerContainer.current.clientWidth / (viewport.width * CSS_UNITS);
+                        if (scale * viewport.height * CSS_UNITS > viewerContainer.current.clientHeight) {
+                            scale = viewerContainer.current.clientHeight / (viewport.height * CSS_UNITS);
+                            viewer.current.style.width = `${scale * viewport.width * CSS_UNITS}px`;
+                        } else {
+                            viewer.current.style.height = `${scale * viewport.height * CSS_UNITS}px`;
+                        }
+                        pdfViewer.currentScale = scale;
+                        pdfViewer.currentPageNumber = pageNum;
+                        pdfViewer.eventBus.on("textlayerrendered", () => {
+                            highlightMatches(docID, pageNum);
+                        })
                     }
-                    pdfViewer.currentScale = scale;
-                    pdfViewer.currentPageNumber = pageNum;
-                    pdfViewer.eventBus.on("textlayerrendered", () => {
-                        highlightMatches(docID, pageNum);
-                    })
                 }
             } catch { }
         }
@@ -261,18 +241,6 @@ const PDFViewer = () => {
         }
     }, [swipeStart, swipeStop, setActiveDocumentPage, activeDocumentPage])
 
-    // useGesture({
-    //     onPinch: ({ offset: [d, a], event}) => {
-    //         event.preventDefault();
-    //         const zoom = d / 200;
-    //         console.log(zoom);
-    //         setSpring({ zoom: d / 200});
-    //     },
-    // }, {
-    //     domTarget: viewer,
-    //     eventOptions: { passive: false },
-    // })
-
     useEffect(() => {
         _loadDocument();
         return () => {
@@ -297,10 +265,8 @@ const PDFViewer = () => {
 
     return (
         <div style={{ width: "100%", height: "100%", position: "relative" }}>
-            {/* {url ? _getPdfFrame() : ""} */}
             <div style={{ ...styles, display: document.loading ? "flex" : "none" }}>
                 <span>Loading ...</span>
-                {/* <CircularProgress variant="determinate" value={progress} /> */}
             </div>
             <div style={{ ...styles, display: !document.content && !document.loading ? "flex" : "none" }}>PDF missing!</div>
             <div
@@ -318,9 +284,6 @@ const PDFViewer = () => {
                 }}>
                 <div ref={viewer} style={{
                     position: "relative", width: "100%", height: "100%",
-                    // transform: 'perspective(600px)',
-                    // x: spring.x, y: spring.y, scale: spring.scale + spring.zoom,
-                    // rotateX: spring.rotateX, rotateY: spring.rotateY, rotateZ: spring.rotateZ,
                 }} />
             </div>
             <div style={{
