@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Pagination, Spinner } from "react-bootstrap";
-import { Results, PDFViewer, Searchbar } from "../components";
+import { Results, PDFViewer, Searchbar, Filter } from "../components";
 import { withRouter } from "react-router-dom";
 import { useGlobal, useSearchData } from "../context";
 
@@ -127,6 +127,7 @@ const Search = (props) => {
     return (
       <React.Fragment>
         {_status()}
+        <Filter />
         <Results
           setPdfPage={setPdfPage}
           // setFavorite={this.setFavorite}

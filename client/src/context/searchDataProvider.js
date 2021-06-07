@@ -1,5 +1,6 @@
 import React, { useState, useContext, useCallback, useEffect } from "react";
 import Axios from "axios";
+import qs from "qs";
 import { useGlobal } from "../context";
 
 const Context = React.createContext(undefined);
@@ -14,6 +15,8 @@ const SearchDataProvider = ({ children }) => {
   const [isFetchingHighs, setIsFetchingHighs] = useState(false);
   const [activeDocument, setActiveDocument] = useState(null);
   const [activeDocumentPage, _setActiveDocumentPage] = useState(1);
+  const [facets, setFacets] = useState({});
+  const [filters, setFilters] = useState([]);
   const [params, setParams] = useState({
     searchText: null,
     page: 1,
@@ -21,7 +24,8 @@ const SearchDataProvider = ({ children }) => {
   });
 
   const setActiveDocumentPage = useCallback(newPage => {
-    _setActiveDocumentPage(parseInt(newPage))}, [])
+    _setActiveDocumentPage(parseInt(newPage))
+  }, [])
 
   useEffect(() => {
     _setActiveDocumentPage(1);
@@ -31,12 +35,14 @@ const SearchDataProvider = ({ children }) => {
     (data) => {
       const docs = data?.response?.docs || [];
       const highs = data?.highlighting || {};
+      const fac = data?.facets || {};
       const info = {
         QTime: data?.responseHeader?.QTime,
         numFound: data?.response?.numFound,
       };
       setDocuments(() => [...docs]);
       setHighlighting(() => ({ ...highs }));
+      setFacets(() => fac);
       setInfo(info);
       _setActiveDocumentPage(1);
       if (docs.length > 0) setActiveDocument(docs[0].id);
@@ -52,10 +58,12 @@ const SearchDataProvider = ({ children }) => {
   const fetchDocuments = useCallback(() => {
     if (params.searchText && token) {
       setIsFetchingDocs(true);
-      Axios.get(api + "/search", {
-        params: { q: params.searchText, page: params.page },
-        headers: { "x-access-token": token },
-      })
+      Axios.post(api + "/search",
+      qs.stringify({ fq: filters }),
+        {
+          params: { q: params.searchText, page: params.page },
+          headers: { "x-access-token": token },
+        })
         .then((res) => {
           setData(res.data);
         })
@@ -66,7 +74,7 @@ const SearchDataProvider = ({ children }) => {
           setIsFetchingDocs(false);
         });
     } else setData(null);
-  }, [params.searchText, params.page, token, api, setData]);
+  }, [params.searchText, params.page, token, api, setData, filters]);
 
   const fetchHighlights = useCallback(() => {
     if (
@@ -112,7 +120,8 @@ const SearchDataProvider = ({ children }) => {
   const setSearchText = useCallback(
     (searchText) => {
       if (searchText !== params.searchText)
-        setParams((prevParams) => ({ ...prevParams, searchText, page: 1 }));
+        setFilters([]);
+      setParams((prevParams) => ({ ...prevParams, searchText, page: 1 }));
     },
     [params.searchText]
   );
@@ -162,6 +171,8 @@ const SearchDataProvider = ({ children }) => {
         params,
         isFetchingDocs,
         isFetchingHighs,
+        facets,
+        filters,
         activeDocumentData,
         getDocumentData,
         setActiveDocument,
@@ -169,6 +180,7 @@ const SearchDataProvider = ({ children }) => {
         setSearchText,
         setPage,
         setFavorite,
+        setFilters
       }}
     >
       {children}

@@ -115,13 +115,13 @@ const PDFViewer = () => {
             for (let phrase in phrases) {
                 phrases[phrase] = phrases[phrase].split('').join('(<[^>]+>)*');
             }
-            const pattern = new RegExp("("+phrases.join("|")+")", "g");
+            const pattern = new RegExp("(" + phrases.join("|") + ")", "g");
             textLayer.innerHTML = textLayer.innerHTML.replace(pattern, (match) => {
                 const pattern = new RegExp("(<[^>]+>)+");
                 var splits = match.split(pattern);
                 for (let s in splits) {
                     if (!pattern.test(splits[s])) {
-                        splits[s] = "<span style='background-color:yellow'>"+splits[s]+"</span>"
+                        splits[s] = "<span style='background-color:yellow'>" + splits[s] + "</span>"
                     }
                 }
                 return splits.join('');
@@ -151,7 +151,7 @@ const PDFViewer = () => {
                         highlightMatches(docID, pageNum);
                     })
                 }
-            } catch {}
+            } catch { }
         }
     }, [document, activeDocument, activeDocumentPage, pdfViewerLoaded, highlightMatches])
 
@@ -172,6 +172,7 @@ const PDFViewer = () => {
                     setProgress(data.loaded / data.total * 100);
                 }
                 const doc = await loadingTask.promise
+                setProgress(100)
                 setDocument(() => ({
                     loading: false,
                     content: doc
@@ -311,7 +312,7 @@ const PDFViewer = () => {
                         // getAriaValueText={valuetext}
                         value={pdfViewer.pagesCount - activeDocumentPage + 1}
                         track="inverted"
-                        marks={marks.map(m => ({value: pdfViewer.pagesCount - m.value + 1}))}
+                        marks={marks.map(m => ({ value: pdfViewer.pagesCount - m.value + 1 }))}
                         // aria-labelledby="vertical-slider"
                         onChange={(e, v) => setActiveDocumentPage(pdfViewer.pagesCount - v + 1)}
                     />

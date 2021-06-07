@@ -79,12 +79,17 @@ const selectPage = (DocId, Page) => {
 };
 
 // search
-router.get("/", auth, async (req, res, next) => {
+router.post("/", auth, async (req, res, next) => {
   const q = req.query.q || "*";
   const page = req.query.page || 1;
   try {
     var fq = [];
-    if (req.body.fq) fq = [].concat(req.body.fq);
+    if (req.body.fq) {
+      const fields = await facetFields()
+      console.log(req.body.fq)
+      fq = req.body.fq.map(f => (`${fields[f[0]].field}:"${f[1]}"`))
+      // fq = [].concat(req.body.fq);
+    }
     if (req.LoginId && req.body.onlyFavs) {
       var favs = await models.Favorite.findAll({
         where: {
@@ -154,7 +159,7 @@ router.get("/", auth, async (req, res, next) => {
 
 // post /search process to save search log
 // save and increment query and count
-router.get("/", (req, res, next) => {
+router.post("/", (req, res, next) => {
   const q = req.query.q;
   const page = req.query.page || 1;
 
