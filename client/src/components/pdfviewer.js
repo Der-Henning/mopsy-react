@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, useLayoutEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef, useLayoutEffect, useMemo } from "react";
 import pdfjsWorker from 'pdfjs-dist/es5/build/pdf.worker.entry';
 import * as pdfjsViewer from 'pdfjs-dist/es5/web/pdf_viewer';
 import * as pdfjs from "pdfjs-dist/es5/build/pdf";
@@ -67,6 +67,7 @@ const PDFViewer = () => {
     const [swipeStart, setSwipeStart] = useState(0);
     const [swipeStop, setSwipeStop] = useState(0);
     const [marks, setMarks] = useState([]);
+    const [currentDoc, setCurrentDoc] = useState(0);
     // const [error, setError] = useState(null);
 
     // const [zoom, setZoom] = useState(1);
@@ -86,6 +87,11 @@ const PDFViewer = () => {
             setMarks(() => Object.keys(highlighting[activeDocument]["pages"]).map(p => ({ value: p })))
         }
     }, [activeDocument, highlighting])
+
+    const getPageCount = useMemo(() => {
+        if (!document.content) return 0
+        return document.content.reduce((total, doc) => (total + doc.numPages), 0)
+    }, [document])
 
     const initPdfViewer = useCallback(() => {
         if (viewerContainer.current) {
@@ -131,11 +137,24 @@ const PDFViewer = () => {
 
     const _setPage = useCallback(async () => {
         const { content } = document;
-        if (content && pdfViewerLoaded) {
+        if (content && pdfViewerLoaded && activeDocumentPage <= getPageCount) {
             try {
-                const pageNum = activeDocumentPage;
                 const docID = activeDocument;
-                const pdfPage = await content.getPage(pageNum);
+                const [docNum, pageNum] = (() => {
+                    var pageSum = content[0].numPages
+                    var docNum = 0
+                    var pageSums = 0
+                    while (pageSum < activeDocumentPage) {
+                        pageSums += content[docNum].numPages
+                        docNum += 1
+                        pageSum += content[docNum].numPages
+                    }
+                    return [docNum, activeDocumentPage - pageSums]
+                })()
+                if (currentDoc !== docNum) {
+                    setCurrentDoc(docNum)
+                }
+                const pdfPage = await content[docNum].getPage(pageNum);
                 if (viewerContainer.current) {
                     const viewport = pdfPage.getViewport({ scale: DEFAULT_SCALE });
                     let scale = viewerContainer.current.clientWidth / (viewport.width * CSS_UNITS);
@@ -153,7 +172,7 @@ const PDFViewer = () => {
                 }
             } catch { }
         }
-    }, [document, activeDocument, activeDocumentPage, pdfViewerLoaded, highlightMatches])
+    }, [document, activeDocument, activeDocumentPage, pdfViewerLoaded, highlightMatches, getPageCount, currentDoc])
 
     const _loadDocument = useCallback(async () => {
         setDocument(() => ({
@@ -171,14 +190,28 @@ const PDFViewer = () => {
                 loadingTask.onProgress = (data) => {
                     setProgress(data.loaded / data.total * 100);
                 }
-                const doc = await loadingTask.promise
+                var docs = [await loadingTask.promise]
+
+                const attachements = await docs[0].getAttachments()
+                if (attachements) {
+                    docs = [...docs, ...(await Promise.all(Object.keys(attachements).map(
+                        async attachment => (
+                            await pdfjs.getDocument({
+                                data: attachements[attachment].content,
+                                cMapUrl: CMAP_URL,
+                                cMapPacked: CMAP_PACKED
+                            }).promise
+                        )
+                    )))]
+                }
                 setProgress(100)
                 setDocument(() => ({
                     loading: false,
-                    content: doc
+                    content: docs
                 }));
                 setProgress(0);
-            } catch {
+            } catch (e) {
+                console.log(e)
                 setDocument(() => ({
                     loading: false,
                     content: null
@@ -196,11 +229,11 @@ const PDFViewer = () => {
         }
         if (e.deltaY > 0) {
             setActiveDocumentPage((() => {
-                if (activeDocumentPage + 1 <= pdfViewer.pagesCount) return activeDocumentPage + 1
+                if (activeDocumentPage + 1 <= getPageCount) return activeDocumentPage + 1
                 return activeDocumentPage
             })());
         }
-    }, [setActiveDocumentPage, activeDocumentPage])
+    }, [setActiveDocumentPage, activeDocumentPage, getPageCount])
 
     const startSwipe = useCallback((e) => {
         const { clientY } = e.targetTouches[0];
@@ -249,10 +282,10 @@ const PDFViewer = () => {
 
     useEffect(() => {
         if (document.content && pdfViewerLoaded) {
-            pdfViewer.setDocument(document.content);
-            pdfLinkService.setDocument(document.content, null);
+            pdfViewer.setDocument(document.content[currentDoc]);
+            pdfLinkService.setDocument(document.content[currentDoc], null);
         }
-    }, [document, pdfViewerLoaded])
+    }, [document, pdfViewerLoaded, currentDoc])
 
     useLayoutEffect(() => {
         initPdfViewer();
@@ -304,17 +337,17 @@ const PDFViewer = () => {
                 position: "absolute", right: 0, top: 0,
                 height: "100%", paddingTop: "13px", paddingBottom: "13px"
             }}>
-                {pdfViewer?.pagesCount ?
+                {pdfViewer ?
                     <StyledSlider
                         orientation="vertical"
                         min={1}
-                        max={pdfViewer.pagesCount}
+                        max={getPageCount}
                         // getAriaValueText={valuetext}
-                        value={pdfViewer.pagesCount - activeDocumentPage + 1}
+                        value={getPageCount - activeDocumentPage + 1}
                         track="inverted"
-                        marks={marks.map(m => ({ value: pdfViewer.pagesCount - m.value + 1 }))}
+                        marks={marks.map(m => ({ value: getPageCount - m.value + 1 }))}
                         // aria-labelledby="vertical-slider"
-                        onChange={(e, v) => setActiveDocumentPage(pdfViewer.pagesCount - v + 1)}
+                        onChange={(e, v) => setActiveDocumentPage(getPageCount - v + 1)}
                     />
                     : ""}
             </div>

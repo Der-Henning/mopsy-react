@@ -23,7 +23,12 @@ const facetFields = async () => {
       field: "Publishers_facet"
     },
     Creation: {
-      field: "creationDate"
+      type: "terms",
+      field: "creationDate",
+      // gap: "+1DAY",
+      // end: "NOW",
+      // start: "NOW/MONTH"
+      // TZ: "America/Los_Angeles",
     }
   }
 
