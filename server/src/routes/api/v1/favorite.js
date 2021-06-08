@@ -8,8 +8,8 @@ const apiVersion = "v1";
 
 const requestBody = (docId) => {
   return {
-    q: "id:" + docId,
-    fl: "id,title_*,subtitle_*,ScanDate,link,language",
+    query: "id:" + docId,
+    fields: "id,title_*,subtitle_*,ScanDate,link,language",
   };
 };
 
@@ -88,8 +88,8 @@ router.put("/:DocId", auth, async (req, res, next) => {
       res.status(200).send(false);
     } else {
       const data = await solr.post("/select", {
-        q: "id:" + DocId,
-        fl: "id",
+        query: "id:" + DocId,
+        fields: "id",
       });
       if ((data.response.numFound = 0))
         return next(new errors.SolrDocumentDoesntExistError());
