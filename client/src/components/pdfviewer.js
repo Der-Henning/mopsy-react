@@ -78,7 +78,8 @@ const PDFViewer = (props) => {
                     loading: false,
                     content: doc
                 }));
-            } catch {
+            } catch(e) {
+                console.log(e)
                 setDocument(() => ({
                     loading: false,
                     content: null
