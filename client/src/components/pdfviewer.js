@@ -150,7 +150,7 @@ const PDFViewer = () => {
                         })
                     }
                 }
-            } catch(e) { console.log(e) }
+            } catch (e) { console.log(e) }
         }
     }, [document, activeDocument, activeDocumentPage, pdfViewerLoaded, highlightMatches, getPageCount, currentDoc])
 
