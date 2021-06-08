@@ -103,7 +103,7 @@ const Favorites = (props) => {
                   </Button>
                 </td>
                 <td>
-                  <span>{doc.title}</span>
+                  <span>{doc.document ? `${doc.document} - ` : ''}{doc.title}</span>
                   <br />
                   <small>{doc.subtitle}</small>
                 </td>
