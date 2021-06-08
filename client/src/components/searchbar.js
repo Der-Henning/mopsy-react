@@ -34,7 +34,6 @@ const stateUpdaters = {
     }
   },
   setHasFocus: (hasFocus) => (prevState) => {
-    console.log(hasFocus)
     return {
       ...prevState,
       hasFocus
@@ -186,8 +185,8 @@ const Searchbar = (props) => {
         onChange={_changeHandler}
         autoComplete="off"
         onKeyDown={_keyPressHandler}
-        onFocus={() => stateUpdaters.setHasFocus(true)}
-        onBlur={() => stateUpdaters.setHasFocus(false)}
+        onFocus={() => setState(stateUpdaters.setHasFocus(true))}
+        onBlur={() => setState(stateUpdaters.setHasFocus(false))}
       />
       <div className={styles.suggestions}>
         {state.renderSuggestions && state.hasFocus
