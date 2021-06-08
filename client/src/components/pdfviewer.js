@@ -175,13 +175,15 @@ const PDFViewer = () => {
                 const attachements = await docs[0].getAttachments()
                 if (attachements) {
                     docs = [...docs, ...(await Promise.all(Object.keys(attachements).map(
-                        async attachment => (
-                            await pdfjs.getDocument({
-                                data: attachements[attachment].content,
-                                cMapUrl: CMAP_URL,
-                                cMapPacked: CMAP_PACKED
-                            }).promise
-                        )
+                        async attachment => {
+                            try {
+                                return await pdfjs.getDocument({
+                                    data: attachements[attachment].content,
+                                    cMapUrl: CMAP_URL,
+                                    cMapPacked: CMAP_PACKED
+                                }).promise
+                            } catch (e) { console.log(e) }
+                        }
                     )))]
                 }
                 setProgress(100)
