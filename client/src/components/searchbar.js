@@ -33,12 +33,19 @@ const stateUpdaters = {
       activeSuggestionMarker
     }
   },
+  setHasFocus: (hasFocus) => (prevState) => {
+    return {
+      ...prevState,
+      hasFocus
+    }
+  },
   resetState: (searchText) => () => ({
     searchText: searchText,
     suggestions: [],
     renderSuggestions: [],
     activeSuggestion: null,
     activeSuggestionMarker: null,
+    hasFocus: false
   }),
 };
 
@@ -53,6 +60,7 @@ const Searchbar = (props) => {
     renderSuggestions: [],
     activeSuggestion: null,
     activeSuggestionMarker: null,
+    hasFocus: false
   });
 
   useEffect(() => {
@@ -177,9 +185,11 @@ const Searchbar = (props) => {
         onChange={_changeHandler}
         autoComplete="off"
         onKeyDown={_keyPressHandler}
+        onFocus={() => stateUpdaters.setHasFocus(true)}
+        onBlur={() => stateUpdaters.setHasFocus(false)}
       />
       <div className={styles.suggestions}>
-        {state.renderSuggestions
+        {state.renderSuggestions && state.hasFocus
           ? state.renderSuggestions.map((s, i) => {
               return (
                 <div
