@@ -45,7 +45,7 @@ const stateUpdaters = {
     renderSuggestions: [],
     activeSuggestion: null,
     activeSuggestionMarker: null,
-    hasFocus: false
+    hasFocus: true
   }),
 };
 
@@ -60,7 +60,7 @@ const Searchbar = (props) => {
     renderSuggestions: [],
     activeSuggestion: null,
     activeSuggestionMarker: null,
-    hasFocus: false
+    hasFocus: true
   });
 
   useEffect(() => {

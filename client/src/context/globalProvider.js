@@ -119,9 +119,10 @@ const GlobalProvider = ({ children, props }) => {
       theme,
       toggleTheme,
       dimensions,
+      headerHeight,
       setHeaderHeight,
     }),
-    [api, user, theme, toggleTheme, setUser, dimensions, setHeaderHeight]
+    [api, user, theme, toggleTheme, setUser, dimensions, setHeaderHeight, headerHeight]
   );
 
   return <Context.Provider value={data}>{children}</Context.Provider>;

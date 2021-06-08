@@ -173,38 +173,16 @@ const PDFViewer = () => {
                 var docs = [await loadingTask.promise]
                 try {
                     const attachements = await docs[0].getAttachments()
-                    console.log(attachements)
                     if (attachements) {
                         for (var attachement in attachements) {
-                           try {
+                            try {
                                 docs = [...docs, await pdfjs.getDocument({
                                     data: attachements[attachement].content,
                                     cMapUrl: CMAP_URL,
                                     cMapPacked: CMAP_PACKED
                                 }).promise]
-                           } catch (e) { console.log(e) }
+                            } catch (e) { console.log(e) }
                         }
-                    
-                 //   await Promise.all(Object.keys(attachements).forEach(async attachment => {
-                 //           try {
-                 //               docs = [...docs, await pdfjs.getDocument({
-                 //                   data: attachements[attachment].content,
-                 //                   cMapUrl: CMAP_URL,
-                 //                   cMapPacked: CMAP_PACKED
-                 //               }).promise]
-                 //           } catch (e) { console.log(e) }
-                 //   }))
-                 //   docs = [...docs, ...(await Promise.all(Object.keys(attachements).map(
-                 //       async attachment => {
-                 //           try {
-                 //               return await pdfjs.getDocument({
-                 //                   data: attachements[attachment].content,
-                 //                   cMapUrl: CMAP_URL,
-                 //                   cMapPacked: CMAP_PACKED
-                 //               }).promise
-                 //           } catch (e) { console.log(e) }
-                 //       }
-                 //   )))]
                     }
                 } catch (e) { console.log(e) }
                 setProgress(100)
