@@ -1038,6 +1038,7 @@
   <field name="modificationDate" type="pdate" docValues="false" indexed="true" stored="true"/>
   <field name="publicationDate" type="pdate" docValues="false" indexed="true" stored="true"/>
   <field name="data" type="string" multiValued="true" stored="true" indexed="true"/>
+  <field name="deleted" type="boolean" multiValued="false" stored="true" indexed="true" default="false"/>
   <dynamicField name="*_facet" type="string" multiValued="true" docValues="true" indexed="true" stored="true"/>
   <copyField source="authors" dest="Authors_facet"/>
   <copyField source="publishers" dest="Publishers_facet"/>
@@ -1045,204 +1046,306 @@
   <!-- language based fields -->
   <field name="content_txt_other" type="text_general" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_other" type="text_general" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_other" type="text_general" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_other" type="text_general" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_other" type="text_general" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_other" type="text_general" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_other" dest="content_txt_other"/>
   <copyField source="tags_txt_other" dest="Keywords_facet"/>
   <copyField source="*_txt_other" dest="spellShingle"/>
   <field name="content_txt_en" type="text_en" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_en" type="text_en" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_en" type="text_en" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_en" type="text_en" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_en" type="text_en" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_en" type="text_en" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_en" dest="content_txt_en"/>
   <copyField source="tags_txt_en" dest="Keywords_facet"/>
   <copyField source="*_txt_en" dest="spellShingle"/>
   <field name="content_txt_de" type="text_de" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_de" type="text_de" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_de" type="text_de" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_de" type="text_de" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_de" type="text_de" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_de" type="text_de" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_de" dest="content_txt_de"/>
   <copyField source="tags_txt_de" dest="Keywords_facet"/>
   <copyField source="*_txt_de" dest="spellShingle"/>
   <field name="content_txt_ar" type="text_ar" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_ar" type="text_ar" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_ar" type="text_ar" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_ar" type="text_ar" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_ar" type="text_ar" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_ar" type="text_ar" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_ar" dest="content_txt_ar"/>
   <copyField source="tags_txt_ar" dest="Keywords_facet"/>
   <copyField source="*_txt_ar" dest="spellShingle"/>
   <field name="content_txt_bg" type="text_bg" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_bg" type="text_bg" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_bg" type="text_bg" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_bg" type="text_bg" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_bg" type="text_bg" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_bg" type="text_bg" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_bg" dest="content_txt_bg"/>
   <copyField source="tags_txt_bg" dest="Keywords_facet"/>
   <copyField source="*_txt_bg" dest="spellShingle"/>
   <field name="content_txt_ca" type="text_ca" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_ca" type="text_ca" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_ca" type="text_ca" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_ca" type="text_ca" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_ca" type="text_ca" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_ca" type="text_ca" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_ca" dest="content_txt_ca"/>
   <copyField source="tags_txt_ca" dest="Keywords_facet"/>
   <copyField source="*_txt_ca" dest="spellShingle"/>
   <field name="content_txt_cjk" type="text_cjk" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_cjk" type="text_cjk" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_cjk" type="text_cjk" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_cjk" type="text_cjk" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_cjk" type="text_cjk" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_cjk" type="text_cjk" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_cjk" dest="content_txt_cjk"/>
   <copyField source="tags_txt_cjk" dest="Keywords_facet"/>
   <copyField source="*_txt_cjk" dest="spellShingle"/>
   <field name="content_txt_cz" type="text_cz" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_cz" type="text_cz" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_cz" type="text_cz" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_cz" type="text_cz" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_cz" type="text_cz" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_cz" type="text_cz" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_cz" dest="content_txt_cz"/>
   <copyField source="tags_txt_cz" dest="Keywords_facet"/>
   <copyField source="*_txt_cz" dest="spellShingle"/>
   <field name="content_txt_da" type="text_da" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_da" type="text_da" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_da" type="text_da" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_da" type="text_da" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_da" type="text_da" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_da" type="text_da" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_da" dest="content_txt_da"/>
   <copyField source="tags_txt_da" dest="Keywords_facet"/>
   <copyField source="*_txt_da" dest="spellShingle"/>
   <field name="content_txt_el" type="text_el" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_el" type="text_el" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_el" type="text_el" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_el" type="text_el" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_el" type="text_el" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_el" type="text_el" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_el" dest="content_txt_el"/>
   <copyField source="tags_txt_el" dest="Keywords_facet"/>
   <copyField source="*_txt_el" dest="spellShingle"/>
   <field name="content_txt_es" type="text_es" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_es" type="text_es" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_es" type="text_es" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_es" type="text_es" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_es" type="text_es" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_es" type="text_es" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_es" dest="content_txt_es"/>
   <copyField source="tags_txt_es" dest="Keywords_facet"/>
   <copyField source="*_txt_es" dest="spellShingle"/>
   <field name="content_txt_et" type="text_et" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_et" type="text_et" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_et" type="text_et" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_et" type="text_et" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_et" type="text_et" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_et" type="text_et" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_et" dest="content_txt_et"/>
   <copyField source="tags_txt_et" dest="Keywords_facet"/>
   <copyField source="*_txt_et" dest="spellShingle"/>
   <field name="content_txt_eu" type="text_eu" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_eu" type="text_eu" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_eu" type="text_eu" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_eu" type="text_eu" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_eu" type="text_eu" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_eu" type="text_eu" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_eu" dest="content_txt_eu"/>
   <copyField source="tags_txt_eu" dest="Keywords_facet"/>
   <copyField source="*_txt_eu" dest="spellShingle"/>
   <field name="content_txt_fa" type="text_fa" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_fa" type="text_fa" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_fa" type="text_fa" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_fa" type="text_fa" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_fa" type="text_fa" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_fa" type="text_fa" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_fa" dest="content_txt_fa"/>
   <copyField source="tags_txt_fa" dest="Keywords_facet"/>
   <copyField source="*_txt_fa" dest="spellShingle"/>
   <field name="content_txt_fi" type="text_fi" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_fi" type="text_fi" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_fi" type="text_fi" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_fi" type="text_fi" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_fi" type="text_fi" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_fi" type="text_fi" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_fi" dest="content_txt_fi"/>
   <copyField source="tags_txt_fi" dest="Keywords_facet"/>
   <copyField source="*_txt_fi" dest="spellShingle"/>
   <field name="content_txt_fr" type="text_fr" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_fr" type="text_fr" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_fr" type="text_fr" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_fr" type="text_fr" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_fr" type="text_fr" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_fr" type="text_fr" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_fr" dest="content_txt_fr"/>
   <copyField source="tags_txt_fr" dest="Keywords_facet"/>
   <copyField source="*_txt_fr" dest="spellShingle"/>
   <field name="content_txt_ga" type="text_ga" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_ga" type="text_ga" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_ga" type="text_ga" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_ga" type="text_ga" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_ga" type="text_ga" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_ga" type="text_ga" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_ga" dest="content_txt_ga"/>
   <copyField source="tags_txt_ga" dest="Keywords_facet"/>
   <copyField source="*_txt_ga" dest="spellShingle"/>
   <field name="content_txt_gl" type="text_gl" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_gl" type="text_gl" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_gl" type="text_gl" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_gl" type="text_gl" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_gl" type="text_gl" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_gl" type="text_gl" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_gl" dest="content_txt_gl"/>
   <copyField source="tags_txt_gl" dest="Keywords_facet"/>
   <copyField source="*_txt_gl" dest="spellShingle"/>
   <field name="content_txt_hi" type="text_hi" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_hi" type="text_hi" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_hi" type="text_hi" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_hi" type="text_hi" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_hi" type="text_hi" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_hi" type="text_hi" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_hi" dest="content_txt_hi"/>
   <copyField source="tags_txt_hi" dest="Keywords_facet"/>
   <copyField source="*_txt_hi" dest="spellShingle"/>
   <field name="content_txt_hu" type="text_hu" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_hu" type="text_hu" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_hu" type="text_hu" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_hu" type="text_hu" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_hu" type="text_hu" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_hu" type="text_hu" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_hu" dest="content_txt_hu"/>
   <copyField source="tags_txt_hu" dest="Keywords_facet"/>
   <copyField source="*_txt_hu" dest="spellShingle"/>
   <field name="content_txt_hy" type="text_hy" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_hy" type="text_hy" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_hy" type="text_hy" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_hy" type="text_hy" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_hy" type="text_hy" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_hy" type="text_hy" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_hy" dest="content_txt_hy"/>
   <copyField source="tags_txt_hy" dest="Keywords_facet"/>
   <copyField source="*_txt_hy" dest="spellShingle"/>
   <field name="content_txt_id" type="text_id" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_id" type="text_id" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_id" type="text_id" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_id" type="text_id" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_id" type="text_id" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_id" type="text_id" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_id" dest="content_txt_id"/>
   <copyField source="tags_txt_id" dest="Keywords_facet"/>
   <copyField source="*_txt_id" dest="spellShingle"/>
   <field name="content_txt_it" type="text_it" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_it" type="text_it" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_it" type="text_it" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_it" type="text_it" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_it" type="text_it" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_it" type="text_it" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_it" dest="content_txt_it"/>
   <copyField source="tags_txt_it" dest="Keywords_facet"/>
   <copyField source="*_txt_it" dest="spellShingle"/>
   <field name="content_txt_ja" type="text_ja" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_ja" type="text_ja" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_ja" type="text_ja" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_ja" type="text_ja" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_ja" type="text_ja" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_ja" type="text_ja" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_ja" dest="content_txt_ja"/>
   <copyField source="tags_txt_ja" dest="Keywords_facet"/>
   <copyField source="*_txt_ja" dest="spellShingle"/>
   <field name="content_txt_ko" type="text_ko" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_ko" type="text_ko" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_ko" type="text_ko" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_ko" type="text_ko" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_ko" type="text_ko" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_ko" type="text_ko" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_ko" dest="content_txt_ko"/>
   <copyField source="tags_txt_ko" dest="Keywords_facet"/>
   <copyField source="*_txt_ko" dest="spellShingle"/>
   <field name="content_txt_lv" type="text_lv" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_lv" type="text_lv" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_lv" type="text_lv" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_lv" type="text_lv" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_lv" type="text_lv" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_lv" type="text_lv" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_lv" dest="content_txt_lv"/>
   <copyField source="tags_txt_lv" dest="Keywords_facet"/>
   <copyField source="*_txt_lv" dest="spellShingle"/>
   <field name="content_txt_nl" type="text_nl" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_nl" type="text_nl" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_nl" type="text_nl" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_nl" type="text_nl" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_nl" type="text_nl" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_nl" type="text_nl" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_nl" dest="content_txt_nl"/>
   <copyField source="tags_txt_nl" dest="Keywords_facet"/>
   <copyField source="*_txt_nl" dest="spellShingle"/>
   <field name="content_txt_no" type="text_no" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_no" type="text_no" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_no" type="text_no" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_no" type="text_no" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_no" type="text_no" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_no" type="text_no" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_no" dest="content_txt_no"/>
   <copyField source="tags_txt_no" dest="Keywords_facet"/>
   <copyField source="*_txt_no" dest="spellShingle"/>
   <field name="content_txt_pt" type="text_pt" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_pt" type="text_pt" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_pt" type="text_pt" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_pt" type="text_pt" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_pt" type="text_pt" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_pt" type="text_pt" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_pt" dest="content_txt_pt"/>
   <copyField source="tags_txt_pt" dest="Keywords_facet"/>
   <copyField source="*_txt_pt" dest="spellShingle"/>
   <field name="content_txt_ro" type="text_ro" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_ro" type="text_ro" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_ro" type="text_ro" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_ro" type="text_ro" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_ro" type="text_ro" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_ro" type="text_ro" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_ro" dest="content_txt_ro"/>
   <copyField source="tags_txt_ro" dest="Keywords_facet"/>
   <copyField source="*_txt_ro" dest="spellShingle"/>
   <field name="content_txt_ru" type="text_ru" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_ru" type="text_ru" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_ru" type="text_ru" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_ru" type="text_ru" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_ru" type="text_ru" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_ru" type="text_ru" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_ru" dest="content_txt_ru"/>
   <copyField source="tags_txt_ru" dest="Keywords_facet"/>
   <copyField source="*_txt_ru" dest="spellShingle"/>
   <field name="content_txt_sv" type="text_sv" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_sv" type="text_sv" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_sv" type="text_sv" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_sv" type="text_sv" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_sv" type="text_sv" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_sv" type="text_sv" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_sv" dest="content_txt_sv"/>
   <copyField source="tags_txt_sv" dest="Keywords_facet"/>
   <copyField source="*_txt_sv" dest="spellShingle"/>
   <field name="content_txt_th" type="text_th" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_th" type="text_th" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_th" type="text_th" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_th" type="text_th" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_th" type="text_th" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_th" type="text_th" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_th" dest="content_txt_th"/>
   <copyField source="tags_txt_th" dest="Keywords_facet"/>
   <copyField source="*_txt_th" dest="spellShingle"/>
   <field name="content_txt_tr" type="text_tr" multiValued="true" indexed="true" stored="true"/>
   <field name="tags_txt_tr" type="text_tr" multiValued="true" indexed="true" stored="true"/>
+  <field name="title_txt_tr" type="text_tr" multiValued="false" indexed="true" stored="true"/>
+  <field name="subtitle_txt_tr" type="text_tr" multiValued="false" indexed="true" stored="true"/>
+  <field name="summary_txt_tr" type="text_tr" multiValued="false" indexed="true" stored="true"/>
   <dynamicField name="*_page_txt_tr" type="text_tr" multiValued="false" indexed="true" stored="true"/>
   <copyField source="*_page_txt_tr" dest="content_txt_tr"/>
   <copyField source="tags_txt_tr" dest="Keywords_facet"/>

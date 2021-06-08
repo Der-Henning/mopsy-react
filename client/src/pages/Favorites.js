@@ -91,16 +91,19 @@ const Favorites = (props) => {
             return (
               <tr key={doc.DocId}>
                 <td>
-                  <Button
-                    variant="link"
-                    onClick={() =>
-                      props.history.push(
-                        `/viewer?url=${doc.link}`
-                      )
-                    }
-                  >
-                    <ExternalLink />
-                  </Button>
+                  {doc.deleted ?
+                    "gelöscht" :
+                    <Button
+                      variant="link"
+                      onClick={() =>
+                        props.history.push(
+                          `/viewer?url=${doc.link}`
+                        )
+                      }
+                    >
+                      <ExternalLink />
+                    </Button>
+                  }
                 </td>
                 <td>
                   <span>{doc.document ? `${doc.document} - ` : ''}{doc.title}</span>

@@ -22,6 +22,10 @@ const facetFields = async () => {
       type: "terms",
       field: "Publishers_facet"
     },
+    Language: {
+      type: "terms",
+      field: "language"
+    },
     Creation: {
       type: "terms",
       field: "creationDate",

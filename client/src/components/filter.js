@@ -59,7 +59,7 @@ const FullFacet = ({ facet }) => {
     if (facets[facet]["buckets"].length > 0)
         return (
             <div>
-                <h4>{facet}</h4>
+                <p style={{margin: "0.2rem"}}><strong>{facet}:</strong></p>
                 {facets[facet]["buckets"].map(b =>
                 (
                     <FilterButton key={b.val} facet={facet} value={b.val} />
