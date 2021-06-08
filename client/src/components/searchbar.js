@@ -34,6 +34,7 @@ const stateUpdaters = {
     }
   },
   setHasFocus: (hasFocus) => (prevState) => {
+    console.log(hasFocus)
     return {
       ...prevState,
       hasFocus
@@ -174,7 +175,7 @@ const Searchbar = (props) => {
     <form
       className={styles.searchbar}
       onSubmit={_submitForm}
-      data-suggest={state.renderSuggestions.length > 0 ? "on" : "off"}
+      data-suggest={state.renderSuggestions.length > 0 && state.hasFocus ? "on" : "off"}
     >
       <input
         type="text"
