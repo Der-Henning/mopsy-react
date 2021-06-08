@@ -175,7 +175,7 @@ const PDFViewer = () => {
                     const attachements = await docs[0].getAttachments()
                     console.log(attachements)
                     if (attachements) {
-                        for (attachement in Object.keys(attachements)) {
+                        for (const attachement in Object.keys(attachements)) {
                            try {
                                 docs = [...docs, await pdfjs.getDocument({
                                     data: attachements[attachement].content,
