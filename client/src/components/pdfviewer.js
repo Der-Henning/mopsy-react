@@ -172,18 +172,28 @@ const PDFViewer = () => {
                 }
                 var docs = [await loadingTask.promise]
                 try {
-                const attachements = await docs[0].getAttachments()
-                console.log(attachements)
-                if (attachements) {
-                    await Promise.all(Object.keys(attachements).forEach(async attachment => {
-                            try {
+                    const attachements = await docs[0].getAttachments()
+                    console.log(attachements)
+                    if (attachements) {
+                        for (attachement in Object.keys(attachements)) {
+                           try {
                                 docs = [...docs, await pdfjs.getDocument({
-                                    data: attachements[attachment].content,
+                                    data: attachements[attachement].content,
                                     cMapUrl: CMAP_URL,
                                     cMapPacked: CMAP_PACKED
                                 }).promise]
-                            } catch (e) { console.log(e) }
-                    }))
+                           } catch (e) { console.log(e) }
+                        }
+                    
+                 //   await Promise.all(Object.keys(attachements).forEach(async attachment => {
+                 //           try {
+                 //               docs = [...docs, await pdfjs.getDocument({
+                 //                   data: attachements[attachment].content,
+                 //                   cMapUrl: CMAP_URL,
+                 //                   cMapPacked: CMAP_PACKED
+                 //               }).promise]
+                 //           } catch (e) { console.log(e) }
+                 //   }))
                  //   docs = [...docs, ...(await Promise.all(Object.keys(attachements).map(
                  //       async attachment => {
                  //           try {
@@ -195,7 +205,7 @@ const PDFViewer = () => {
                  //           } catch (e) { console.log(e) }
                  //       }
                  //   )))]
-                }
+                    }
                 } catch (e) { console.log(e) }
                 setProgress(100)
                 setDocument(() => ({
