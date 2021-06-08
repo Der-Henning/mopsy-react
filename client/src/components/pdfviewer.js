@@ -171,8 +171,9 @@ const PDFViewer = () => {
                     setProgress(data.loaded / data.total * 100);
                 }
                 var docs = [await loadingTask.promise]
-
+                try {
                 const attachements = await docs[0].getAttachments()
+                console.log(attachements)
                 if (attachements) {
                     await Promise.all(Object.keys(attachements).forEach(async attachment => {
                             try {
@@ -195,6 +196,7 @@ const PDFViewer = () => {
                  //       }
                  //   )))]
                 }
+                } catch (e) { console.log(e) }
                 setProgress(100)
                 setDocument(() => ({
                     loading: false,
