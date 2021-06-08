@@ -56,15 +56,17 @@ const SmallFacet = ({setOpen}) => {
 const FullFacet = ({ facet }) => {
     const { facets } = useSearchData();
 
-    return (
-        <div>
-            <h4>{facet}</h4>
-            {facets[facet]["buckets"].map(b =>
-            (
-                <FilterButton key={b.val} facet={facet} value={b.val} />
-            ))}
-        </div>
-    )
+    if (facets[facet]["buckets"].length > 0)
+        return (
+            <div>
+                <h4>{facet}</h4>
+                {facets[facet]["buckets"].map(b =>
+                (
+                    <FilterButton key={b.val} facet={facet} value={b.val} />
+                ))}
+            </div>
+        )
+    return null
 }
 
 const Filter = (props) => {
