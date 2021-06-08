@@ -13,7 +13,7 @@ const Search = (props) => {
   const q = useQuery().get("q");
   const page = parseInt(useQuery().get("page")) || 1;
 
-  const { dimensions } = useGlobal();
+  const { dimensions, setDisplayFooter } = useGlobal();
   const {
     activeDocument,
     info,
@@ -26,6 +26,11 @@ const Search = (props) => {
     setPage,
     setActiveDocumentPage,
   } = useSearchData();
+
+  useEffect(() => {
+    setDisplayFooter(false)
+    return () => setDisplayFooter(true)
+  }, [setDisplayFooter])
 
   useEffect(() => {
     setSearchText(q);

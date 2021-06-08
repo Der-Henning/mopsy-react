@@ -25,6 +25,7 @@ const GlobalProvider = ({ children, props }) => {
     showPdfViewer: false,
   });
   const [headerHeight, setHeaderHeight] = useState(0);
+  const [displayFooter, setDisplayFooter] = useState(true);
   const { api } = props;
 
   const _updateDimensions = useCallback(() => {
@@ -119,10 +120,11 @@ const GlobalProvider = ({ children, props }) => {
       theme,
       toggleTheme,
       dimensions,
-      headerHeight,
       setHeaderHeight,
+      displayFooter,
+      setDisplayFooter
     }),
-    [api, user, theme, toggleTheme, setUser, dimensions, setHeaderHeight, headerHeight]
+    [api, user, theme, toggleTheme, setUser, dimensions, setHeaderHeight, displayFooter, setDisplayFooter]
   );
 
   return <Context.Provider value={data}>{children}</Context.Provider>;
