@@ -1,9 +1,9 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { withRouter } from "react-router-dom";
-import { Table, Spinner, Button } from "react-bootstrap";
+import { Table, Spinner } from "react-bootstrap";
 import Axios from "axios";
-import { Trash2, ExternalLink } from "react-feather";
 import { useGlobal } from "../context";
+import { OpenExternalLinkButton, DeleteButton } from "../components";
 
 const Favorites = (props) => {
   const { api, token, loginId, dimensions } = useGlobal();
@@ -93,16 +93,7 @@ const Favorites = (props) => {
                 <td>
                   {doc.deleted ?
                     "gelöscht" :
-                    <Button
-                      variant="link"
-                      onClick={() =>
-                        props.history.push(
-                          `/viewer?url=${doc.link}`
-                        )
-                      }
-                    >
-                      <ExternalLink />
-                    </Button>
+                    <OpenExternalLinkButton link={doc.externallink || doc.link} />
                   }
                 </td>
                 <td>
@@ -112,14 +103,11 @@ const Favorites = (props) => {
                 </td>
                 <td style={{ whiteSpace: "nowrap" }}>{doc.date}</td>
                 <td>
-                  <Button
-                    variant="link"
+                  <DeleteButton
                     onClick={() => {
                       _removeFavorite(doc.DocId);
                     }}
-                  >
-                    <Trash2 />
-                  </Button>
+                  />
                 </td>
               </tr>
             );
@@ -127,7 +115,7 @@ const Favorites = (props) => {
         </tbody>
       </Table>
     );
-  }, [_removeFavorite, state, props.history]);
+  }, [_removeFavorite, state]);
 
   return (
     <div

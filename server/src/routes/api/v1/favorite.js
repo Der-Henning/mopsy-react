@@ -9,7 +9,7 @@ const apiVersion = "v1";
 const requestBody = (docId) => {
   return {
     query: "id:" + docId,
-    fields: "id,document,title_*,subtitle_*,scanDate,link,language,deleted",
+    fields: "id,document,title_*,subtitle_*,scanDate,link,language,deleted,externallink",
   };
 };
 
@@ -38,7 +38,8 @@ router.get("/", auth, async (req, res, next) => {
               subtitle: doc[`subtitle_txt_${lang}`],
               date: doc.scanDate?.split("T")[0],
               link: doc.link || `/api/${apiVersion}/pdf/${doc.id}`,
-              deleted: doc.deleted
+              deleted: doc.deleted,
+              externalling: doc.externallink
             })
           }
         })

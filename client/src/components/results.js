@@ -2,10 +2,10 @@ import React, { useEffect, useCallback } from "react";
 import { Accordion, Card } from "react-bootstrap";
 import Parser from "html-react-parser";
 import styles from "../styles/results.module.css";
-import { Star, ExternalLink } from "react-feather";
 import Axios from "axios";
 import { useGlobal, useSearchData } from "../context";
 import { withRouter } from "react-router-dom";
+import { OpenExternalLinkButton, FavoriteButton } from "../components";
 
 const Results = (props) => {
   const { api, token } = useGlobal();
@@ -125,25 +125,8 @@ const Results = (props) => {
               {doc["title"] && <span style={{ marginRight: "5px" }}>{_getVal(doc, "title")}</span>}
               {doc["subtitle"] && <span style={{ marginRight: "5px" }}><i>{_getVal(doc, "subtitle")}</i></span>}
             </Accordion.Toggle>
-            <ExternalLink
-              size="30"
-              style={{ cursor: "pointer", margin: "3px" }}
-              onClick={() => window.open(doc.externallink || doc.link, "_blank")}
-            // onClick={() =>
-            //   props.history.push(
-            //     `/viewer?url=${doc.link}`
-            //   )
-            // }
-            />
-            <Star
-              size="30"
-              style={{
-                fill: doc.isFavorite ? "yellow" : "none",
-                cursor: "pointer",
-                margin: "3px",
-              }}
-              onClick={_starKlickHandler.bind(null, i)}
-            />
+            <OpenExternalLinkButton link={doc.externallink || doc.link} />
+            <FavoriteButton isFavorite={doc.isFavorite} onClick={_starKlickHandler.bind(null, i)} />
           </div>
           <Accordion.Toggle
             as={Card.Header}
