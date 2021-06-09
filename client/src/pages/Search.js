@@ -76,6 +76,7 @@ const Search = (props) => {
   }, [info, params.page]);
 
   const _pagination = useCallback(() => {
+    if (!info.numFound) return null
     const pages = Math.ceil(info.numFound / params.dpp);
     if (pages <= 1) return;
     const max = 8;
