@@ -26,19 +26,19 @@ const start = () => {
 const migrate = (old_db) => {
     old_db.query("SELECT * FROM login", (err, result, fields) => {
         if (err) throw err;
-        console.log(result)
-        for (const login_old in result) {
-            const hash = "$2b$10$" + login_old.password.slice(7);
+        Object.keys(result).forEach((key) => {
+            const row = result[key];
+            const hash = "$2b$10$" + row.password.slice(7);
             models.Login.create({
-                username: login_old.display,
-                email: login_old.email,
+                username: row.display,
+                email: row.email,
                 password: hash
             }).then(login => {
                 console.log(`created ${login}`)
                 // const login_favs_old = await old_db.query(`SELECT * FROM favs WHERE username='${login_old.username}'`);    
             })
                 .catch(err => { throw err })
-        }
+        });
     });
 
 }
