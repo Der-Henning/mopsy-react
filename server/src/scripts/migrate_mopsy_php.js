@@ -26,7 +26,7 @@ const start = () => {
 const migrate = (old_db) => {
     old_db.query("SELECT * FROM login", (err, logins_old, fields) => {
         if (err) throw err;
-        print(logins_old)
+        console.log(logins_old)
         for (login_old in logins_old) {
             var hash = "$2b$10$" + login_old.password.slice(7);
             models.Login.create({
