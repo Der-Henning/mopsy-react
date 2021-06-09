@@ -1,5 +1,6 @@
 const models = require("../models");
 const mysql = require('mysql');
+const solr = require('../middleware/solr');
 import "regenerator-runtime/runtime";
 
 const start = () => {
@@ -17,7 +18,6 @@ const start = () => {
                 if (err) { throw err }
                 console.log(`Connected to old Database on host '${process.env.MIGRATE_OLD_MYSQL_HOST}'`)
                 migrate(old_db)
-                console.log("Migraction complete")
             })
         })
         .catch(err => { throw err })
@@ -27,16 +27,32 @@ const migrate = (old_db) => {
     old_db.query("SELECT * FROM login", (err, result, fields) => {
         if (err) throw err;
         Object.keys(result).forEach((key) => {
-            const row = result[key];
-            const hash = "$2b$10$" + row.password.slice(7);
+            const login_old = result[key];
+            const hash = "$2b$10$" + login_old.password.slice(7);
             models.Login.create({
-                username: row.display,
-                email: row.email,
+                username: login_old.display,
+                email: login_old.email,
                 password: hash
-            }).then(login => {
-                console.log(`created ${login}`)
-                // const login_favs_old = await old_db.query(`SELECT * FROM favs WHERE username='${login_old.username}'`);    
             })
+                .then(login => {
+                    old_db.query(`SELECT * FROM favs WHERE username='${login_old.username}'`, (err, result, fields) => {
+                        if (err) throw err;
+                        Object.keys(result).forEach((key) => {
+                            const favorite_old = result[key];
+                            const data = await solr.post("/select", {
+                                query: "id:zrms_" + favorite_old.docID,
+                                fields: "id",
+                            });
+                            if (data.response.numFound > 0) {
+                                models.Favorite.create({
+                                    DocId: data.response.docs[0].id,
+                                    LoginId: login.id
+                                });
+                            }
+                        })
+
+                    });
+                })
                 .catch(err => { throw err })
         });
     });
