@@ -39,7 +39,7 @@ router.get("/", auth, async (req, res, next) => {
               date: doc.scanDate?.split("T")[0],
               link: doc.link || `/api/${apiVersion}/pdf/${doc.id}`,
               deleted: doc.deleted,
-              externalling: doc.externallink
+              externallink: doc.externallink
             })
           }
         })

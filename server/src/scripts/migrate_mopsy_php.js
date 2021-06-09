@@ -1,5 +1,6 @@
 const models = require("../models");
 const mysql = require('mysql');
+import "regenerator-runtime/runtime";
 
 const migrate = () => {
     const old_db = mysql.createConnection({
@@ -16,7 +17,7 @@ const migrate = () => {
             for (user in users_old) {
                 var hash = "$2b$10$" + user.password.slice(7);
                 var login = await models.Login.create({
-                    username: user.username,
+                    username: user.display,
                     email: user.email,
                     password: hash
                 });
