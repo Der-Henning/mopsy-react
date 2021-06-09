@@ -42,4 +42,4 @@ const migrate = () => {
 
 }
 
-export default start
+start()
