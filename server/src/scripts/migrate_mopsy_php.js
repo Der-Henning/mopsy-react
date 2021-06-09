@@ -16,14 +16,14 @@ const start = () => {
             old_db.connect(err => {
                 if (err) { throw err }
                 console.log(`Connected to old Database on host '${process.env.MIGRATE_OLD_MYSQL_HOST}'`)
-                migrate()
+                migrate(old_db)
                 console.log("Migraction complete")
             })
         })
         .catch(err => { throw err })
 }
 
-const migrate = () => {
+const migrate = (old_db) => {
     old_db.query("SELECT * FROM login", (err, logins_old, fields) => {
         if (err) throw err;
         print(logins_old)
