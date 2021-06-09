@@ -14,10 +14,8 @@ const start = () => {
         console.log(`Connected to new Database on host '${process.env.MOPSY_MYSQL_HOST}'`)
         old_db.connect().then(() => {
             console.log(`Connected to old Database on host '${process.env.MIGRATE_OLD_MYSQL_HOST}'`)
-            migrate.then(() => {
-                console.log("Migraction complete")
-            })
-                .catch(err => { throw err })
+            migrate()
+            console.log("Migraction complete")
         })
             .catch(err => { throw err })
     })
@@ -25,24 +23,23 @@ const start = () => {
 }
 
 const migrate = () => {
-    return new Promise(async () => {
-        old_db.query("SELECT * FROM login", (err, logins_old, fields) => {
-            if (err) throw err;
-            print(logins_old)
-            for (login_old in logins_old) {
-                var hash = "$2b$10$" + login_old.password.slice(7);
-                var login = await models.Login.create({
-                    username: login_old.display,
-                    email: login_old.email,
-                    password: hash
-                });
+    old_db.query("SELECT * FROM login", (err, logins_old, fields) => {
+        if (err) throw err;
+        print(logins_old)
+        for (login_old in logins_old) {
+            var hash = "$2b$10$" + login_old.password.slice(7);
+            models.Login.create({
+                username: login_old.display,
+                email: login_old.email,
+                password: hash
+            }).then(login => {
                 console.log(`created ${login}`)
-                // const login_favs_old = await old_db.query(`SELECT * FROM favs WHERE username='${login_old.username}'`);
+                // const login_favs_old = await old_db.query(`SELECT * FROM favs WHERE username='${login_old.username}'`);    
+            })
+            .catch(err => {throw err})
+        }
+    });
 
-            }
-        });
-
-    })
 }
 
 export default start
