@@ -10,15 +10,16 @@ const start = () => {
         database: process.env.MIGRATE_OLD_MYSQL_DATABASE
     });
 
-    models.sequelize.sync().then(() => {
-        console.log(`Connected to new Database on host '${process.env.MOPSY_MYSQL_HOST}'`)
-        old_db.connect().then(() => {
-            console.log(`Connected to old Database on host '${process.env.MIGRATE_OLD_MYSQL_HOST}'`)
-            migrate()
-            console.log("Migraction complete")
+    models.sequelize.sync()
+        .then(() => {
+            console.log(`Connected to new Database on host '${process.env.MOPSY_MYSQL_HOST}'`)
+            old_db.connect(err => {
+                if (err) { throw err }
+                console.log(`Connected to old Database on host '${process.env.MIGRATE_OLD_MYSQL_HOST}'`)
+                migrate()
+                console.log("Migraction complete")
+            })
         })
-            .catch(err => { throw err })
-    })
         .catch(err => { throw err })
 }
 
@@ -36,7 +37,7 @@ const migrate = () => {
                 console.log(`created ${login}`)
                 // const login_favs_old = await old_db.query(`SELECT * FROM favs WHERE username='${login_old.username}'`);    
             })
-            .catch(err => {throw err})
+                .catch(err => { throw err })
         }
     });
 
