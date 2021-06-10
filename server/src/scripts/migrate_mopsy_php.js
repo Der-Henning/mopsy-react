@@ -46,7 +46,7 @@ const migrate = (old_db) => {
                             if (data.response.numFound > 0) {
                                 models.Favorite.create({
                                     DocId: data.response.docs[0].id,
-                                    LoginId: user.id
+                                    UserId: user.id
                                 });
                             }
                         })
