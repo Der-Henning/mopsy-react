@@ -1,5 +1,5 @@
 # Use NodeJS v12 as base image
-FROM node:12 AS builder
+FROM node:14 AS builder
 
 # Set Working directory
 WORKDIR /usr/mopsy
@@ -9,7 +9,7 @@ COPY . .
 RUN npm ci
 RUN npm run build
 
-FROM node:12
+FROM node:14
 
 WORKDIR /usr/mopsy
 ENV NODE_ENV=production

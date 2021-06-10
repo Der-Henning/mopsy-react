@@ -32,7 +32,7 @@ const FilterButton = ({ facet, value }) => {
     return (
         <Button
             style={style}
-            variant={checkFilter([facet, value]) ? "primary" : "outline-primary"}
+            variant={checkFilter([facet, value]) ? "secondary" : "outline-secondary"}
             value={facet}
             onClick={() => { toggleFilter([facet, value]) }}>
             {value}

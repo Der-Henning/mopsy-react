@@ -1,7 +1,6 @@
 const router = require("express").Router();
 const config = require("../../../config");
 const models = require("../../../models");
-const auth = require("../../../middleware/auth");
 const errors = require("../../../middleware/errors");
 const solr = require("../../../middleware/solr");
 const Axios = require("axios")
@@ -88,22 +87,19 @@ const selectPage = (DocId, Page) => {
 };
 
 // search
-router.post("/", auth, async (req, res, next) => {
+router.post("/", async (req, res, next) => {
+  const { userId } = req.session;
   const q = req.query.q || "*";
   const page = req.query.page || 1;
   try {
     var fq = [];
     if (req.body.fq) {
       const fields = await facetFields()
-      console.log(req.body.fq)
       fq = req.body.fq.map(f => (`${fields[f[0]].field}:"${f[1]}"`))
-      // fq = [].concat(req.body.fq);
     }
-    if (req.LoginId && req.body.onlyFavs) {
+    if (userId && req.body.onlyFavs) {
       var favs = await models.Favorite.findAll({
-        where: {
-          LoginId: req.LoginId,
-        },
+        where: { UserId: userId,},
         attributes: ["DocId"],
         raw: true,
       });
@@ -130,13 +126,13 @@ router.post("/", auth, async (req, res, next) => {
         // link: doc.link || `/api/${apiVersion}/pdf/${doc.id}`,
         link: `/api/${apiVersion}/pdf/${doc.id}`,
     }));
-    if (req.LoginId) {
+    if (userId) {
       data.response.docs = await Promise.all(
         data.response.docs.map(async (doc) => ({
           ...doc,
           isFavorite: (await models.Favorite.findOne({
             where: {
-              LoginId: req.LoginId,
+              UserId: userId,
               DocId: doc.id,
             },
           }))
@@ -177,7 +173,7 @@ router.post("/", (req, res, next) => {
       models.Log.create({
         query: q,
         remoteAddress: req.ip,
-        UserId: req.UserId,
+        sessionID: req.sessionID,
       });
       var terms = q.split(" ");
       for (let term of terms) {
@@ -195,7 +191,7 @@ router.post("/", (req, res, next) => {
 });
 
 // get search suggestions
-router.get("/suggest", auth, async (req, res, next) => {
+router.get("/suggest", async (req, res, next) => {
   const { q } = req.query;
 
   try {
@@ -212,7 +208,7 @@ router.get("/suggest", auth, async (req, res, next) => {
 });
 
 // get search pages hits for document
-router.get("/:DocId", auth, async (req, res, next) => {
+router.get("/:DocId", async (req, res, next) => {
   const q = req.query.q || "*";
   const DocId = req.params.DocId;
 
@@ -241,7 +237,7 @@ router.get("/:DocId", auth, async (req, res, next) => {
 });
 
 // get page of document
-router.get("/:DocId/:page", auth, async (req, res, next) => {
+router.get("/:DocId/:page", async (req, res, next) => {
   const { DocId, page } = req.params;
   try {
     const data = await solr.post("/select", selectPage(DocId, page));
@@ -259,7 +255,7 @@ router.get("/:DocId/:page", auth, async (req, res, next) => {
 });
 
 // proxy /select request to SOLR backend
-router.post("/select", auth, async (req, res, next) => {
+router.post("/select", async (req, res, next) => {
   try {
     const data = await solr.post("/select", req.body);
     res.status(200).send(data);
@@ -269,7 +265,7 @@ router.post("/select", auth, async (req, res, next) => {
 });
 
 // get data for specific document
-router.post("/select/:DocId", auth, async (req, res, next) => {
+router.post("/select/:DocId", async (req, res, next) => {
   const { DocId } = req.params;
   try {
     const data = await solr.post("/select", { query: "id:" + DocId });
@@ -280,7 +276,7 @@ router.post("/select/:DocId", auth, async (req, res, next) => {
 });
 
 // get top queries, takes count as input, default 30
-router.get("/tagcloud", auth, async (req, res, next) => {
+router.get("/tagcloud", async (req, res, next) => {
   const count = req.query.count ? parseInt(req.query.count, 10) : 30;
   try {
     const queries = await models.Query.findAll({

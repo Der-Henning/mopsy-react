@@ -1,12 +1,10 @@
 const router = require("express").Router();
-const auth = require("../../../middleware/auth");
 const solr = require("../../../middleware/solr");
 const errors = require("../../../middleware/errors");
 const fs = require("fs");
 const redis = require("redis");
 const config = require("../../../config");
 const axios = require("axios");
-// const rstream = require("redis-rstream");
 
 const redisClient = redis.createClient({
   host: config.redis.host,

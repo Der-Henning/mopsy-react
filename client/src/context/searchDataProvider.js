@@ -1,12 +1,11 @@
 import React, { useState, useContext, useCallback, useEffect } from "react";
 import Axios from "axios";
-import qs from "qs";
 import { useGlobal } from "../context";
 
 const Context = React.createContext(undefined);
 
 const SearchDataProvider = ({ children }) => {
-  const { api, token } = useGlobal();
+  const { api } = useGlobal();
 
   const [documents, setDocuments] = useState([]);
   const [highlighting, setHighlighting] = useState({});
@@ -56,14 +55,12 @@ const SearchDataProvider = ({ children }) => {
   );
 
   const fetchDocuments = useCallback(() => {
-    if (params.searchText && token) {
+    if (params.searchText) {
       setIsFetchingDocs(true);
       Axios.post(api + "/search",
-      qs.stringify({ fq: filters }),
-        {
-          params: { q: params.searchText, page: params.page },
-          headers: { "x-access-token": token },
-        })
+        { fq: filters },
+        { params: { q: params.searchText, page: params.page } }
+      )
         .then((res) => {
           setData(res.data);
         })
@@ -74,19 +71,17 @@ const SearchDataProvider = ({ children }) => {
           setIsFetchingDocs(false);
         });
     } else setData(null);
-  }, [params.searchText, params.page, token, api, setData, filters]);
+  }, [params.searchText, params.page, api, setData, filters]);
 
   const fetchHighlights = useCallback(() => {
     if (
       params.searchText &&
       activeDocument &&
-      token &&
       !highlighting[activeDocument]?.fetched
     ) {
       setIsFetchingHighs(true);
       Axios.get(api + "/search/" + activeDocument, {
         params: { q: params.searchText },
-        headers: { "x-access-token": token },
       })
         .then((res) => {
           const highs = res?.data?.highlighting;
@@ -103,7 +98,7 @@ const SearchDataProvider = ({ children }) => {
           setIsFetchingHighs(false);
         });
     }
-  }, [api, token, params.searchText, activeDocument, highlighting]);
+  }, [api, params.searchText, activeDocument, highlighting]);
 
   useEffect(() => {
     fetchHighlights();

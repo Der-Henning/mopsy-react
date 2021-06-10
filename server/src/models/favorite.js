@@ -11,22 +11,22 @@ module.exports = (sequelize, type) => {
       indexes: [
         {
           unique: true,
-          fields: ["LoginId", "DocId"],
+          fields: ["UserId", "DocId"],
         },
         {
           unique: false,
-          fields: ["LoginId"],
+          fields: ["UserId"],
         },
       ],
     }
   );
 
   Favorite.associate = (models) => {
-    models.Favorite.belongsTo(models.Login, {
+    models.Favorite.belongsTo(models.User, {
       onDelete: "CASCADE",
       foreignKey: {
         allowNull: false,
-        name: "LoginId",
+        name: "UserId",
       },
     });
   };

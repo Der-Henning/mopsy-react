@@ -3,7 +3,7 @@ networks:
   dev:
 services:
   base:
-    image: node:12
+    image: node:14
     volumes:
       - .:/home/app
     working_dir: /home/app

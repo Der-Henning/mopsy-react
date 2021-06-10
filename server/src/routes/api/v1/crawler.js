@@ -1,9 +1,8 @@
 const router = require("express").Router();
-const auth = require("../../../middleware/auth");
 const config = require("../../../config");
 const Axios = require("axios")
 
-router.get("/", auth, async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   let data = {}
   await Promise.all(config.crawlers.map(async crawler => {
     try {
@@ -21,7 +20,7 @@ router.get("/", auth, async (req, res, next) => {
   res.status(200).send(data)
 })
 
-router.get("/:crawler/start", auth, async (req, res, next) => {
+router.get("/:crawler/start", async (req, res, next) => {
   const { crawler } = req.params;
   try {
     const response = await Axios.post(`http://${crawler}/start`)
@@ -31,7 +30,7 @@ router.get("/:crawler/start", auth, async (req, res, next) => {
   }
 });
 
-router.get("/:crawler/stop", auth, async (req, res, next) => {
+router.get("/:crawler/stop", async (req, res, next) => {
   const { crawler } = req.params;
   try {
     const response = await Axios.post(`http://${crawler}/stop`)
@@ -41,7 +40,7 @@ router.get("/:crawler/stop", auth, async (req, res, next) => {
   }
 });
 
-router.get("/:crawler/toggleAutorestart", auth, async (req, res, next) => {
+router.get("/:crawler/toggleAutorestart", async (req, res, next) => {
   const { crawler } = req.params;
   try {
     const response = await Axios.post(`http://${crawler}/toggleAutorestart`)

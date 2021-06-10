@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef, useLayoutEffect, useMemo } from "react";
-import pdfjsWorker from 'pdfjs-dist/es5/build/pdf.worker.entry';
-import * as pdfjsViewer from 'pdfjs-dist/es5/web/pdf_viewer';
-import * as pdfjs from "pdfjs-dist/es5/build/pdf";
-import 'pdfjs-dist/es5/web/pdf_viewer.css';
+import pdfjsWorker from 'pdfjs-dist/legacy/build/pdf.worker.entry';
+import * as pdfjsViewer from 'pdfjs-dist/legacy/web/pdf_viewer';
+import * as pdfjs from "pdfjs-dist/legacy/build/pdf";
+import 'pdfjs-dist/legacy/web/pdf_viewer.css';
 import { LinearProgress, Slider } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { useSearchData } from "../context";

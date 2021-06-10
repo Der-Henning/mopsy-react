@@ -2,21 +2,17 @@ import React, { useEffect, useCallback, useRef } from "react";
 import { Navbar, Button, Nav, Form } from "react-bootstrap";
 import { NavLink, Link } from "react-router-dom";
 import { withRouter } from "react-router-dom";
-import Axios from "axios";
 import { Menu, Sun, Moon, LogOut } from "react-feather";
 import { useGlobal } from "../context";
 
 const Header = (props) => {
   const {
-    api,
-    token,
-    loginId,
-    admin,
     theme,
-    setUser,
     setHeaderHeight,
     toggleTheme,
+    userAPI
   } = useGlobal();
+  const { user, logout } = userAPI;
   const { visible, sticky } = props;
   const bar = useRef();
 
@@ -25,16 +21,12 @@ const Header = (props) => {
     setHeaderHeight(height);
   }, [setHeaderHeight]);
 
-  const logout = useCallback(() => {
-    Axios.get(api + "/user/logout", {
-      headers: { "x-access-token": token },
-    }).then((res) => {
-      setUser({token: res.headers["x-auth-token"], loginId: null, admin: false});
-    });
-  }, [api, token, setUser]);
+  const _logout = useCallback(() => {
+    logout().catch(err => { })
+  }, [logout])
 
   const _getLoginForm = useCallback(() => {
-    if (loginId)
+    if (user.loggedIn)
       return (
         <React.Fragment>
           <Button
@@ -46,7 +38,7 @@ const Header = (props) => {
           >
             Konto
           </Button>
-          <Button variant="link" onClick={logout}>
+          <Button variant="link" onClick={_logout}>
             <LogOut />
           </Button>
         </React.Fragment>
@@ -72,19 +64,19 @@ const Header = (props) => {
         </Button>
       </React.Fragment>
     );
-  }, [loginId, logout, props.history]);
+  }, [user, _logout, props.history]);
 
   const _getNavbarContent = useCallback(() => {
     return (
       <React.Fragment>
-        {loginId ? (
+        {user.loggedIn ? (
           <NavLink to={"/favorites"} className="nav-link">
             Favoriten
           </NavLink>
         ) : (
           ""
         )}
-        {admin ? (
+        {user.admin ? (
           <NavLink to={"/admin"} className="nav-link">
             Admin
           </NavLink>
@@ -96,7 +88,7 @@ const Header = (props) => {
         </NavLink>
       </React.Fragment>
     );
-  }, [loginId, admin]);
+  }, [user]);
 
   if (visible)
     return (

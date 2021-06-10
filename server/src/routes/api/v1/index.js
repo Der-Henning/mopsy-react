@@ -8,10 +8,9 @@ const userRouter = require("./user");
 const favoriteRouter = require("./favorite");
 const crawlerRouter = require("./crawler");
 const pdfRouter = require("./pdf");
-const request = require("request");
 
 router.get("/", function(req, res, next) {
-  res.status(200).send("Welcome to Training Sheduler API!");
+  res.status(200).send("Welcome to MOPS-Y API!");
 });
 
 router.use("/search", searchRouter);

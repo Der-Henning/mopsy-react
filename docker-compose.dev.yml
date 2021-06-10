@@ -7,7 +7,7 @@ volumes:
   data-dev:
 services:
   mopsy:
-    image: node:12
+    image: node:14
     networks:
       dev:
     ports:
@@ -40,7 +40,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
   db:
-    image: mariadb
+    image: mariadb:10
     networks:
       dev:
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW

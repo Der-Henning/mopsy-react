@@ -3,7 +3,6 @@
 const config = require("../config");
 const url = require("url");
 const axios = require("axios");
-const qs = require("qs");
 const errors = require("./errors");
 
 // build solr url for SOLR backend requests

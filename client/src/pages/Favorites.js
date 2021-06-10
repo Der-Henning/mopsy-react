@@ -1,21 +1,17 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { withRouter } from "react-router-dom";
 import { Table, Spinner } from "react-bootstrap";
-import Axios from "axios";
 import { useGlobal } from "../context";
 import { OpenExternalLinkButton, DeleteButton } from "../components";
 
 const Favorites = (props) => {
-  const { api, token, loginId, dimensions } = useGlobal();
+  const { dimensions, userAPI } = useGlobal();
+  const {user, getFavorites, toggleFavorites} = userAPI;
 
   const [state, setState] = useState({
     isFetching: true,
     data: null,
     error: null,
-  });
-
-  useEffect(() => {
-    if (!loginId) props.history.push("/");
   });
 
   const _fetchData = useCallback(() => {
@@ -24,13 +20,11 @@ const Favorites = (props) => {
       data: null,
       error: null,
     });
-    Axios.get(api + "/favorite", {
-      headers: { "x-access-token": token },
-    })
+    getFavorites()
       .then((res) => {
         setState({
           isFetching: false,
-          data: res.data,
+          data: res,
           error: null,
         });
       })
@@ -41,25 +35,21 @@ const Favorites = (props) => {
           error: err.response ? err.response.data?.status?.message : err,
         });
       });
-  }, [api, token]);
+  }, [getFavorites]);
 
   useEffect(() => {
-    if (loginId) _fetchData();
-  }, [loginId, _fetchData]);
+    if (!user.loggedIn) props.history.push("/");
+    else _fetchData();
+  }, [user, props.history, _fetchData]);
 
   const _removeFavorite = useCallback(
     (DocId) => {
-      Axios.put(
-        api + "/favorite/" + DocId,
-        {},
-        {
-          headers: { "x-access-token": token },
-        }
-      ).then(() => {
+      toggleFavorites(DocId)
+      .then(() => {
         _fetchData();
       });
     },
-    [api, token, _fetchData]
+    [toggleFavorites, _fetchData]
   );
 
   const _body = useCallback(() => {

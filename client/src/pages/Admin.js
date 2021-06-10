@@ -1,9 +1,9 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { withRouter } from "react-router-dom";
 import { Button, ToggleButton } from "react-bootstrap";
-import Axios from "axios";
 import { Spinner } from "react-bootstrap";
 import { useGlobal } from "../context";
+import { useCrawlers } from "../hooks";
 
 const styles = {
   border: "solid 1px grey",
@@ -14,18 +14,21 @@ const styles = {
 };
 
 const Admin = (props) => {
-  const { api, token, admin, dimensions } = useGlobal();
+  const { api, userAPI, dimensions } = useGlobal();
+  const { user } = userAPI;
+  const { fetchCrawlers,
+    startCrawler,
+    stopCrawler,
+    toggleAutorestart } = useCrawlers(api)
 
   const [crawlers, setCrawlers] = useState({});
   const [state, setState] = useState({ loading: true });
 
   const _fetchCrawlers = useCallback(() => {
     // setState((prevState) => ({ ...prevState, loading: true }));
-    Axios.get(api + "/crawler", {
-      headers: { "x-access-token": token },
-    })
+    fetchCrawlers()
       .then((res) => {
-        setCrawlers(() => res.data);
+        setCrawlers(res);
       })
       .catch((err) => {
         console.log(err);
@@ -33,14 +36,11 @@ const Admin = (props) => {
       .finally(() => {
         setState((prevState) => ({ ...prevState, loading: false }));
       });
-  }, [api, token]);
+  }, [fetchCrawlers]);
 
-
-  const start = useCallback(
+  const _start = useCallback(
     (i) => {
-      Axios.get(`${api}/crawler/${i}/start`, {
-        headers: { "x-access-token": token },
-      })
+      startCrawler(i)
         .then((res) => {
           console.log(`started ${crawlers[i].name}`);
         })
@@ -48,14 +48,12 @@ const Admin = (props) => {
           console.log(err);
         });
     },
-    [api, token, crawlers]
+    [startCrawler, crawlers]
   );
 
-  const stop = useCallback(
+  const _stop = useCallback(
     (i) => {
-      Axios.get(`${api}/crawler/${i}/stop`, {
-        headers: { "x-access-token": token },
-      })
+      stopCrawler(i)
         .then((res) => {
           console.log(`stopped ${crawlers[i].name}`);
         })
@@ -63,33 +61,31 @@ const Admin = (props) => {
           console.log(err);
         });
     },
-    [api, token, crawlers]
+    [stopCrawler, crawlers]
   );
 
-  const toggleAutorestart = useCallback(
+  const _toggleAutorestart = useCallback(
     (i) => {
-      Axios.get(`${api}/crawler/${i}/toggleAutorestart`, {
-        headers: { "x-access-token": token },
-      })
-      .then((res) => {
-        console.log(`toggled autorestart for ${crawlers[i].name}`);
-      })
-      .catch((err) => {
-        console.log(err);
-      })
+      toggleAutorestart(i)
+        .then((res) => {
+          console.log(`toggled autorestart for ${crawlers[i].name}`);
+        })
+        .catch((err) => {
+          console.log(err);
+        })
     },
-    [api, token, crawlers]
+    [toggleAutorestart, crawlers]
   )
 
   const startStopBtn = useCallback(
     (i) => {
       if (crawlers[i].startable) {
-        return <Button onClick={() => start(i)}>start</Button>;
+        return <Button onClick={() => _start(i)}>start</Button>;
       } else {
-        return <Button onClick={() => stop(i)}>stop</Button>;
+        return <Button onClick={() => _stop(i)}>stop</Button>;
       }
     },
-    [start, stop, crawlers]
+    [_start, _stop, crawlers]
   );
 
   const toggleAutostartBtn = useCallback(
@@ -97,11 +93,11 @@ const Admin = (props) => {
       return <ToggleButton
         type="checkbox"
         checked={crawlers[i].autorestart}
-        onChange={() => toggleAutorestart(i)}>
+        onChange={() => _toggleAutorestart(i)}>
         Autorestart
       </ToggleButton>
     },
-    [toggleAutorestart, crawlers]
+    [_toggleAutorestart, crawlers]
   )
 
   const progress = useCallback((p) => {
@@ -116,12 +112,12 @@ const Admin = (props) => {
   useEffect(() => {
     var interval = null;
     _fetchCrawlers();
-    if (admin)
+    if (user.admin)
       interval = setInterval(() => {
         _fetchCrawlers();
       }, 2000);
     return () => clearInterval(interval);
-  }, [admin, _fetchCrawlers]);
+  }, [user, _fetchCrawlers]);
 
   if (state.loading)
     return (

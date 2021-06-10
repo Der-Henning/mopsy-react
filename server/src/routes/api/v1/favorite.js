@@ -1,6 +1,5 @@
 const router = require("express").Router();
 const models = require("../../../models");
-const auth = require("../../../middleware/auth");
 const errors = require("../../../middleware/errors");
 const solr = require("../../../middleware/solr");
 
@@ -14,13 +13,12 @@ const requestBody = (docId) => {
 };
 
 // get favorites of logged in user as Array
-router.get("/", auth, async (req, res, next) => {
+router.get("/", async (req, res, next) => {
+  const { userId } = req.session;
   try {
-    if (!req.LoginId) return next(new errors.UnauthorizedError());
+    if (!userId) return next(new errors.UnauthorizedError());
     const favorites = await models.Favorite.findAll({
-      where: {
-        LoginId: req.LoginId,
-      },
+      where: { UserId: userId },
     });
     var response = []
     if (favorites) {
@@ -53,12 +51,13 @@ router.get("/", auth, async (req, res, next) => {
 
 // get favorite Status of Document
 // returns true if favorite else false
-router.get("/:DocId", auth, async (req, res, next) => {
+router.get("/:DocId", async (req, res, next) => {
   const { DocId } = req.params;
+  const { userId } = req.session;
   try {
-    if (!req.LoginId) return next(new errors.UnauthorizedError());
+    if (!userId) return next(new errors.UnauthorizedError());
     var fav = await models.Favorite.findOne({
-      where: { DocId: DocId, LoginId: req.LoginId },
+      where: { DocId: DocId, UserId: userId },
     });
     if (!fav) res.send(200).send(true);
     else res.send(200).send(false);
@@ -68,13 +67,14 @@ router.get("/:DocId", auth, async (req, res, next) => {
 });
 
 // Toggle Doc as favorite for logged in user
-router.put("/:DocId", auth, async (req, res, next) => {
+router.put("/:DocId", async (req, res, next) => {
   const DocId = req.params.DocId;
+  const { userId } = req.session;
 
   try {
-    if (!req.LoginId) return next(new errors.UnauthorizedError());
+    if (!userId) return next(new errors.UnauthorizedError());
     var fav = await models.Favorite.findOne({
-      where: { DocId: DocId, LoginId: req.LoginId },
+      where: { DocId: DocId, UserId: userId },
     });
     if (fav) {
       await fav.destroy();
@@ -88,7 +88,7 @@ router.put("/:DocId", auth, async (req, res, next) => {
         return next(new errors.SolrDocumentDoesntExistError());
       await models.Favorite.create({
         DocId: DocId,
-        LoginId: req.LoginId,
+        UserId: userId,
       });
       res.status(200).send(true);
     }

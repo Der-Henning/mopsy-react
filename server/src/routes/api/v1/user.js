@@ -1,9 +1,7 @@
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const models = require("../../../models");
 const config = require("../../../config");
-const auth = require("../../../middleware/auth");
 const errors = require("../../../middleware/errors");
 const nodemailer = require("nodemailer");
 const { smtp } = config;
@@ -17,161 +15,125 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// create new user
-// create new token, send as x-auth-token in header
-// token must be provided via x-access-token or authorization in header in every request
-router.get("/newtoken", async (req, res, next) => {
+// get login / admin status
+router.get("/", async (req, res, next) => {
+  const { userId } = req.session
   try {
-    const user = await models.User.create();
-    const token = jwt.sign({ UserId: user.id }, config.myprivatekey);
-    res
-      .status(200)
-      .header("x-auth-token", token)
-      .send();
+    if (userId) {
+      const user = await models.User.findByPk(userId);
+      if (user)
+        return res.send({ loggedIn: true, admin: user.admin })
+    }
+    res.send({ loggedIn: false, admin: false })
   } catch (err) {
     next(err);
   }
-});
+})
+
+// get user data
+router.get("/data", async (req, res, next) => {
+  const { userId } = req.session
+  try {
+    if (!userId) return next(new errors.UnauthorizedError());
+    const user = await models.User.findByPk(userId, {attributes: ["username", "email"]});
+    if (!user) return next(new errors.ResourceNotFoundError("User"));
+    res.send({ email: user.email })
+  } catch (err) {
+    next(err);
+  }
+})
 
 // register new user, send new x-auth-token in header
-router.post("/register", auth, async (req, res, next) => {
+router.post("/register", async (req, res, next) => {
   const { username, password, email } = req.body;
   try {
     if (!password || !username || !email)
       return next(new errors.MissingParameterError());
     const hash = await bcrypt.hash(password, 10);
-    var login = await models.Login.create({
+    var user = await models.User.create({
       username: username,
       email: email,
       password: hash,
     });
-    const token = jwt.sign(
-      { UserId: req.UserId, LoginId: login.id },
-      config.myprivatekey
-    );
-    res
-      .status(200)
-      .header("x-auth-token", token)
-      .send({ loginId: login.id });
+    req.session.userId = user.id;
+    res.send({ loggedIn: true, admin: user.admin });
   } catch (err) {
     next(err);
   }
 });
 
 // login user, send new x-auth-token in header
-router.post("/login", auth, async (req, res, next) => {
+router.post("/login", async (req, res, next) => {
   const { username, password } = req.body;
   try {
     if (!username || !password) return next(new errors.MissingParameterError());
-    const login = await models.Login.findOne({ where: { username } });
-    if (!login) return next(new errors.ResourceNotFoundError("Login"));
-    if (!bcrypt.compareSync(password, login.password))
+    const user = await models.User.findOne({ where: { username } });
+    if (!user) return next(new errors.ResourceNotFoundError("User"));
+    if (!bcrypt.compareSync(password, user.password))
       return next(new errors.AuthenticationError());
-    const token = jwt.sign(
-      { UserId: req.UserId, LoginId: login.id },
-      config.myprivatekey
-    );
-    res
-      .status(200)
-      .header("x-auth-token", token)
-      .send({ loginId: login.id, admin: login.admin });
+    req.session.userId = user.id
+    res.send({ loggedIn: true, admin: user.admin });
   } catch (err) {
     next(err);
   }
 });
 
 // logout user, send new x-auth-token in header
-router.get("/logout", auth, (req, res, next) => {
+router.get("/logout", (req, res, next) => {
   try {
-    const token = jwt.sign({ UserId: req.UserId }, config.myprivatekey);
-    res
-      .status(200)
-      .header("x-auth-token", token)
-      .send();
+    req.session.userId = null
+    res.send({ loggedIn: false, admin: false });
   } catch (err) {
     next(err);
   }
 });
 
-router.get("/loginid", auth, (req, res, next) => {
-  try {
-    res.status(200).send({ loginId: req.LoginId, admin: req.Admin });
-  } catch (err) {
-    next(err);
-  }
-});
-
-// update user information
-router.post("/:LoginId/update", auth, async (req, res, next) => {
-  const LoginId = req.params.LoginId;
+// update user data
+router.put("/data", async (req, res, next) => {
+  const { userId } = req.session;
   const { password, email } = req.body;
   try {
-    if (!req.LoginId) return next(new errors.UnauthorizedError());
+    if (!userId) return next(new errors.UnauthorizedError());
     if (!password && !email) return next(new errors.MissingParameterError());
-    var currentLogin = await models.Login.findOne({
-      where: { id: req.LoginId },
-    });
-    if (req.LoginId != LoginId && !currentLogin.admin)
-      return next(new errors.UnauthorizedError());
-    var login = await models.Login.findOne({ where: { id: LoginId } });
-    if (!login) return next(new errors.ResourceNotFoundError("Login"));
-    if (email) login.email = email;
+    var user = await models.User.findByPk(userId);
+    if (!user) return next(new errors.ResourceNotFoundError("User"));
+    if (email) user.email = email;
     if (password) {
       const hash = await bcrypt.hash(password, 10);
-      login.password = hash;
+      user.password = hash;
     }
-    await login.save();
-    res.status(200).send();
+    await user.save();
+    res.send();
   } catch (err) {
     next(err);
   }
 });
 
-// return userdata
-router.get("/:LoginId", auth, async (req, res, next) => {
-  const LoginId = req.params.LoginId;
-  try {
-    if (!req.LoginId) return next(new errors.UnauthorizedError());
-    var currentLogin = await models.Login.findOne({
-      where: { id: req.LoginId },
-    });
-    if (req.LoginId != LoginId && !currentLogin.admin)
-      return next(new errors.UnauthorizedError());
-    var login = await models.Login.findOne({
-      where: { id: LoginId },
-      attributes: ["username", "email", "admin"],
-    });
-    if (!login) return next(new errors.ResourceNotFoundError("Login"));
-    res.status(200).send(login);
-  } catch (err) {
-    next(err);
-  }
-});
-
-router.post("/changepassword", auth, async (req, res, next) => {
+router.post("/changepassword", async (req, res, next) => {
+  const { userId } = req.session;
   const { password } = req.body;
   try {
-    if (!req.LoginId) return next(new errors.UnauthorizedError());
-    var login = await models.Login.findOne({ where: { id: req.LoginId } });
+    if (!userId) return next(new errors.UnauthorizedError());
+    var user = await models.User.findByPk(userId);
     const hash = await bcrypt.hash(password, 10);
-    login.password = hash;
-    await login.save();
+    user.password = hash;
+    await user.save();
     res.status(200).send();
   } catch (err) {
     next(err);
   }
 });
 
-router.post("/forgottusername", auth, async (req, res, next) => {
+router.post("/forgottusername", async (req, res, next) => {
   const { email } = req.body;
   try {
-    const login = await models.Login.findOne({ where: { email: email } });
-    if (!login) return next(new errors.ResourceNotFoundError("E-Mail"));
+    const user = await models.User.findOne({ where: { email: email } });
+    if (!user) return next(new errors.ResourceNotFoundError("E-Mail"));
     const mailOptions = {
       from: smtp.from,
       to: email,
       subject: "Forgotten Username",
-      text: "Benutzername: " + login.username,
+      text: "Benutzername: " + user.username,
     };
     const info = await transporter.sendMail(mailOptions);
     res.status(200).send(info);
@@ -180,11 +142,11 @@ router.post("/forgottusername", auth, async (req, res, next) => {
   }
 });
 
-router.post("/forgottpassword", auth, async (req, res, next) => {
+router.post("/forgottpassword", async (req, res, next) => {
   const { email } = req.body;
   try {
-    const login = await models.Login.findOne({ where: { email: email } });
-    if (!login) return next(new errors.ResourceNotFoundError("E-Mail"));
+    const user = await models.User.findOne({ where: { email: email } });
+    if (!user) return next(new errors.ResourceNotFoundError("E-Mail"));
     const randomPassword = Math.random()
       .toString(36)
       .slice(-8);
@@ -195,8 +157,8 @@ router.post("/forgottpassword", auth, async (req, res, next) => {
       text: "Benutzername: " + randomPassword,
     };
     const hash = await bcrypt.hash(randomPassword, 10);
-    login.password = hash;
-    await login.save();
+    user.password = hash;
+    await user.save();
     const info = await transporter.sendMail(mailOptions);
     res.status(200).send(info);
   } catch (err) {
