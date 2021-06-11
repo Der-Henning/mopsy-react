@@ -38,6 +38,5 @@ const finalConfig = {
     expire: process.env.REDIS_EXPIRE || 1440              // expiration time for cached documents in minutes
   },
 };
-console.log(finalConfig.solr.searchParams);
 
 module.exports = finalConfig;

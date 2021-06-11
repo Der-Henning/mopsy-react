@@ -2,6 +2,11 @@ module.exports = (sequelize, type) => {
   var Log = sequelize.define(
     "Log",
     {
+      id: {
+        type: type.UUID,
+        defaultValue: type.UUIDV4,
+        primaryKey: true
+      },
       remoteAddress: {
         type: type.STRING,
         allowNull: false,

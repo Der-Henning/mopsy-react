@@ -10,7 +10,8 @@ import {
   Viewer,
   About,
   Account,
-  Admin
+  Admin,
+  Changes
 } from "./pages";
 import { useGlobal, SearchDataProvider } from "./context";
 
@@ -37,6 +38,7 @@ const App = (props) => {
           <Route path="/register" component={Register} />
           <Route path="/account" component={Account} />
           <Route path="/admin" component={Admin} />
+          <Route path="/changes" component={Changes} />
           <SearchDataProvider>
             <Route path="/search" component={Search} />
             <Route path="/viewer" component={Viewer} />

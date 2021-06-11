@@ -63,6 +63,18 @@ export default function useAPI(api) {
         })
     }, [api])
 
+    const getChanges = useCallback(() => {
+        return new Promise((resolve, reject) => {
+            Axios.get(api + "/changes")
+                .then(res => {
+                    resolve(res.data)
+                })
+                .catch(err => {
+                    reject(err)
+                })
+        })
+    }, [api])
+
     const toggleFavorites = useCallback((DocId) => {
         return new Promise((resolve, reject) => {
             Axios.put(api + "/favorite/" + DocId)
@@ -99,6 +111,7 @@ export default function useAPI(api) {
         setUserData,
         getFavorites,
         toggleFavorites,
+        getChanges,
         sendMail
     }
 }

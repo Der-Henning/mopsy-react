@@ -83,6 +83,9 @@ const Header = (props) => {
         ) : (
           ""
         )}
+        <NavLink to={"/changes"} className="nav-link">
+          Änderungen
+        </NavLink>
         <NavLink to={"/about"} className="nav-link">
           Über
         </NavLink>

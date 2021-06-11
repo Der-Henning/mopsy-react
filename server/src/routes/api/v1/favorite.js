@@ -35,7 +35,8 @@ router.get("/", async (req, res, next) => {
               title: doc[`title_txt_${lang}`],
               subtitle: doc[`subtitle_txt_${lang}`],
               date: doc.scanDate?.split("T")[0],
-              link: doc.link || `/api/${apiVersion}/pdf/${doc.id}`,
+              // link: doc.link || `/api/${apiVersion}/pdf/${doc.id}`,
+              link: `/api/${apiVersion}/pdf/${doc.id}`,
               deleted: doc.deleted,
               externallink: doc.externallink
             })

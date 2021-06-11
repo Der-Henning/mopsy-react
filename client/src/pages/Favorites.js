@@ -14,8 +14,8 @@ const Favorites = (props) => {
     error: null,
   });
 
-  const _fetchData = useCallback(() => {
-    setState({
+  const _fetchData = useCallback((setIsFetching = true) => {
+    if (setIsFetching) setState({
       isFetching: true,
       data: null,
       error: null,
@@ -46,7 +46,7 @@ const Favorites = (props) => {
     (DocId) => {
       toggleFavorites(DocId)
       .then(() => {
-        _fetchData();
+        _fetchData(false);
       });
     },
     [toggleFavorites, _fetchData]

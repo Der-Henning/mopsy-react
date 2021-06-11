@@ -1,5 +1,4 @@
 const router = require("express").Router();
-const bcrypt = require("bcrypt");
 const models = require("../../../models");
 const config = require("../../../config");
 const errors = require("../../../middleware/errors");
@@ -37,7 +36,7 @@ router.get("/data", async (req, res, next) => {
     if (!userId) return next(new errors.UnauthorizedError());
     const user = await models.User.findByPk(userId, {attributes: ["username", "email"]});
     if (!user) return next(new errors.ResourceNotFoundError("User"));
-    res.send({ email: user.email })
+    res.send({ username: user.username, email: user.email })
   } catch (err) {
     next(err);
   }
@@ -49,7 +48,7 @@ router.post("/register", async (req, res, next) => {
   try {
     if (!password || !username || !email)
       return next(new errors.MissingParameterError());
-    const hash = await bcrypt.hash(password, 10);
+    const hash = await models.User.hashPassword(password);
     var user = await models.User.create({
       username: username,
       email: email,
@@ -69,7 +68,7 @@ router.post("/login", async (req, res, next) => {
     if (!username || !password) return next(new errors.MissingParameterError());
     const user = await models.User.findOne({ where: { username } });
     if (!user) return next(new errors.ResourceNotFoundError("User"));
-    if (!bcrypt.compareSync(password, user.password))
+    if (!await models.User.validate(password, user.password))
       return next(new errors.AuthenticationError());
     req.session.userId = user.id
     res.send({ loggedIn: true, admin: user.admin });
@@ -99,7 +98,7 @@ router.put("/data", async (req, res, next) => {
     if (!user) return next(new errors.ResourceNotFoundError("User"));
     if (email) user.email = email;
     if (password) {
-      const hash = await bcrypt.hash(password, 10);
+      const hash = await models.User.hashPassword(password);
       user.password = hash;
     }
     await user.save();
@@ -115,7 +114,7 @@ router.post("/changepassword", async (req, res, next) => {
   try {
     if (!userId) return next(new errors.UnauthorizedError());
     var user = await models.User.findByPk(userId);
-    const hash = await bcrypt.hash(password, 10);
+    const hash = await models.User.hashPassword(password);
     user.password = hash;
     await user.save();
     res.status(200).send();
@@ -156,7 +155,7 @@ router.post("/forgottpassword", async (req, res, next) => {
       subject: "Forgotten Username",
       text: "Benutzername: " + randomPassword,
     };
-    const hash = await bcrypt.hash(randomPassword, 10);
+    const hash = await models.User.hashPassword(randomPassword);
     user.password = hash;
     await user.save();
     const info = await transporter.sendMail(mailOptions);

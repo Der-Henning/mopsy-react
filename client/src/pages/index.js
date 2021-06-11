@@ -7,6 +7,7 @@ import Viewer from "./Viewer";
 import About from "./About";
 import Account from "./Account";
 import Admin from "./Admin";
+import Changes from "./Changes";
 
 export {
   Home,
@@ -18,4 +19,5 @@ export {
   About,
   Account,
   Admin,
+  Changes
 };

@@ -2,6 +2,11 @@ module.exports = (sequelize, type) => {
   var Favorite = sequelize.define(
     "Favorite",
     {
+      id: {
+        type: type.UUID,
+        defaultValue: type.UUIDV4,
+        primaryKey: true
+      },
       DocId: {
         type: type.STRING,
         allowNull: false,
