@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Pagination, Spinner } from "react-bootstrap";
-import { Results, PDFViewer, Searchbar } from "../components";
+import { Results, PDFViewer, Searchbar, Filter } from "../components";
 import { withRouter } from "react-router-dom";
 import { useGlobal, useSearchData } from "../context";
 
@@ -13,19 +13,24 @@ const Search = (props) => {
   const q = useQuery().get("q");
   const page = parseInt(useQuery().get("page")) || 1;
 
-  const { dimensions } = useGlobal();
+  const { dimensions, setDisplayFooter } = useGlobal();
   const {
     activeDocument,
     info,
     params,
     isFetchingDocs,
     getDocumentData,
-    activeDocumentData,
-    activeDocumentPage,
+    // activeDocumentData,
+    // activeDocumentPage,
     setSearchText,
     setPage,
     setActiveDocumentPage,
   } = useSearchData();
+
+  useEffect(() => {
+    setDisplayFooter(false)
+    return () => setDisplayFooter(true)
+  }, [setDisplayFooter])
 
   useEffect(() => {
     setSearchText(q);
@@ -71,6 +76,7 @@ const Search = (props) => {
   }, [info, params.page]);
 
   const _pagination = useCallback(() => {
+    if (!info.numFound) return null
     const pages = Math.ceil(info.numFound / params.dpp);
     if (pages <= 1) return;
     const max = 8;
@@ -127,6 +133,7 @@ const Search = (props) => {
     return (
       <React.Fragment>
         {_status()}
+        <Filter />
         <Results
           setPdfPage={setPdfPage}
           // setFavorite={this.setFavorite}
@@ -162,10 +169,10 @@ const Search = (props) => {
       <div style={{ minWidth: dimensions.pdfWidth }}>
         {!isFetchingDocs && activeDocument ? (
           <PDFViewer
-            url={activeDocument ? activeDocumentData()?.link : null}
-            page={activeDocumentPage}
+            // url={activeDocument ? activeDocumentData()?.link : null}
+            // page={activeDocumentPage}
 
-            format={"pdf"}
+            // format={"pdf"}
             style={{width:dimensions.pdfWidth, height:dimensions.pdfHeight}}
           />
         ) : (

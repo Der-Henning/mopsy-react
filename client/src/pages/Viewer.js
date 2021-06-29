@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { PDFViewer } from "../components";
 import { useGlobal } from "../context";
@@ -10,7 +10,12 @@ function useQuery() {
 const Viewer = () => {
   const url = useQuery().get("url");
   const page = useQuery().get("page");
-  const { dimensions } = useGlobal();
+  const { dimensions, setDisplayFooter } = useGlobal();
+
+  useEffect(() => {
+    setDisplayFooter(false)
+    return () => setDisplayFooter(true)
+  }, [setDisplayFooter])
 
   const render = useCallback(() => {
     return (

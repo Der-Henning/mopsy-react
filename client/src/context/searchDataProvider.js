@@ -5,7 +5,7 @@ import { useGlobal } from "../context";
 const Context = React.createContext(undefined);
 
 const SearchDataProvider = ({ children }) => {
-  const { api, token } = useGlobal();
+  const { api } = useGlobal();
 
   const [documents, setDocuments] = useState([]);
   const [highlighting, setHighlighting] = useState({});
@@ -13,29 +13,37 @@ const SearchDataProvider = ({ children }) => {
   const [isFetchingDocs, setIsFetchingDocs] = useState(false);
   const [isFetchingHighs, setIsFetchingHighs] = useState(false);
   const [activeDocument, setActiveDocument] = useState(null);
-  const [activeDocumentPage, setActiveDocumentPage] = useState(1);
+  const [activeDocumentPage, _setActiveDocumentPage] = useState(1);
+  const [facets, setFacets] = useState({});
+  const [filters, setFilters] = useState([]);
   const [params, setParams] = useState({
     searchText: null,
     page: 1,
     dpp: 10,
   });
 
+  const setActiveDocumentPage = useCallback(newPage => {
+    _setActiveDocumentPage(parseInt(newPage))
+  }, [])
+
   useEffect(() => {
-    setActiveDocumentPage(1);
+    _setActiveDocumentPage(1);
   }, [activeDocument])
 
   const setData = useCallback(
     (data) => {
       const docs = data?.response?.docs || [];
       const highs = data?.highlighting || {};
+      const fac = data?.facets || {};
       const info = {
         QTime: data?.responseHeader?.QTime,
         numFound: data?.response?.numFound,
       };
       setDocuments(() => [...docs]);
       setHighlighting(() => ({ ...highs }));
+      setFacets(() => fac);
       setInfo(info);
-      setActiveDocumentPage(1);
+      _setActiveDocumentPage(1);
       if (docs.length > 0) setActiveDocument(docs[0].id);
       if (docs && params.page === 1)
         setParams((prevParams) => ({
@@ -47,12 +55,12 @@ const SearchDataProvider = ({ children }) => {
   );
 
   const fetchDocuments = useCallback(() => {
-    if (params.searchText && token) {
+    if (params.searchText) {
       setIsFetchingDocs(true);
-      Axios.get(api + "/search", {
-        params: { q: params.searchText, page: params.page },
-        headers: { "x-access-token": token },
-      })
+      Axios.post(api + "/search",
+        { fq: filters },
+        { params: { q: params.searchText, page: params.page } }
+      )
         .then((res) => {
           setData(res.data);
         })
@@ -63,19 +71,17 @@ const SearchDataProvider = ({ children }) => {
           setIsFetchingDocs(false);
         });
     } else setData(null);
-  }, [params.searchText, params.page, token, api, setData]);
+  }, [params.searchText, params.page, api, setData, filters]);
 
   const fetchHighlights = useCallback(() => {
     if (
       params.searchText &&
       activeDocument &&
-      token &&
       !highlighting[activeDocument]?.fetched
     ) {
       setIsFetchingHighs(true);
       Axios.get(api + "/search/" + activeDocument, {
         params: { q: params.searchText },
-        headers: { "x-access-token": token },
       })
         .then((res) => {
           const highs = res?.data?.highlighting;
@@ -92,7 +98,7 @@ const SearchDataProvider = ({ children }) => {
           setIsFetchingHighs(false);
         });
     }
-  }, [api, token, params.searchText, activeDocument, highlighting]);
+  }, [api, params.searchText, activeDocument, highlighting]);
 
   useEffect(() => {
     fetchHighlights();
@@ -109,7 +115,8 @@ const SearchDataProvider = ({ children }) => {
   const setSearchText = useCallback(
     (searchText) => {
       if (searchText !== params.searchText)
-        setParams((prevParams) => ({ ...prevParams, searchText, page: 1 }));
+        setFilters([]);
+      setParams((prevParams) => ({ ...prevParams, searchText, page: 1 }));
     },
     [params.searchText]
   );
@@ -159,6 +166,8 @@ const SearchDataProvider = ({ children }) => {
         params,
         isFetchingDocs,
         isFetchingHighs,
+        facets,
+        filters,
         activeDocumentData,
         getDocumentData,
         setActiveDocument,
@@ -166,6 +175,7 @@ const SearchDataProvider = ({ children }) => {
         setSearchText,
         setPage,
         setFavorite,
+        setFilters
       }}
     >
       {children}

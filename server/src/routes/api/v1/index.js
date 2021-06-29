@@ -8,10 +8,10 @@ const userRouter = require("./user");
 const favoriteRouter = require("./favorite");
 const crawlerRouter = require("./crawler");
 const pdfRouter = require("./pdf");
-const request = require("request");
+const changesRouter = require("./changes");
 
 router.get("/", function(req, res, next) {
-  res.status(200).send("Welcome to Training Sheduler API!");
+  res.status(200).send("Welcome to MOPS-Y API!");
 });
 
 router.use("/search", searchRouter);
@@ -19,6 +19,7 @@ router.use("/user", userRouter);
 router.use("/favorite", favoriteRouter);
 router.use("/crawler", crawlerRouter);
 router.use("/pdf", pdfRouter);
+router.use("/changes", changesRouter);
 
 router.use((err, req, res, next) => {
   console.log(err);

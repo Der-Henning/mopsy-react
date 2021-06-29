@@ -3,7 +3,7 @@ networks:
   dev:
 services:
   base:
-    image: node:12
+    image: node:14
     volumes:
       - .:/home/app
     working_dir: /home/app
@@ -23,3 +23,6 @@ services:
     stdin_open: true
     tty: true
     command: /bin/bash
+  schema:
+    image: crawler:dev
+    command: python buildSchema.py

@@ -1,5 +1,10 @@
 module.exports = (sequelize, type) => {
   var Query = sequelize.define("Query", {
+    id: {
+      type: type.UUID,
+      defaultValue: type.UUIDV4,
+      primaryKey: true
+    },
     query: {
       type: type.STRING,
       allowNull: false,

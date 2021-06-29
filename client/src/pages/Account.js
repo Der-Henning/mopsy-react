@@ -1,8 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { withRouter } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
-import Axios from "axios";
-import qs from "qs";
 import { Spinner } from "react-bootstrap";
 import { useGlobal } from "../context";
 
@@ -11,6 +9,7 @@ const formStyle = {
   maxWidth: "500px",
   margin: "0 auto",
   marginTop: "50px",
+  marginBottom: "50px"
 };
 
 const errorStyle = {
@@ -26,7 +25,8 @@ const successStyle = {
 };
 
 const Account = (props) => {
-  const { api, token, loginId } = useGlobal();
+  const { userAPI } = useGlobal();
+  const { user, getUserData, setUserData } = userAPI;
 
   const [state, setState] = useState({
     isFetching: true,
@@ -35,22 +35,16 @@ const Account = (props) => {
     success: false,
   });
 
-  useEffect(() => {
-    if (!loginId) props.history.push("/");
-  }, [loginId, props.history]);
-
   const _fetchData = useCallback(() => {
     setState((prevState) => ({ ...prevState, isFetching: true }));
-    Axios.get(api + "/user/" + loginId, {
-      headers: { "x-access-token": token },
-    })
-      .then((res) => {
-        setState((prevState) => ({
+    getUserData()
+      .then(res => {
+        setState(prevState => ({
           ...prevState,
           data: res.data,
           isFetching: false,
-          error: null,
-        }));
+          error: null
+        }))
       })
       .catch((err) => {
         setState((prevState) => ({
@@ -59,11 +53,12 @@ const Account = (props) => {
           error: err.response ? err.response.data : err,
         }));
       });
-  }, [api, token, loginId]);
+  }, [getUserData]);
 
   useEffect(() => {
-    if (loginId) _fetchData();
-  }, [loginId, _fetchData]);
+    if (!user.loggedIn) props.history.push("/");
+    else _fetchData();
+  }, [user, _fetchData, props.history]);
 
   const _update = useCallback(
     (e) => {
@@ -77,14 +72,7 @@ const Account = (props) => {
           ...prevState,
           error: "Passwords don't match!",
         }));
-      Axios.post(
-        api + "/user/" + loginId + "/update",
-        qs.stringify({
-          password: password,
-          email: email,
-        }),
-        { headers: { "x-access-token": token } }
-      )
+      setUserData({ password: password, email: email, })
         .then(() => {
           setState((prevState) => ({
             ...prevState,
@@ -99,7 +87,7 @@ const Account = (props) => {
           }));
         });
     },
-    [api, token, loginId]
+    [setUserData]
   );
 
   const _onChange = useCallback((e) => {

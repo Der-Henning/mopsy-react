@@ -24,13 +24,28 @@ const stateUpdaters = {
       ...prevState,
       searchText: words.join(" "),
       activeSuggestion,
+      activeSuggestionMarker: activeSuggestion,
     };
+  },
+  setActiveSuggestionMarker: (activeSuggestionMarker) => (prevState) => {
+    return {
+      ...prevState,
+      activeSuggestionMarker
+    }
+  },
+  setHasFocus: (hasFocus) => (prevState) => {
+    return {
+      ...prevState,
+      hasFocus
+    }
   },
   resetState: (searchText) => () => ({
     searchText: searchText,
     suggestions: [],
     renderSuggestions: [],
     activeSuggestion: null,
+    activeSuggestionMarker: null,
+    hasFocus: true
   }),
 };
 
@@ -44,7 +59,11 @@ const Searchbar = (props) => {
     suggestions: [],
     renderSuggestions: [],
     activeSuggestion: null,
+    activeSuggestionMarker: null,
+    hasFocus: true
   });
+
+  const [mouseOverSuggestions, setMouseOverSuggestions] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -71,8 +90,14 @@ const Searchbar = (props) => {
     }
   };
 
+  const _suggestionClick = useCallback((s) => {
+    _search(s);
+  }, [_search])
+
   const _mouseEnterHandler = useCallback((i) => {
-    setState(stateUpdaters.setActiveSuggestion(i));
+    // setState(stateUpdaters.setActiveSuggestion(i));
+    setMouseOverSuggestions(true);
+    setState(stateUpdaters.setActiveSuggestionMarker(i));
   }, []);
 
   const _changeHandler = useCallback(
@@ -89,7 +114,7 @@ const Searchbar = (props) => {
             headers: { "x-access-token": token },
           }).then((res) => {
             const suggestions = res.data;
-            if (mountedRef.current && suggestions) {
+            if (mountedRef.current && suggestions && state.searchText) {
               setState(
                 stateUpdaters.setSuggestions(
                   suggestions,
@@ -102,7 +127,7 @@ const Searchbar = (props) => {
                       <div
                         key={i}
                         onMouseEnter={_mouseEnterHandler.bind(null, i)}
-                        onClick={() => _search(words.join(" "))}
+                        onClick={() => _suggestionClick(words.join(" "))}
                       >
                         {searchText}
                         <b>{suggestion}</b>
@@ -116,7 +141,7 @@ const Searchbar = (props) => {
         }
       }
     },
-    [_mouseEnterHandler, _search, api, token]
+    [_mouseEnterHandler, api, token, state.searchText, _suggestionClick]
   );
 
   const _keyPressHandler = useCallback(
@@ -127,7 +152,7 @@ const Searchbar = (props) => {
         (e.keyCode === 38 || e.keyCode === 40) &&
         maxKey >= 0
       ) {
-        var newActiveSuggestion = state.activeSuggestion;
+        var newActiveSuggestion = state.activeSuggestionMarker;
         e.preventDefault();
         switch (e.keyCode) {
           case 38:
@@ -149,14 +174,14 @@ const Searchbar = (props) => {
         setState(stateUpdaters.setActiveSuggestion(newActiveSuggestion));
       }
     },
-    [state.activeSuggestion, state.searchText, state.suggestions.length]
+    [state.activeSuggestionMarker, state.searchText, state.suggestions.length]
   );
 
   return (
     <form
       className={styles.searchbar}
       onSubmit={_submitForm}
-      data-suggest={state.renderSuggestions.length > 0 ? "on" : "off"}
+      data-suggest={state.renderSuggestions.length > 0 && state.hasFocus ? "on" : "off"}
     >
       <input
         type="text"
@@ -167,21 +192,23 @@ const Searchbar = (props) => {
         onChange={_changeHandler}
         autoComplete="off"
         onKeyDown={_keyPressHandler}
+        onFocus={() => setState(stateUpdaters.setHasFocus(true))}
+        onBlur={() => { if (!mouseOverSuggestions) setState(stateUpdaters.setHasFocus(false)) }}
       />
       <div className={styles.suggestions}>
-        {state.renderSuggestions
+        {state.renderSuggestions && state.hasFocus
           ? state.renderSuggestions.map((s, i) => {
-              return (
-                <div
-                  key={i}
-                  className={
-                    i === state.activeSuggestion ? styles.activeSugg : ""
-                  }
-                >
-                  {s}
-                </div>
-              );
-            })
+            return (
+              <div
+                key={i}
+                className={
+                  i === state.activeSuggestionMarker ? styles.activeSugg : ""
+                }
+              >
+                {s}
+              </div>
+            );
+          })
           : ""}
       </div>
       <button type="submit">

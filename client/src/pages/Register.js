@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { withRouter } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
-import Axios from "axios";
-import qs from "qs";
 import { useGlobal } from "../context";
 
 const formStyle = {
@@ -10,6 +8,7 @@ const formStyle = {
   maxWidth: "500px",
   margin: "0 auto",
   marginTop: "50px",
+  marginBottom: "50px"
 };
 
 const errorStyle = {
@@ -19,15 +18,16 @@ const errorStyle = {
 };
 
 const Register = (props) => {
-  const { api, token, loginId, setUser } = useGlobal();
+  const { userAPI } = useGlobal();
+  const { user, register } = userAPI;
 
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (loginId) props.history.push("/");
-  }, [loginId, props.history]);
+    if (user.loggedIn) props.history.push("/");
+  }, [user, props.history]);
 
-  const register = useCallback(
+  const _register = useCallback(
     (e) => {
       e.preventDefault();
       const username = e.target.username.value;
@@ -35,30 +35,20 @@ const Register = (props) => {
       const repPassword = e.target.repPassword.value;
       const email = e.target.email.value;
       if (password !== repPassword) return setError("Passwords don't match!");
-      Axios.post(
-        api + "/user/register",
-        qs.stringify({
+      register({
           username: username,
           password: password,
           email: email,
-        }),
-        { headers: { "x-access-token": token } }
-      )
-        .then((res) => {
-          setUser({
-            token: res.headers["x-auth-token"],
-            loginId: res?.data?.loginId,
-          });
         })
         .catch((err) => {
           setError(err.response ? err.response.data?.status?.message : err);
         });
     },
-    [api, token, setUser]
+    [register]
   );
 
   return (
-    <Form onSubmit={register} style={formStyle}>
+    <Form onSubmit={_register} style={formStyle}>
       <Form.Group>
         <Form.Label>Benutzername</Form.Label>
         <Form.Control

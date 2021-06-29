@@ -1,58 +1,105 @@
 const router = require("express").Router();
 const config = require("../../../config");
 const models = require("../../../models");
-const auth = require("../../../middleware/auth");
 const errors = require("../../../middleware/errors");
 const solr = require("../../../middleware/solr");
+const Axios = require("axios")
 
 const apiVersion = "v1";
 
-const searchBody = (q, page, fq) => {
+const facetFields = async () => {
+  var facet = {
+    Keywords: {
+      type: "terms",
+      field: "Keywords_facet"
+    },
+    Authors: {
+      type: "terms",
+      field: "Authors_facet"
+    },
+    Publishers: {
+      type: "terms",
+      field: "Publishers_facet"
+    },
+    Language: {
+      type: "terms",
+      field: "language"
+    },
+    Creation: {
+      type: "terms",
+      field: "creationDate",
+      // gap: "+1DAY",
+      // end: "NOW",
+      // start: "NOW/MONTH"
+      // TZ: "America/Los_Angeles",
+    }
+  }
+
+  await Promise.all(config.crawlers.map(async crawler => {
+    try {
+      const c = await Axios.get(`http://${crawler}/fieldList`)
+      facet = {...facet, ...c.data.facets}
+    } catch (err) {
+      console.log(err);
+    }
+  }))
+
+  return facet
+}
+
+const searchBody = async (q, page, fq) => {
   return {
-    q: q,
-    rows: 10,
-    start: (page - 1) * 10,
-    fq: fq,
-    hl: "on",
-    "hl.snippets": 1,
-    "hl.fl": "title_*,subtitle_*",
-    "hl.fragsize": 0,
-    facet: "off",
+    ...config.solr.searchParams,
+    query: q,
+    limit: 10,
+    offset: (page - 1) * 10,
+    filter: fq,
+    params: {
+      hl: "on",
+      "hl.snippets": 1,
+      "hl.fl": "document,title_*,subtitle_*,tags_*,authors",
+      "hl.fragsize": 0
+    },
+    facet: await facetFields(),
   };
 };
 
 const searchPagesBody = (q, DocId) => {
   return {
-    q: q,
-    rows: 1,
-    fl: "id",
-    fq: "id:" + DocId,
-    hl: "on",
-    "hl.fl": "*_page_*",
-    "hl.snippets": 10,
-    facet: "off",
+    ...config.solr.searchParams,
+    query: q,
+    limit: 1,
+    fields: "id",
+    filter: [`id:"${DocId}"`],
+    params: {
+      hl: "on",
+      "hl.fl": "*_page_*",
+      "hl.snippets": 10,
+    }
   };
 };
 
 const selectPage = (DocId, Page) => {
   return {
-    q: `id:${DocId}`,
-    fl: `p_${Page}_page_*`,
+    query: `id:"${DocId}"`,
+    fields: `p_${Page}_page_*`,
   };
 };
 
 // search
-router.get("/", auth, async (req, res, next) => {
+router.post("/", async (req, res, next) => {
+  const { userId } = req.session;
   const q = req.query.q || "*";
   const page = req.query.page || 1;
   try {
     var fq = [];
-    if (req.body.fq) fq = [].concat(req.body.fq);
-    if (req.LoginId && req.body.onlyFavs) {
+    if (req.body.fq) {
+      const fields = await facetFields()
+      fq = req.body.fq.map(f => (`${fields[f[0]].field}:"${f[1]}"`))
+    }
+    if (userId && req.body.onlyFavs) {
       var favs = await models.Favorite.findAll({
-        where: {
-          LoginId: req.LoginId,
-        },
+        where: { UserId: userId,},
         attributes: ["DocId"],
         raw: true,
       });
@@ -61,26 +108,31 @@ router.get("/", auth, async (req, res, next) => {
         fq = fq.concat("id:(" + favorites.join(" OR ") + ")");
       }
     }
-    const data = await solr.post("/search", searchBody(q, page, fq));
+    const data = await solr.post("/search", await searchBody(q, page, fq));
     data.response.docs = data.response.docs.map((doc) => ({
         id: doc.id,
+        document: doc.document,
         title: doc["title_txt_" + doc.language],
         subtitle: doc["subtitle_txt_" + doc.language],
         authors: doc.authors,
         language: doc.language,
         creationDate: doc.creationDate,
         scanDate: doc.scanDate,
+        publicationDate: doc.publicationDate,
+        modificationDate: doc.modificationDate,
         data: doc.data,
         path: doc.path,
-        link: doc.link || `/api/${apiVersion}/pdf/${doc.id}`,
+        externallink: doc.externallink,
+        // link: doc.link || `/api/${apiVersion}/pdf/${doc.id}`,
+        link: `/api/${apiVersion}/pdf/${doc.id}`,
     }));
-    if (req.LoginId) {
+    if (userId) {
       data.response.docs = await Promise.all(
         data.response.docs.map(async (doc) => ({
           ...doc,
           isFavorite: (await models.Favorite.findOne({
             where: {
-              LoginId: req.LoginId,
+              UserId: userId,
               DocId: doc.id,
             },
           }))
@@ -102,16 +154,6 @@ router.get("/", auth, async (req, res, next) => {
         }
       });
     });
-
-    // insert dummy pdf for external developement
-    if (config.pdf_dummy) {
-      data.response.docs = data.response.docs.map((doc) => ({
-        ...doc,
-        link: config.pdf_dummy,
-      }));
-    }
-    // -----------
-
     res.status(200).send(data);
     next();
   } catch (err) {
@@ -122,7 +164,7 @@ router.get("/", auth, async (req, res, next) => {
 
 // post /search process to save search log
 // save and increment query and count
-router.get("/", (req, res, next) => {
+router.post("/", (req, res, next) => {
   const q = req.query.q;
   const page = req.query.page || 1;
 
@@ -131,7 +173,7 @@ router.get("/", (req, res, next) => {
       models.Log.create({
         query: q,
         remoteAddress: req.ip,
-        UserId: req.UserId,
+        sessionID: req.sessionID,
       });
       var terms = q.split(" ");
       for (let term of terms) {
@@ -149,12 +191,12 @@ router.get("/", (req, res, next) => {
 });
 
 // get search suggestions
-router.get("/suggest", auth, async (req, res, next) => {
+router.get("/suggest", async (req, res, next) => {
   const { q } = req.query;
 
   try {
     if (!q) return next(new errors.MissingParameterError());
-    const data = await solr.post("/suggest", { q });
+    const data = await solr.post("/suggest", { query: q });
     res.send(
       data.suggest.mySuggester[q].suggestions.map((t) =>
         t.term.replace(/<(.|\n)*?>/g, "")
@@ -166,17 +208,19 @@ router.get("/suggest", auth, async (req, res, next) => {
 });
 
 // get search pages hits for document
-router.get("/:DocId", auth, async (req, res, next) => {
+router.get("/:DocId", async (req, res, next) => {
   const q = req.query.q || "*";
   const DocId = req.params.DocId;
 
   try {
     const data = await solr.post("/search", searchPagesBody(q, DocId));
     Object.keys(data.highlighting).forEach((d) => {
+      data.highlighting[d]["pages"] = {};
       Object.keys(data.highlighting[d]).forEach((f) => {
         if (RegExp("p_[0-9]*_page_txt_[a-z]*").test(f)) {
           data.highlighting[d]["page_" + f.split("_")[1]] =
             data.highlighting[d][f];
+          data.highlighting[d]["pages"][parseInt(f.split("_")[1])] = data.highlighting[d][f];
           delete data.highlighting[d][f];
         }
         if (RegExp("[a-z]*_txt_[a-z]*").test(f)) {
@@ -193,7 +237,7 @@ router.get("/:DocId", auth, async (req, res, next) => {
 });
 
 // get page of document
-router.get("/:DocId/:page", auth, async (req, res, next) => {
+router.get("/:DocId/:page", async (req, res, next) => {
   const { DocId, page } = req.params;
   try {
     const data = await solr.post("/select", selectPage(DocId, page));
@@ -211,7 +255,7 @@ router.get("/:DocId/:page", auth, async (req, res, next) => {
 });
 
 // proxy /select request to SOLR backend
-router.post("/select", auth, async (req, res, next) => {
+router.post("/select", async (req, res, next) => {
   try {
     const data = await solr.post("/select", req.body);
     res.status(200).send(data);
@@ -221,10 +265,10 @@ router.post("/select", auth, async (req, res, next) => {
 });
 
 // get data for specific document
-router.post("/select/:DocId", auth, async (req, res, next) => {
+router.post("/select/:DocId", async (req, res, next) => {
   const { DocId } = req.params;
   try {
-    const data = await solr.post("/select", { q: "id:" + DocId });
+    const data = await solr.post("/select", { query: "id:" + DocId });
     res.send(data);
   } catch (err) {
     next(err);
@@ -232,7 +276,7 @@ router.post("/select/:DocId", auth, async (req, res, next) => {
 });
 
 // get top queries, takes count as input, default 30
-router.get("/tagcloud", auth, async (req, res, next) => {
+router.get("/tagcloud", async (req, res, next) => {
   const count = req.query.count ? parseInt(req.query.count, 10) : 30;
   try {
     const queries = await models.Query.findAll({

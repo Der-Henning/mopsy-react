@@ -2,6 +2,11 @@ module.exports = (sequelize, type) => {
   var Favorite = sequelize.define(
     "Favorite",
     {
+      id: {
+        type: type.UUID,
+        defaultValue: type.UUIDV4,
+        primaryKey: true
+      },
       DocId: {
         type: type.STRING,
         allowNull: false,
@@ -11,22 +16,22 @@ module.exports = (sequelize, type) => {
       indexes: [
         {
           unique: true,
-          fields: ["LoginId", "DocId"],
+          fields: ["UserId", "DocId"],
         },
         {
           unique: false,
-          fields: ["LoginId"],
+          fields: ["UserId"],
         },
       ],
     }
   );
 
   Favorite.associate = (models) => {
-    models.Favorite.belongsTo(models.Login, {
+    models.Favorite.belongsTo(models.User, {
       onDelete: "CASCADE",
       foreignKey: {
         allowNull: false,
-        name: "LoginId",
+        name: "UserId",
       },
     });
   };

@@ -2,6 +2,11 @@ module.exports = (sequelize, type) => {
   var Log = sequelize.define(
     "Log",
     {
+      id: {
+        type: type.UUID,
+        defaultValue: type.UUIDV4,
+        primaryKey: true
+      },
       remoteAddress: {
         type: type.STRING,
         allowNull: false,
@@ -10,6 +15,10 @@ module.exports = (sequelize, type) => {
         type: type.STRING,
         allowNull: false,
       },
+      sessionID: {
+        type: type.STRING,
+        allowNull: false
+      }
     },
     {
       indexes: [
@@ -19,25 +28,15 @@ module.exports = (sequelize, type) => {
         },
         {
           unique: false,
-          fields: ["query"],
+          fields: ["sessionID"]
         },
         {
           unique: false,
-          fields: ["UserId"],
-        },
+          fields: ["query"],
+        }
       ],
     }
   );
-
-  Log.associate = (models) => {
-    models.Log.belongsTo(models.User, {
-      onDelete: "CASCADE",
-      foreignKey: {
-        name: "UserId",
-        allowNull: false,
-      },
-    });
-  };
 
   return Log;
 };

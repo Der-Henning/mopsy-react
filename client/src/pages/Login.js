@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { withRouter } from "react-router-dom";
 import { Form, Button, Row, Col } from "react-bootstrap";
-import Axios from "axios";
-import qs from "qs";
 import { useGlobal } from "../context";
 
 const formStyle = {
@@ -10,6 +8,7 @@ const formStyle = {
   maxWidth: "500px",
   margin: "0 auto",
   marginTop: "50px",
+  marginBottom: "50px"
 };
 
 const errorStyle = {
@@ -19,7 +18,8 @@ const errorStyle = {
 };
 
 const Login = (props) => {
-  const { api, token, loginId, setUser } = useGlobal();
+  const { userAPI } = useGlobal();
+  const { user, login, sendMail } = userAPI;
 
   const [state, setState] = useState({
     error: null,
@@ -29,31 +29,18 @@ const Login = (props) => {
   });
 
   useEffect(() => {
-    if (loginId) props.history.push("/");
-  }, [loginId, props.history]);
+    if (user.loggedIn) props.history.push("/");
+  }, [user, props.history]);
 
   const _login = useCallback(
     (e) => {
       e.preventDefault();
       const username = e.target.username.value;
       const password = e.target.password.value;
-      Axios.post(
-        api + "/user/login",
-        qs.stringify({
-          username: username,
-          password: password,
-        }),
-        {
-          headers: { "x-access-token": token },
-        }
-      )
-        .then((res) => {
-          setUser({
-            token: res.headers["x-auth-token"],
-            loginId: res?.data?.loginId,
-            admin: res?.data?.admin,
-          });
-        })
+      login({
+        username: username,
+        password: password,
+      })
         .catch((err) => {
           setState((prevState) => ({
             ...prevState,
@@ -61,24 +48,14 @@ const Login = (props) => {
           }));
         });
     },
-    [api, token, setUser]
+    [login]
   );
 
   const _sendMail = useCallback(
     (e) => {
       e.preventDefault();
       const email = e.target.email.value;
-      Axios.post(
-        api +
-          "/user/" +
-          (state.forgottUsername ? "forgottusername" : "forgottpassword"),
-        qs.stringify({
-          email: email,
-        }),
-        {
-          headers: { "x-access-token": token },
-        }
-      )
+      sendMail(state.forgottUsername ? "forgottusername" : "forgottpassword", email)
         .then(() => {
           setState((prevState) => ({ ...prevState, mailSend: true }));
         })
@@ -97,7 +74,7 @@ const Login = (props) => {
             }));
         });
     },
-    [api, token, state.forgottUsername]
+    [sendMail, state.forgottUsername]
   );
 
   if (state.mailSend) {

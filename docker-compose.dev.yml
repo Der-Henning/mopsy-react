@@ -4,10 +4,10 @@ networks:
 volumes:
   db-dev:
   solr-dev:
-  redis-dev:
+  data-dev:
 services:
   mopsy:
-    image: node:12
+    image: node:14
     networks:
       dev:
     ports:
@@ -16,7 +16,9 @@ services:
     command: npm run dev
     volumes:
       - ./:/home/app
-      - /volume1/media/books:/mnt/books:ro
+      # - /volume1/media/books:/mnt/books:ro
+      - /volume1/media/bib:/mnt/books:ro
+      - data-dev:/mnt/data
     working_dir: /home/app
     environment:
       DANGEROUSLY_DISABLE_HOST_CHECK: "true"
@@ -30,13 +32,14 @@ services:
       MOPSY_SOLR_HOST: solr
       MOPSY_SOLR_PORT: 8983
       MOPSY_SOLR_CORE: mopsy
-      MOPSY_MYPRIVATEKEY: myprivatekey
       MOPSY_SESSIONKEY: myprivatekey
       MOPSY_SALT_ROUNDS: 10
       MOPSY_HITS_PER_PAGE: 10
-      MOPSY_CRAWLERS: calibre
+      MOPSY_CRAWLERS: calibre,filesystem
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
   db:
-    image: mariadb
+    image: mariadb:10.6
     networks:
       dev:
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
@@ -47,6 +50,10 @@ services:
       - MYSQL_PASSWORD=mopsy
       - MYSQL_DATABASE=mopsy
       - MYSQL_USER=mopsy
+  redis:
+    image: redis:6
+    networks:
+      dev:
   adminer:
     image: adminer
     networks:
@@ -67,17 +74,42 @@ services:
     command:
       solr-precreate mopsy /opt/solr/server/solr/configsets/myconfig
   calibre:
-    image: derhenning/mopsy-crawler:latest
+    #image: derhenning/mopsy-crawler:latest
+    image: crawler:dev
     networks:
       dev:
+    ports:
+      - 1238:80
     volumes:
-      - /volume1/media/books:/mnt/books:ro
+      # - /volume1/media/books:/mnt/books:ro
+      - /volume1/media/bib:/mnt/books:ro
+      - data-dev:/mnt/data
     environment:
       DEBUG: 'true'
       CRAWLER_TYPE: calibre
       CRAWLER_NAME: Calibre V1.0
       CALIBRE_PATH: /mnt/books
+      CRAWLER_SLEEP_TIME: 1
       MOPSY_SOLR_HOST: solr
       MOPSY_SOLR_PORT: 8983
       MOPSY_SOLR_CORE: mopsy
       MOPSY_SOLR_PREFIX: calibre
+  filesystem:
+    #image: derhenning/mopsy-crawler:latest
+    image: crawler:dev
+    networks:
+      dev:
+    volumes:
+      # - /volume1/media/books:/mnt/books:ro
+      - /volume1/media/bib:/mnt/books:ro
+      - data-dev:/mnt/data
+    environment:
+      DEBUG: 'true'
+      CRAWLER_TYPE: filesystem
+      CRAWLER_NAME: Filesystem V1.0
+      ROOT_FOLDER: /mnt/books/
+      CRAWLER_SLEEP_TIME: 1
+      MOPSY_SOLR_HOST: solr
+      MOPSY_SOLR_PORT: 8983
+      MOPSY_SOLR_CORE: mopsy
+      MOPSY_SOLR_PREFIX: files

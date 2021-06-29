@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import { Header } from "./components";
+import { Header, Footer } from "./components";
 import {
   Home,
   Search,
@@ -10,17 +10,23 @@ import {
   Viewer,
   About,
   Account,
-  Admin
+  Admin,
+  Changes
 } from "./pages";
 import { useGlobal, SearchDataProvider } from "./context";
 
 const App = (props) => {
-  const { theme, dimensions } = useGlobal();
+  const { theme, displayFooter } = useGlobal();
 
   return (
     <div
       data-theme={theme === "light" ? "light" : "dark"}
-      style={dimensions.showPdfViewer ? {} : { overflowY: "auto" }}
+      style={{
+        overflowY: displayFooter ? "auto" : "" ,
+        display: "flex",
+        flexDirection: "column",
+        height: `calc(100vh)`
+      }}
     >
       <Router>
         <Header visible={true} />
@@ -32,12 +38,14 @@ const App = (props) => {
           <Route path="/register" component={Register} />
           <Route path="/account" component={Account} />
           <Route path="/admin" component={Admin} />
+          <Route path="/changes" component={Changes} />
           <SearchDataProvider>
             <Route path="/search" component={Search} />
             <Route path="/viewer" component={Viewer} />
           </SearchDataProvider>
         </Switch>
       </Router>
+      <Footer style={{ marginTop: "auto" }} visible={displayFooter} />
     </div>
   );
 };

@@ -1,22 +1,18 @@
 import React, { useEffect, useCallback, useRef } from "react";
-import { Navbar, Button, Nav, Form } from "react-bootstrap";
-import { NavLink, Link } from "react-router-dom";
+import { Navbar, Nav } from "react-bootstrap";
+import { NavLink } from "react-router-dom";
 import { withRouter } from "react-router-dom";
-import Axios from "axios";
 import { Menu, Sun, Moon, LogOut } from "react-feather";
 import { useGlobal } from "../context";
 
 const Header = (props) => {
   const {
-    api,
-    token,
-    loginId,
-    admin,
     theme,
-    setUser,
     setHeaderHeight,
     toggleTheme,
+    userAPI
   } = useGlobal();
+  const { user, logout } = userAPI;
   const { visible, sticky } = props;
   const bar = useRef();
 
@@ -25,78 +21,60 @@ const Header = (props) => {
     setHeaderHeight(height);
   }, [setHeaderHeight]);
 
-  const logout = useCallback(() => {
-    Axios.get(api + "/user/logout", {
-      headers: { "x-access-token": token },
-    }).then((res) => {
-      setUser({token: res.headers["x-auth-token"], loginId: null, admin: false});
-    });
-  }, [api, token, setUser]);
+  const _logout = useCallback(() => {
+    logout().catch(err => { })
+  }, [logout])
 
   const _getLoginForm = useCallback(() => {
-    if (loginId)
+    if (user.loggedIn)
       return (
         <React.Fragment>
-          <Button
-            variant="link"
-            style={{ textDecoration: "none" }}
-            onClick={() => {
-              props.history.push("/account");
-            }}
-          >
+          <Nav.Link to={"/account"} as={NavLink} href={"/account"} >
             Konto
-          </Button>
-          <Button variant="link" onClick={logout}>
+          </Nav.Link>
+          <Nav.Link onClick={() => _logout()} as={Nav.Link} href={"#"} >
             <LogOut />
-          </Button>
+          </Nav.Link>
         </React.Fragment>
       );
     return (
       <React.Fragment>
-        <Button
-          variant="link"
-          style={{ textDecoration: "none" }}
-          onClick={() => {
-            props.history.push("/login");
-          }}
-        >
+        <Nav.Link to={"/login"} as={NavLink} href={"/login"} >
           Login
-        </Button>
-        <Button
-          onClick={() => {
-            props.history.push("/register");
-          }}
-          variant="outline-primary"
-        >
+        </Nav.Link>
+        <Nav.Link to={"/register"} as={NavLink} href={"/register"} >
           Sign in
-        </Button>
+        </Nav.Link>
       </React.Fragment>
     );
-  }, [loginId, logout, props.history]);
+  }, [user, _logout]);
 
   const _getNavbarContent = useCallback(() => {
     return (
       <React.Fragment>
-        {loginId ? (
-          <NavLink to={"/favorites"} className="nav-link">
+        {user.loggedIn ? (
+          <Nav.Link to={"/favorites"} as={NavLink} href={"/favorites"}>
             Favoriten
-          </NavLink>
+          </Nav.Link>
         ) : (
           ""
         )}
-        {admin ? (
-          <NavLink to={"/admin"} className="nav-link">
+        {user.admin ? (
+          <Nav.Link to={"/admin"} as={NavLink} href={"/admin"}>
             Admin
-          </NavLink>
+          </Nav.Link>
         ) : (
           ""
         )}
-        <NavLink to={"/about"} className="nav-link">
+        <Nav.Link to={"/changes"} as={NavLink} href={"/changes"}>
+          Änderungen
+        </Nav.Link>
+        <Nav.Link to={"/about"} as={NavLink} href={"/about"}>
           Über
-        </NavLink>
+        </Nav.Link>
       </React.Fragment>
     );
-  }, [loginId, admin]);
+  }, [user]);
 
   if (visible)
     return (
@@ -106,33 +84,25 @@ const Header = (props) => {
         expand="md"
         sticky={sticky ? "top" : ""}
         ref={bar}
+        as="header"
+        collapseOnSelect
       >
-        <Navbar.Brand as={Link} to={"/"}>
+        <Navbar.Brand to={"/"} as={NavLink} href={"/"}>
           MOPS-Y{" "}
           <i>
             <small>Search</small>
           </i>
         </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-nav-bar-nav" children={<Menu />} />
-        <Navbar.Collapse id="basic-navbar-nav">
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" children={<Menu />} />
+        <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
-            {/* <NavLink to={"/"} className="nav-link">
-                <Home />
-              </NavLink> */}
             {_getNavbarContent()}
           </Nav>
           <Nav>
-            <Form inline>
-              {_getLoginForm()}
-              <Button
-                variant="link"
-                onClick={() => {
-                  toggleTheme();
-                }}
-              >
-                {theme === "dark" ? <Sun /> : <Moon />}
-              </Button>
-            </Form>
+            {_getLoginForm()}
+            <Nav.Link onClick={() => toggleTheme()} as={Nav.Link} href={"#"} >
+              {theme === "dark" ? <Sun /> : <Moon />}
+            </Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Navbar>

@@ -1,12 +1,12 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { withRouter } from "react-router-dom";
-import { Table, Spinner, Button } from "react-bootstrap";
-import Axios from "axios";
-import { Trash2, ExternalLink } from "react-feather";
+import { Table, Spinner } from "react-bootstrap";
 import { useGlobal } from "../context";
+import { OpenExternalLinkButton, DeleteButton } from "../components";
 
 const Favorites = (props) => {
-  const { api, token, loginId, dimensions } = useGlobal();
+  const { userAPI } = useGlobal();
+  const { user, getFavorites, toggleFavorites } = userAPI;
 
   const [state, setState] = useState({
     isFetching: true,
@@ -14,23 +14,17 @@ const Favorites = (props) => {
     error: null,
   });
 
-  useEffect(() => {
-    if (!loginId) props.history.push("/");
-  });
-
-  const _fetchData = useCallback(() => {
-    setState({
+  const _fetchData = useCallback((setIsFetching = true) => {
+    if (setIsFetching) setState({
       isFetching: true,
       data: null,
       error: null,
     });
-    Axios.get(api + "/favorite", {
-      headers: { "x-access-token": token },
-    })
+    getFavorites()
       .then((res) => {
         setState({
           isFetching: false,
-          data: res.data,
+          data: res,
           error: null,
         });
       })
@@ -41,25 +35,21 @@ const Favorites = (props) => {
           error: err.response ? err.response.data?.status?.message : err,
         });
       });
-  }, [api, token]);
+  }, [getFavorites]);
 
   useEffect(() => {
-    if (loginId) _fetchData();
-  }, [loginId, _fetchData]);
+    if (!user.loggedIn) props.history.push("/");
+    else _fetchData();
+  }, [user, props.history, _fetchData]);
 
   const _removeFavorite = useCallback(
     (DocId) => {
-      Axios.put(
-        api + "/favorite/" + DocId,
-        {},
-        {
-          headers: { "x-access-token": token },
-        }
-      ).then(() => {
-        _fetchData();
-      });
+      toggleFavorites(DocId)
+        .then(() => {
+          _fetchData(false);
+        });
     },
-    [api, token, _fetchData]
+    [toggleFavorites, _fetchData]
   );
 
   const _body = useCallback(() => {
@@ -81,7 +71,7 @@ const Favorites = (props) => {
         <thead>
           <tr>
             <th></th>
-            <th>Regelung</th>
+            <th>Dokument</th>
             <th>Stand</th>
             <th></th>
           </tr>
@@ -91,32 +81,23 @@ const Favorites = (props) => {
             return (
               <tr key={doc.DocId}>
                 <td>
-                  <Button
-                    variant="link"
-                    onClick={() =>
-                      props.history.push(
-                        `/viewer?url=${doc.link}`
-                      )
-                    }
-                  >
-                    <ExternalLink />
-                  </Button>
+                  {doc.deleted ?
+                    "gelöscht" :
+                    <OpenExternalLinkButton link={doc.externallink || doc.link} />
+                  }
                 </td>
                 <td>
-                  <span>{doc.title}</span>
+                  <span>{doc.document ? `${doc.document} - ` : ''}{doc.title}</span>
                   <br />
                   <small>{doc.subtitle}</small>
                 </td>
                 <td style={{ whiteSpace: "nowrap" }}>{doc.date}</td>
                 <td>
-                  <Button
-                    variant="link"
+                  <DeleteButton
                     onClick={() => {
                       _removeFavorite(doc.DocId);
                     }}
-                  >
-                    <Trash2 />
-                  </Button>
+                  />
                 </td>
               </tr>
             );
@@ -124,14 +105,14 @@ const Favorites = (props) => {
         </tbody>
       </Table>
     );
-  }, [_removeFavorite, state, props.history]);
+  }, [_removeFavorite, state]);
 
   return (
     <div
-      style={{
-        height: dimensions.pdfHeight,
-        overflowY: "auto",
-      }}
+    // style={{
+    //   height: dimensions.pdfHeight,
+    //   overflowY: "auto",
+    // }}
     >
       {_body()}
     </div>

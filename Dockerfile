@@ -1,5 +1,5 @@
 # Use NodeJS v12 as base image
-FROM node:12 AS builder
+FROM node:14 AS builder
 
 # Set Working directory
 WORKDIR /usr/mopsy
@@ -9,7 +9,8 @@ COPY . .
 RUN npm ci
 RUN npm run build
 
-FROM node:12-alpine
+FROM node:14
+
 WORKDIR /usr/mopsy
 ENV NODE_ENV=production
 
@@ -19,8 +20,8 @@ RUN mkdir /client
 COPY ./server/package.json ./server/
 COPY ./server/package-lock.json ./server/
 COPY ./solr_configset ./solr_configset
-COPY --from=builder /usr/mopsy/client/build client/build
-COPY --from=builder /usr/mopsy/server/build server/build
+COPY --from=builder /usr/mopsy/client/build ./client/build
+COPY --from=builder /usr/mopsy/server/build ./server/build
 
 WORKDIR /usr/mopsy/server
 
