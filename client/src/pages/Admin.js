@@ -14,7 +14,7 @@ const styles = {
 };
 
 const Admin = (props) => {
-  const { api, userAPI, dimensions } = useGlobal();
+  const { api, userAPI } = useGlobal();
   const { user } = userAPI;
   const { fetchCrawlers,
     startCrawler,
@@ -116,6 +116,7 @@ const Admin = (props) => {
       interval = setInterval(() => {
         _fetchCrawlers();
       }, 2000);
+    else props.history.push("/");
     return () => clearInterval(interval);
   }, [user, _fetchCrawlers]);
 
@@ -135,10 +136,10 @@ const Admin = (props) => {
   if (crawlers) {
     return (
       <div
-        style={{
-          height: dimensions.pdfHeight,
-          overflowY: "auto",
-        }}
+        // style={{
+        //   height: dimensions.pdfHeight,
+        //   overflowY: "auto",
+        // }}
       >
         {Object.keys(crawlers).map((key) => (
           <div key={key} style={styles}>

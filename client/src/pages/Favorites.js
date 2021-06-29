@@ -5,8 +5,8 @@ import { useGlobal } from "../context";
 import { OpenExternalLinkButton, DeleteButton } from "../components";
 
 const Favorites = (props) => {
-  const { dimensions, userAPI } = useGlobal();
-  const {user, getFavorites, toggleFavorites} = userAPI;
+  const { userAPI } = useGlobal();
+  const { user, getFavorites, toggleFavorites } = userAPI;
 
   const [state, setState] = useState({
     isFetching: true,
@@ -45,9 +45,9 @@ const Favorites = (props) => {
   const _removeFavorite = useCallback(
     (DocId) => {
       toggleFavorites(DocId)
-      .then(() => {
-        _fetchData(false);
-      });
+        .then(() => {
+          _fetchData(false);
+        });
     },
     [toggleFavorites, _fetchData]
   );
@@ -109,10 +109,10 @@ const Favorites = (props) => {
 
   return (
     <div
-      style={{
-        height: dimensions.pdfHeight,
-        overflowY: "auto",
-      }}
+    // style={{
+    //   height: dimensions.pdfHeight,
+    //   overflowY: "auto",
+    // }}
     >
       {_body()}
     </div>

@@ -20,6 +20,7 @@ const apiVersion = "v1";
 server.use(session({
   secret: config.sessionkey,
   resave: false,
+  saveUninitialized: true,
   store: new SequelizeStore({
     db: models.sequelize
   }),

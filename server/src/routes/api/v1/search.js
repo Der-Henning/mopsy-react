@@ -70,7 +70,7 @@ const searchPagesBody = (q, DocId) => {
     query: q,
     limit: 1,
     fields: "id",
-    filter: ["id:" + DocId],
+    filter: [`id:"${DocId}"`],
     params: {
       hl: "on",
       "hl.fl": "*_page_*",
@@ -81,7 +81,7 @@ const searchPagesBody = (q, DocId) => {
 
 const selectPage = (DocId, Page) => {
   return {
-    query: `id:${DocId}`,
+    query: `id:"${DocId}"`,
     fields: `p_${Page}_page_*`,
   };
 };

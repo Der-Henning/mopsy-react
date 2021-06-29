@@ -9,6 +9,7 @@ const formStyle = {
   maxWidth: "500px",
   margin: "0 auto",
   marginTop: "50px",
+  marginBottom: "50px"
 };
 
 const errorStyle = {

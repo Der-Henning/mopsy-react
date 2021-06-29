@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useRef } from "react";
-import { Navbar, Button, Nav, Form } from "react-bootstrap";
-import { NavLink, Link } from "react-router-dom";
+import { Navbar, Nav } from "react-bootstrap";
+import { NavLink } from "react-router-dom";
 import { withRouter } from "react-router-dom";
 import { Menu, Sun, Moon, LogOut } from "react-feather";
 import { useGlobal } from "../context";
@@ -29,66 +29,49 @@ const Header = (props) => {
     if (user.loggedIn)
       return (
         <React.Fragment>
-          <Button
-            variant="link"
-            style={{ textDecoration: "none" }}
-            onClick={() => {
-              props.history.push("/account");
-            }}
-          >
+          <Nav.Link to={"/account"} as={NavLink} href={"/account"} >
             Konto
-          </Button>
-          <Button variant="link" onClick={_logout}>
+          </Nav.Link>
+          <Nav.Link onClick={() => _logout()} as={Nav.Link} href={"#"} >
             <LogOut />
-          </Button>
+          </Nav.Link>
         </React.Fragment>
       );
     return (
       <React.Fragment>
-        <Button
-          variant="link"
-          style={{ textDecoration: "none" }}
-          onClick={() => {
-            props.history.push("/login");
-          }}
-        >
+        <Nav.Link to={"/login"} as={NavLink} href={"/login"} >
           Login
-        </Button>
-        <Button
-          onClick={() => {
-            props.history.push("/register");
-          }}
-          variant="outline-primary"
-        >
+        </Nav.Link>
+        <Nav.Link to={"/register"} as={NavLink} href={"/register"} >
           Sign in
-        </Button>
+        </Nav.Link>
       </React.Fragment>
     );
-  }, [user, _logout, props.history]);
+  }, [user, _logout]);
 
   const _getNavbarContent = useCallback(() => {
     return (
       <React.Fragment>
         {user.loggedIn ? (
-          <NavLink to={"/favorites"} className="nav-link">
+          <Nav.Link to={"/favorites"} as={NavLink} href={"/favorites"}>
             Favoriten
-          </NavLink>
+          </Nav.Link>
         ) : (
           ""
         )}
         {user.admin ? (
-          <NavLink to={"/admin"} className="nav-link">
+          <Nav.Link to={"/admin"} as={NavLink} href={"/admin"}>
             Admin
-          </NavLink>
+          </Nav.Link>
         ) : (
           ""
         )}
-        <NavLink to={"/changes"} className="nav-link">
+        <Nav.Link to={"/changes"} as={NavLink} href={"/changes"}>
           Änderungen
-        </NavLink>
-        <NavLink to={"/about"} className="nav-link">
+        </Nav.Link>
+        <Nav.Link to={"/about"} as={NavLink} href={"/about"}>
           Über
-        </NavLink>
+        </Nav.Link>
       </React.Fragment>
     );
   }, [user]);
@@ -101,33 +84,25 @@ const Header = (props) => {
         expand="md"
         sticky={sticky ? "top" : ""}
         ref={bar}
+        as="header"
+        collapseOnSelect
       >
-        <Navbar.Brand as={Link} to={"/"}>
+        <Navbar.Brand to={"/"} as={NavLink} href={"/"}>
           MOPS-Y{" "}
           <i>
             <small>Search</small>
           </i>
         </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-nav-bar-nav" children={<Menu />} />
-        <Navbar.Collapse id="basic-navbar-nav">
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" children={<Menu />} />
+        <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
-            {/* <NavLink to={"/"} className="nav-link">
-                <Home />
-              </NavLink> */}
             {_getNavbarContent()}
           </Nav>
           <Nav>
-            <Form inline>
-              {_getLoginForm()}
-              <Button
-                variant="link"
-                onClick={() => {
-                  toggleTheme();
-                }}
-              >
-                {theme === "dark" ? <Sun /> : <Moon />}
-              </Button>
-            </Form>
+            {_getLoginForm()}
+            <Nav.Link onClick={() => toggleTheme()} as={Nav.Link} href={"#"} >
+              {theme === "dark" ? <Sun /> : <Moon />}
+            </Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Navbar>

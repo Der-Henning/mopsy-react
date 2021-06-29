@@ -16,13 +16,13 @@ import {
 import { useGlobal, SearchDataProvider } from "./context";
 
 const App = (props) => {
-  const { theme, dimensions, displayFooter } = useGlobal();
+  const { theme, displayFooter } = useGlobal();
 
   return (
     <div
       data-theme={theme === "light" ? "light" : "dark"}
       style={{
-        overflowY: dimensions.showPdfViewer ? "" : "auto" ,
+        overflowY: displayFooter ? "auto" : "" ,
         display: "flex",
         flexDirection: "column",
         height: `calc(100vh)`

@@ -32,7 +32,7 @@ const FilterButton = ({ facet, value }) => {
     return (
         <Button
             style={style}
-            variant={checkFilter([facet, value]) ? "secondary" : "outline-secondary"}
+            variant={checkFilter([facet, value]) ? "primary" : "outline-primary"}
             value={facet}
             onClick={() => { toggleFilter([facet, value]) }}>
             {value}
@@ -40,17 +40,12 @@ const FilterButton = ({ facet, value }) => {
     )
 }
 
-const SmallFacet = ({setOpen}) => {
+const SmallFacet = () => {
     const { filters } = useSearchData();
 
-    return (
-        <div style={{width: "100%", position: "relative"}}>
-            <Button variant="link" onClick={() => setOpen(true)}>Filter</Button>
-            {filters.map(f => (
-                <FilterButton key={f[1]} facet={f[0]} value={f[1]} />
-            ))}
-        </div>
-    )
+    return filters.map(f => (
+        <FilterButton key={f[1]} facet={f[0]} value={f[1]} />
+    ))
 }
 
 const FullFacet = ({ facet }) => {
@@ -59,7 +54,7 @@ const FullFacet = ({ facet }) => {
     if (facets[facet]["buckets"].length > 0)
         return (
             <div>
-                <p style={{margin: "0.2rem"}}><strong>{facet}:</strong></p>
+                <p style={{ margin: "0.2rem" }}><strong>{facet}:</strong></p>
                 {facets[facet]["buckets"].map(b =>
                 (
                     <FilterButton key={b.val} facet={facet} value={b.val} />
@@ -70,24 +65,28 @@ const FullFacet = ({ facet }) => {
 }
 
 const Filter = (props) => {
-    const { facets } = useSearchData();
+    const { facets, filters } = useSearchData();
     const [open, setOpen] = useState(false);
+
+    const toggleFilter = useCallback(() => {
+        setOpen(open ? false : true)
+    }, [open])
 
     if (facets) {
         delete facets.count
         delete facets.Creation
-        if (open)
-            return (
-                <div>
-                    {Object.keys(facets).map(f => (<FullFacet key={f} facet={f} />))}
-                </div>
-            )
-        else
-            return (
-                <div>
-                    <SmallFacet setOpen={setOpen}/>
-                </div>
-            )
+
+        return (
+            <div style={{ width: "100%" }}>
+                <Button variant="link" onClick={() => toggleFilter()} style={{textDecoration: 'none'}}>
+                    Filter{filters.length > 0 ? ` (${filters.length})` : ''} {open ? '∧' : '∨'}
+                </Button>
+                {open ?
+                    Object.keys(facets).map(f => (<FullFacet key={f} facet={f} />)) :
+                    <SmallFacet />
+                }
+            </div>
+        )
     }
 }
 

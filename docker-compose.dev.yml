@@ -36,7 +36,7 @@ services:
       MOPSY_SESSIONKEY: myprivatekey
       MOPSY_SALT_ROUNDS: 10
       MOPSY_HITS_PER_PAGE: 10
-      MOPSY_CRAWLERS: calibre
+      MOPSY_CRAWLERS: calibre,filesystem
       REDIS_HOST: redis
       REDIS_PORT: 6379
   db:
@@ -95,3 +95,22 @@ services:
       MOPSY_SOLR_PORT: 8983
       MOPSY_SOLR_CORE: mopsy
       MOPSY_SOLR_PREFIX: calibre
+  filesystem:
+    #image: derhenning/mopsy-crawler:latest
+    image: crawler:dev
+    networks:
+      dev:
+    volumes:
+      # - /volume1/media/books:/mnt/books:ro
+      - /volume1/media/bib:/mnt/books:ro
+      - data-dev:/mnt/data
+    environment:
+      DEBUG: 'true'
+      CRAWLER_TYPE: filesystem
+      CRAWLER_NAME: Filesystem V1.0
+      ROOT_FOLDER: /mnt/books/
+      CRAWLER_SLEEP_TIME: 1
+      MOPSY_SOLR_HOST: solr
+      MOPSY_SOLR_PORT: 8983
+      MOPSY_SOLR_CORE: mopsy
+      MOPSY_SOLR_PREFIX: files

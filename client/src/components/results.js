@@ -21,11 +21,11 @@ const Results = (props) => {
   useEffect(() => {
     if (documents.length > 0)
       setActiveDocument(activeDocument ? activeDocument : documents[0].id);
-    if (activeDocument) {
+    if (activeDocument && activeDocument !== documents[0].id) {
       const activeCard = document.querySelector(".restore-" + activeDocument);
       if (activeCard) {
         activeCard.scrollIntoView();
-        window.scrollBy(0, -700);
+        // window.scrollBy(0, -700);
       }
     }
     // eslint-disable-next-line

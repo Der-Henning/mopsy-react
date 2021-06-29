@@ -29,7 +29,7 @@ router.get("/:DocId", async (req, res, next) => {
   try {
     if (format === "txt") {
       const data = await solr.post("/select", {
-        query: `id:${DocId}`,
+        query: `id:"${DocId}"`,
         fields: `*_page_*`,
       });
       if ((data.response.numFound = 0))
@@ -47,7 +47,7 @@ router.get("/:DocId", async (req, res, next) => {
         if (err) console.log(err);
         if (!doc) {
           const data = await solr.post("/select", {
-            query: `id:${DocId}`,
+            query: `id:"${DocId}"`,
             fields: `link,file`,
           });
           if ((data.response.numFound = 0))

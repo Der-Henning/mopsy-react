@@ -72,6 +72,29 @@ const PDFViewer = () => {
         return document.content.reduce((total, doc) => (total + doc.numPages), 0)
     }, [document])
 
+    // useEffect(() => {
+    //     console.log(activeDocumentPage)
+    // }, [activeDocumentPage])
+
+    // useEffect(() => {
+    //     const { content } = document;
+    //     if (content && pdfViewerLoaded) {
+    //         eventBus.on('pagechanging', e => {
+    //             console.log(`e.pageNumber: ${e.pageNumber}`)
+    //             var docNum = 0;
+    //             var pageNum = e.pageNumber;
+    //             while (docNum < currentDoc) {
+    //                 pageNum += content[docNum].numPages;
+    //                 docNum += 1;
+    //             }
+    //             console.log(`pageNum: ${pageNum}`)
+    //             console.log(`active: ${activeDocumentPage}`)
+    //             if (pageNum !== activeDocumentPage)
+    //                 setActiveDocumentPage(pageNum)
+    //         });
+    //     }
+    // }, [document, pdfViewerLoaded, activeDocumentPage, setActiveDocumentPage, currentDoc])
+
     const initPdfViewer = useCallback(() => {
         if (viewerContainer.current) {
             pdfViewer = new pdfjsViewer.PDFSinglePageViewer({
@@ -150,7 +173,7 @@ const PDFViewer = () => {
                         })
                     }
                 }
-            } catch (e) { console.log(e) }
+            } catch (e) { }
         }
     }, [document, activeDocument, activeDocumentPage, pdfViewerLoaded, highlightMatches, getPageCount, currentDoc])
 
@@ -283,9 +306,11 @@ const PDFViewer = () => {
                     position: "absolute",
                     display: document.content && !document.loading ? "flex" : "none"
                 }}>
-                <div ref={viewer} style={{
-                    position: "relative", width: "100%", height: "100%",
-                }} />
+                <div ref={viewer}
+                    style={{
+                        position: "relative", width: "100%", height: "100%",
+                    }}
+                />
             </div>
             <div style={{
                 display: progress < 100 ? "block" : "none",

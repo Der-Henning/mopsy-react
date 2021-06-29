@@ -5,7 +5,7 @@ import { useGlobal } from "../context";
 import { OpenExternalLinkButton, FavoriteButton } from "../components";
 
 const Changes = (props) => {
-    const { dimensions, userAPI } = useGlobal();
+    const { userAPI } = useGlobal();
     const { user, getChanges, toggleFavorites } = userAPI;
 
     const [state, setState] = useState({
@@ -105,10 +105,10 @@ const Changes = (props) => {
 
     return (
         <div
-            style={{
-                height: dimensions.pdfHeight,
-                overflowY: "auto",
-            }}
+            // style={{
+            //     height: dimensions.pdfHeight,
+            //     overflowY: "auto",
+            // }}
         >
             {_body()}
         </div>
