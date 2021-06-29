@@ -32,7 +32,6 @@ services:
       MOPSY_SOLR_HOST: solr
       MOPSY_SOLR_PORT: 8983
       MOPSY_SOLR_CORE: mopsy
-      MOPSY_MYPRIVATEKEY: myprivatekey
       MOPSY_SESSIONKEY: myprivatekey
       MOPSY_SALT_ROUNDS: 10
       MOPSY_HITS_PER_PAGE: 10
@@ -40,7 +39,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
   db:
-    image: mariadb:10
+    image: mariadb:10.6
     networks:
       dev:
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
@@ -52,7 +51,7 @@ services:
       - MYSQL_DATABASE=mopsy
       - MYSQL_USER=mopsy
   redis:
-    image: redis
+    image: redis:6
     networks:
       dev:
   adminer:

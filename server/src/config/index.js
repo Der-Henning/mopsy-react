@@ -3,7 +3,6 @@ const finalConfig = {
   app_name: process.env.MOPSY_APP_NAME || "MOPSY Search",
   port: process.env.MOPSY_PORT || 4000,
   json_indentation: process.env.MOPSY_JSON_IDENTATION || 4,
-  myprivatekey: process.env.MOPSY_MYPRIVATEKEY || "myprivatekey",
   sessionkey: process.env.MOPSY_SESSIONKEY || "myprivatekey",
   salt_rounds: process.env.MOPSY_SALT_ROUNDS || 10,
   hits_per_page: process.env.MOPSY_HITS_PER_PAGE || 10,

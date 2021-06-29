@@ -1,17 +1,17 @@
 version: '3'
 volumes:
-  db:
-  solr:
-  solr_config:
-  data:
+  db:     # volume for database - it is recomended to mount an external folder
+  solr:   # volume for solr index - it is recommendet to mount an external folder
+  data:   # volume for cached pdf files. only applies for web scraping crawlers
 services:
   web:
     image: derhenning/mopsy:latest
     restart: always
     ports:
-      - 80:80
+      - 80:80     ## it is recomended to use a reverse proxy with ssl encryption
     volumes:
-      - /volume1/media/books:/mnt/books:ro
+      - /volume1/books:/mnt/calibre:ro    ## change /volume1/books to path to your calibre db folder    only for calibre crawler
+      - /volume1/pdf:/mnt/filesystem:ro   ## change /volume1/pdf to path to your folder with pdf files  only for filesystem crawler
       - data:/mnt/data:ro
     environment:
       MOPSY_APP_NAME: MOPSY Search
@@ -25,15 +25,14 @@ services:
       MOPSY_SOLR_HOST: solr
       MOPSY_SOLR_PORT: 8983
       MOPSY_SOLR_CORE: mopsy
-      MOPSY_MYPRIVATEKEY: myprivatekey
       MOPSY_SESSIONKEY: myprivatekey
       MOPSY_SALT_ROUNDS: 10
       MOPSY_HITS_PER_PAGE: 10
-      MOPSY_CRAWLERS: calibre,filesystem
+      MOPSY_CRAWLERS: calibre,filesystem    ## hostnames of used crawlers
       REDIS_HOST: redis
       REDIS_PORT: 6379
   db:
-    image: mariadb
+    image: mariadb:10.6
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     volumes:
       - db:/var/lib/mysql:rw
@@ -43,7 +42,7 @@ services:
       MYSQL_DATABASE: mopsy
       MYSQL_USER: mopsy
   redis:
-    image: redis
+    image: redis:6
   solr:
     image: solr:8.6
     restart: always
@@ -51,34 +50,38 @@ services:
       - SOLR_HEAP=2g
     volumes:
       - solr:/var/solr:rw
-      - solr_config:/opt/solr/server/solr/configsets/myconfig:ro
+      - ./solr_configset:/opt/solr/server/solr/configsets/myconfig:ro
     command:
       solr-precreate mopsy /opt/solr/server/solr/configsets/myconfig
+
+###       Crawler for Calibre DB   --   delete if not needed
   calibre:
     image: derhenning/mopsy-crawler:latest
     volumes:
-      - /volume1/media/books:/mnt/books:ro
+      - /volume1/books:/mnt/calibre:ro    ### change /volume1/books to path to your calibre db folder
       - data:/mnt/data:rw
     environment:
       CRAWLER_TYPE: calibre
       CRAWLER_NAME: Calibre V1.0
-      CALIBRE_PATH: /mnt/books
+      CALIBRE_PATH: /mnt/calibre
+      CRAWLER_SLEEP_TIME: 1
       MOPSY_SOLR_HOST: solr
       MOPSY_SOLR_PORT: 8983
       MOPSY_SOLR_CORE: mopsy
       MOPSY_SOLR_PREFIX: calibre
+
+###       Crawler for pdf files on filesystem. Only Meta data saved in the pdf files will be used
   filesystem:
     image: derhenning/mopsy-crawler:latest
     networks:
       dev:
     volumes:
-      - /volume1/media/bib:/mnt/books:ro
+      - /volume1/pdf:/mnt/filesystem:ro    ### Change /volume1/pdf to path to your folder with pdf files
       - data-dev:/mnt/data:rw
     environment:
-      DEBUG: 'true'
       CRAWLER_TYPE: filesystem
       CRAWLER_NAME: Filesystem V1.0
-      ROOT_FOLDER: /mnt/books/
+      ROOT_FOLDER: /mnt/pdf
       CRAWLER_SLEEP_TIME: 1
       MOPSY_SOLR_HOST: solr
       MOPSY_SOLR_PORT: 8983
