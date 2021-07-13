@@ -118,7 +118,7 @@ const Admin = (props) => {
       }, 2000);
     else props.history.push("/");
     return () => clearInterval(interval);
-  }, [user, _fetchCrawlers]);
+  }, [user, _fetchCrawlers, props.history]);
 
   if (state.loading)
     return (
