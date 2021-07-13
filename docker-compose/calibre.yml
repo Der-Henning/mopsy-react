@@ -1,0 +1,70 @@
+version: '3'
+volumes:
+  db:     # volume for database - it is recomended to mount an external folder
+  solr:   # volume for solr index - it is recommendet to mount an external folder
+  data:   # volume for cached pdf files. only applies for web scraping crawlers
+services:
+  web:
+    image: derhenning/mopsy:latest
+    restart: always
+    ports:
+      - 80:80     ## it is recomended to use a reverse proxy with ssl encryption
+    volumes:
+      - ./books:/mnt/calibre:ro    ## change ./books to path to your calibre db folder
+      - data:/mnt/data:ro
+    environment:
+      MOPSY_APP_NAME: MOPSY Search
+      MOPSY_PORT: 80
+      MOPSY_JSON_IDENTATION: 4
+      MOPSY_MYSQL_DATABASE: mopsy
+      MOPSY_MYSQL_HOST: db
+      MOPSY_MYSQL_PORT: 3306
+      MOPSY_MYSQL_USERNAME: mopsy
+      MOPSY_MYSQL_PASSWORD: mopsy
+      MOPSY_SOLR_HOST: solr
+      MOPSY_SOLR_PORT: 8983
+      MOPSY_SOLR_CORE: mopsy
+      MOPSY_SESSIONKEY: myprivatekey
+      MOPSY_SALT_ROUNDS: 10
+      MOPSY_HITS_PER_PAGE: 10
+      MOPSY_CRAWLERS: calibre    ## hostnames of used crawlers
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+  db:
+    image: mariadb:10.6
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    volumes:
+      - db:/var/lib/mysql:rw
+    environment:
+      MYSQL_ROOT_PASSWORD: mopsy
+      MYSQL_PASSWORD: mopsy
+      MYSQL_DATABASE: mopsy
+      MYSQL_USER: mopsy
+  redis:
+    image: redis:6
+  solr:
+    image: solr:8.6
+    restart: always
+    environment:
+      - SOLR_HEAP=2g
+    volumes:
+      - solr:/var/solr:rw
+      - ./solr_configset:/opt/solr/server/solr/configsets/myconfig:ro
+    command:
+      solr-precreate mopsy /opt/solr/server/solr/configsets/myconfig
+
+###       Crawler for Calibre DB   --   delete if not needed
+  calibre:
+    image: derhenning/mopsy-crawler:latest
+    volumes:
+      - ./books:/mnt/calibre:ro    ### change ./books to path to your calibre db folder
+      - data:/mnt/data:rw
+    environment:
+      CRAWLER_TYPE: calibre
+      CRAWLER_NAME: Calibre V1.0
+      CALIBRE_PATH: /mnt/calibre
+      CRAWLER_SLEEP_TIME: 1
+      MOPSY_SOLR_HOST: solr
+      MOPSY_SOLR_PORT: 8983
+      MOPSY_SOLR_CORE: mopsy
+      MOPSY_SOLR_PREFIX: calibre

@@ -4,8 +4,11 @@
 
 ## Quickstart
 
+Create a ./docker-compose.yml based on the examples in the docker-compose folder.
+Download https://github.com/Der-Henning/mopsy-react/blob/master/solr_configset/conf.zip and unzip to ./solr_configset.
+
+Run
 ````
-git clone https://github.com/Der-Henning/mopsy-react.git
 docker-compose up
 ````
 

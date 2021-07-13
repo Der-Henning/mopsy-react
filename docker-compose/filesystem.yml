@@ -10,8 +10,7 @@ services:
     ports:
       - 80:80     ## it is recomended to use a reverse proxy with ssl encryption
     volumes:
-      - /volume1/books:/mnt/calibre:ro    ## change /volume1/books to path to your calibre db folder    only for calibre crawler
-      - /volume1/pdf:/mnt/filesystem:ro   ## change /volume1/pdf to path to your folder with pdf files  only for filesystem crawler
+      - ./pdf:/mnt/filesystem:ro   ## change ./pdf to path to your folder with pdf files
       - data:/mnt/data:ro
     environment:
       MOPSY_APP_NAME: MOPSY Search
@@ -28,7 +27,7 @@ services:
       MOPSY_SESSIONKEY: myprivatekey
       MOPSY_SALT_ROUNDS: 10
       MOPSY_HITS_PER_PAGE: 10
-      MOPSY_CRAWLERS: calibre,filesystem    ## hostnames of used crawlers
+      MOPSY_CRAWLERS: filesystem    ## hostnames of used crawlers
       REDIS_HOST: redis
       REDIS_PORT: 6379
   db:
@@ -54,34 +53,16 @@ services:
     command:
       solr-precreate mopsy /opt/solr/server/solr/configsets/myconfig
 
-###       Crawler for Calibre DB   --   delete if not needed
-  calibre:
-    image: derhenning/mopsy-crawler:latest
-    volumes:
-      - /volume1/books:/mnt/calibre:ro    ### change /volume1/books to path to your calibre db folder
-      - data:/mnt/data:rw
-    environment:
-      CRAWLER_TYPE: calibre
-      CRAWLER_NAME: Calibre V1.0
-      CALIBRE_PATH: /mnt/calibre
-      CRAWLER_SLEEP_TIME: 1
-      MOPSY_SOLR_HOST: solr
-      MOPSY_SOLR_PORT: 8983
-      MOPSY_SOLR_CORE: mopsy
-      MOPSY_SOLR_PREFIX: calibre
-
 ###       Crawler for pdf files on filesystem. Only Meta data saved in the pdf files will be used
   filesystem:
     image: derhenning/mopsy-crawler:latest
-    networks:
-      dev:
     volumes:
-      - /volume1/pdf:/mnt/filesystem:ro    ### Change /volume1/pdf to path to your folder with pdf files
-      - data-dev:/mnt/data:rw
+      - ./pdf:/mnt/filesystem:ro    ### Change ./pdf to path to your folder with pdf files
+      - data:/mnt/data:rw
     environment:
       CRAWLER_TYPE: filesystem
       CRAWLER_NAME: Filesystem V1.0
-      ROOT_FOLDER: /mnt/pdf
+      ROOT_FOLDER: /mnt/filesystem
       CRAWLER_SLEEP_TIME: 1
       MOPSY_SOLR_HOST: solr
       MOPSY_SOLR_PORT: 8983
