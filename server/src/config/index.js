@@ -19,10 +19,10 @@ const finalConfig = {
   },
   mysql: {
     database: process.env.MOPSY_MYSQL_DATABASE,
-    host: process.env.MOPSY_MYSQL_HOST || "localhost",
-    port: process.env.MOPSY_MYSQL_PORT || 3306,
-    username: process.env.MOPSY_MYSQL_USERNAME,
-    password: process.env.MOPSY_MYSQL_PASSWORD,
+    host: process.env.MOPSY_MYSQL_HOST || "db",
+    port: process.env.MOPSY_MYSQL_PORT || 5432,
+    username: process.env.MOPSY_MYSQL_USERNAME || "mopsy",
+    password: process.env.MOPSY_MYSQL_PASSWORD || "myverygoodpassword",
   },
   smtp: {
     host: process.env.MOPSY_SMTP_HOST || "",

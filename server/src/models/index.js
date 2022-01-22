@@ -14,7 +14,7 @@ const sequelize = new Sequelize(
   {
     host: config.mysql.host,
     port: config.mysql.port,
-    dialect: "mysql",
+    dialect: "postgres",
     retry: {
       max: 1000,
       match: [
@@ -35,7 +35,8 @@ fs.readdirSync(__dirname)
     );
   })
   .forEach((file) => {
-    var model = sequelize["import"](path.join(__dirname, file));
+    // var model = sequelize["import"](path.join(__dirname, file));
+    var model = require(path.join(__dirname, file))(sequelize, Sequelize);
     db[model.name] = model;
   });
 
