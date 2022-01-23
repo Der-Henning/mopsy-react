@@ -37,7 +37,7 @@ jobs:
                 username: ${{ secrets.DOCKER_USERNAME }}
                 password: ${{ secrets.DOCKER_PASSWORD }}
         -
-            name: Build and push
+            name: Build and push mopsy
             uses: docker/build-push-action@v2
             with:
                 context: .
@@ -46,7 +46,7 @@ jobs:
                 push: true
                 tags: ${{ secrets.DOCKER_USERNAME }}/mopsy:${{ env.RELEASE_TAG }}
         -
-            name: Build and push
+            name: Build and push crawler
             uses: docker/build-push-action@v2
             with:
                 context: .
