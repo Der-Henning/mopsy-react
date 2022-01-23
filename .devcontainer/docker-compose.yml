@@ -1,24 +1,32 @@
-version: '3.8'
+version: '3.7'
 
 services:
   app:
     build: 
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
       args:
-        # Update 'VARIANT' to pick an LTS version of Node.js: 16, 14, 12.
         # Append -bullseye or -buster to pin to an OS version.
         # Use -bullseye variants on local arm64/Apple Silicon.
-        VARIANT: 16
-
+        PYTHON_VERSION: "3.10"
+        NODE_VERSION: 16
     volumes:
       - ..:/workspace:cached
-      
+      - cache:/cache
+    environment:
+      DANGEROUSLY_DISABLE_HOST_CHECK: "true"
+      MOPSY_CRAWLERS: "localhost:5000"
+      MOPSY_DB_PASSWORD: myverygoodpassword
+      CALIBRE_PATH: /workspace/calibre-library
+      CRAWLER_AUTORESTART: 'false'
+      CRAWLER_AUTOSTART: 'false'
+      CRAWLER_PORT: 5000
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
 
     # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
-    network_mode: service:db
+    # network_mode: service:db
+    # network_mode: service:solr
 
     # Uncomment the next line to use a non-root user for all processes.
     # user: node
@@ -27,7 +35,7 @@ services:
     # (Adding the "ports" property to this file will not forward from a Codespace.)
 
   db:
-    image: postgres:latest
+    image: postgres:9.6
     restart: unless-stopped
     volumes:
       - postgres-data:/var/lib/postgresql/data
@@ -40,10 +48,12 @@ services:
     # (Adding the "ports" property to this file will not forward from a Codespace.)
 
   redis:
-    image: redis:latest
+    image: redis:6.2
+    restart: unless-stopped
 
   solr:
-    image: solr:8.6
+    image: solr:8.11
+    restart: unless-stopped
     volumes:
       - solr-data:/var/solr
       - ../solr_configset:/opt/solr/server/solr/configsets/myconfig:ro
@@ -52,6 +62,28 @@ services:
     command:
       solr-precreate mopsy /opt/solr/server/solr/configsets/myconfig
 
+  # calibre:
+  #   build:
+  #     context: ..
+  #     dockerfile: .devcontainer/Dockerfile.crawler
+  #     args:
+  #       PYTHON_VERSION: "3.10-slim"
+  #   volumes:
+  #     - ../crawler:/app:cached
+  #     - ../calibre-library:/workspace/calibre-library:ro
+  #     - cache:/cache
+  #   environment:
+  #     DEBUG: 'true'
+  #     CRAWLER_PORT: 8989
+  #     CRAWLER_TYPE: calibre
+  #     CRAWLER_NAME: Calibre V1.0
+  #     CALIBRE_PATH: /workspace/calibre-library
+  #     CRAWLER_AUTORESTART: 'false'
+  #     CRAWLER_AUTOSTART: 'false'
+  #     MOPSY_SOLR_PREFIX: calibre
+  #   command: python src/server.py
+
 volumes:
   postgres-data:
   solr-data:
+  cache:

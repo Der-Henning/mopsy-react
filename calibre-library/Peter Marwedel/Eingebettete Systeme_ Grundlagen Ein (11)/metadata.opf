@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='utf-8'?>
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uuid_id" version="2.0">
+    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+        <dc:identifier opf:scheme="calibre" id="calibre_id">11</dc:identifier>
+        <dc:identifier opf:scheme="uuid" id="uuid_id">42f043be-f522-4462-8b40-879496c97f12</dc:identifier>
+        <dc:title>Eingebettete Systeme: Grundlagen Eingebetteter Systeme in Cyber-Physikalischen Systemen</dc:title>
+        <dc:creator opf:file-as="Marwedel, Peter" opf:role="aut">Peter Marwedel</dc:creator>
+        <dc:contributor opf:file-as="calibre" opf:role="bkp">calibre (5.35.0) [https://calibre-ebook.com]</dc:contributor>
+        <dc:date>2021-05-19T22:00:00+00:00</dc:date>
+        <dc:description>&lt;div&gt;
+&lt;p&gt;Informationsverarbeitende Systeme werden immer kleiner und zunehmend in komplexe Produkte eingebettet – daher der Name "eingebettete Systeme". Es wird erwartet, dass ihre wirtschaftliche Bedeutung diejenige von traditionellen informationsverarbeitenden Systemen wie PCs und Großrechnern deutlich übersteigen wird. Dieses Buch betrachtet gemeinsame Eigenschaften solcher Systeme wie Verlässlichkeit, Effizienz, Echtzeitanforderungen sowie anwendungsspezifische Benutzerschnittstellen. Neben Spezifikationssprachen werden Hard- und Software eingebetteter Systeme sowie Echtzeitbetriebssysteme und Scheduling betrachtet. Zur Implementierung eingebetteter Systeme wird Hardware-/Software-Codesign verwendet. Das Buch schließt mit einem Überblick über Validierungstechniken. Dieses Buch eignet sich als Begleitbuch zu einem Kurs über eingebettete Systeme, ist aber auch eine Informationsquelle für Doktoranden und Lehrende. Grundwissen über Hard- und Software in der Informationsverarbeitung wird vorausgesetzt.&lt;/p&gt;&lt;/div&gt;</dc:description>
+        <dc:publisher>Springer Fachmedien Wiesbaden</dc:publisher>
+        <dc:identifier opf:scheme="ISBN">9783658334369</dc:identifier>
+        <dc:identifier opf:scheme="GOOGLE">5t40zgEACAAJ</dc:identifier>
+        <dc:language>deu</dc:language>
+        <dc:subject>Computers</dc:subject>
+        <dc:subject>Networking</dc:subject>
+        <dc:subject>General</dc:subject>
+        <dc:subject>Technology &amp; Engineering</dc:subject>
+        <dc:subject>Electrical</dc:subject>
+        <dc:subject>Electronics</dc:subject>
+        <dc:subject>Circuits</dc:subject>
+        <dc:subject>Information Technology</dc:subject>
+        <meta name="calibre:author_link_map" content="{&quot;Peter Marwedel&quot;: &quot;&quot;}"/>
+        <meta name="calibre:timestamp" content="2022-01-23T09:25:55.437822+00:00"/>
+        <meta name="calibre:title_sort" content="Eingebettete Systeme: Grundlagen Eingebetteter Systeme in Cyber-Physikalischen Systemen"/>
+    </metadata>
+    <guide>
+        <reference type="cover" title="Titelbild" href="cover.jpg"/>
+    </guide>
+</package>

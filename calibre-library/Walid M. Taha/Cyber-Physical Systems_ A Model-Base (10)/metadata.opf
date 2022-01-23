@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='utf-8'?>
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uuid_id" version="2.0">
+    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+        <dc:identifier opf:scheme="calibre" id="calibre_id">10</dc:identifier>
+        <dc:identifier opf:scheme="uuid" id="uuid_id">fa5dd447-ad63-473c-bc83-00a223226776</dc:identifier>
+        <dc:title>Cyber-Physical Systems: A Model-Based Approach</dc:title>
+        <dc:creator opf:file-as="Taha, Walid M. &amp; Taha, Abd-Elhamid M. &amp; Thunberg, Johan" opf:role="aut">Walid M. Taha</dc:creator>
+        <dc:creator opf:file-as="Taha, Walid M. &amp; Taha, Abd-Elhamid M. &amp; Thunberg, Johan" opf:role="aut">Abd-Elhamid M. Taha</dc:creator>
+        <dc:creator opf:file-as="Taha, Walid M. &amp; Taha, Abd-Elhamid M. &amp; Thunberg, Johan" opf:role="aut">Johan Thunberg</dc:creator>
+        <dc:contributor opf:file-as="calibre" opf:role="bkp">calibre (5.35.0) [https://calibre-ebook.com]</dc:contributor>
+        <dc:date>2020-09-17T22:00:00+00:00</dc:date>
+        <dc:description>&lt;div&gt;
+&lt;p&gt;In this concise yet comprehensive Open Access textbook, future inventors are introduced to the key concepts of Cyber-Physical Systems (CPS). Using modeling as a way to develop deeper understanding of the computational and physical components of these systems, one can express new designs in a way that facilitates their simulation, visualization, and analysis. Concepts are introduced in a cross-disciplinary way. Leveraging hybrid (continuous/discrete) systems as a unifying framework and Acumen as a modeling environment, the book bridges the conceptual gap in modeling skills needed for physical systems on the one hand and computational systems on the other. In doing so, the book gives the reader the modeling and design skills they need to build smart, IT-enabled products. Starting with a look at various examples and characteristics of Cyber-Physical Systems, the book progresses to explain how the area brings together several previously distinct ones such as Embedded Systems, Control Theory, and Mechatronics. Featuring a simulation-based project that focuses on a robotics problem (how to design a robot that can play ping-pong) as a useful example of a CPS domain, Cyber-Physical Systems: A Model-Based Approach demonstrates the intimate coupling between cyber and physical components, and how designing robots reveals several non-trivial control problems, significant embedded and real-time computation requirements, and a need to consider issues of communication and preconceptions.&lt;/p&gt;&lt;/div&gt;</dc:description>
+        <dc:publisher>Springer International Publishing</dc:publisher>
+        <dc:identifier opf:scheme="ISBN">9783030360733</dc:identifier>
+        <dc:identifier opf:scheme="GOOGLE">gmXYzQEACAAJ</dc:identifier>
+        <dc:language>eng</dc:language>
+        <dc:subject>Computers</dc:subject>
+        <dc:subject>Networking</dc:subject>
+        <dc:subject>General</dc:subject>
+        <dc:subject>Technology &amp; Engineering</dc:subject>
+        <dc:subject>Electrical</dc:subject>
+        <dc:subject>Computer Simulation</dc:subject>
+        <dc:subject>Automation</dc:subject>
+        <dc:subject>Information Technology</dc:subject>
+        <meta name="calibre:author_link_map" content="{&quot;Walid M. Taha&quot;: &quot;&quot;, &quot;Abd-Elhamid M. Taha&quot;: &quot;&quot;, &quot;Johan Thunberg&quot;: &quot;&quot;}"/>
+        <meta name="calibre:timestamp" content="2022-01-23T09:25:55.376822+00:00"/>
+        <meta name="calibre:title_sort" content="Cyber-Physical Systems: A Model-Based Approach"/>
+    </metadata>
+    <guide>
+        <reference type="cover" title="Titelbild" href="cover.jpg"/>
+    </guide>
+</package>

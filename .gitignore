@@ -9,3 +9,5 @@ config.json
 .eslintcache
 
 server/.env
+
+__pycache__

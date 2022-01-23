@@ -8,15 +8,15 @@ const config = require("../config");
 var db = {};
 
 const sequelize = new Sequelize(
-  config.mysql.database,
-  config.mysql.username,
-  config.mysql.password,
+  config.db.database,
+  config.db.username,
+  config.db.password,
   {
-    host: config.mysql.host,
-    port: config.mysql.port,
-    dialect: "postgres",
+    host: config.db.host,
+    port: config.db.port,
+    dialect: config.db.dialect,
     retry: {
-      max: 1000,
+      max: 1,
       match: [
         Sequelize.ConnectionError,
         Sequelize.ConnectionRefusedError,

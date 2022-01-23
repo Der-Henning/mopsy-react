@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='utf-8'?>
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uuid_id" version="2.0">
+    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+        <dc:identifier opf:scheme="calibre" id="calibre_id">7</dc:identifier>
+        <dc:identifier opf:scheme="uuid" id="uuid_id">4f977557-8c8c-4477-977a-3bc33a4418b5</dc:identifier>
+        <dc:title>Cyber Security: 18th China Annual Conference, CNCERT 2021, Beijing, China, July 20–21, 2021, Revised Selected Papers</dc:title>
+        <dc:creator opf:file-as="Lu, Wei &amp; Zhang, Yuqing &amp; Wen, Weiping &amp; Yan, Hanbing &amp; Li, Chao" opf:role="aut">Wei Lu</dc:creator>
+        <dc:creator opf:file-as="Lu, Wei &amp; Zhang, Yuqing &amp; Wen, Weiping &amp; Yan, Hanbing &amp; Li, Chao" opf:role="aut">Yuqing Zhang</dc:creator>
+        <dc:creator opf:file-as="Lu, Wei &amp; Zhang, Yuqing &amp; Wen, Weiping &amp; Yan, Hanbing &amp; Li, Chao" opf:role="aut">Weiping Wen</dc:creator>
+        <dc:creator opf:file-as="Lu, Wei &amp; Zhang, Yuqing &amp; Wen, Weiping &amp; Yan, Hanbing &amp; Li, Chao" opf:role="aut">Hanbing Yan</dc:creator>
+        <dc:creator opf:file-as="Lu, Wei &amp; Zhang, Yuqing &amp; Wen, Weiping &amp; Yan, Hanbing &amp; Li, Chao" opf:role="aut">Chao Li</dc:creator>
+        <dc:contributor opf:file-as="calibre" opf:role="bkp">calibre (5.35.0) [https://calibre-ebook.com]</dc:contributor>
+        <dc:date>2022-03-01T23:00:00+00:00</dc:date>
+        <dc:description>&lt;div&gt;
+&lt;p&gt;This open access book constitutes the refereed proceedings of the 17th International Annual Conference on Cyber Security, CNCERT 2021, held in Beijing, China, in AJuly 2021. The 14 papers presented were carefully reviewed and selected from 51 submissions. The papers are organized according to the following topical sections: ​data security; privacy protection; anomaly detection; traffic analysis; social network security; vulnerability detection; text classification.&lt;/p&gt;&lt;/div&gt;</dc:description>
+        <dc:publisher>Springer Singapore</dc:publisher>
+        <dc:identifier opf:scheme="ISBN">9789811692284</dc:identifier>
+        <dc:identifier opf:scheme="GOOGLE">q4DLzgEACAAJ</dc:identifier>
+        <dc:language>eng</dc:language>
+        <dc:subject>Computers</dc:subject>
+        <dc:subject>Security</dc:subject>
+        <dc:subject>General</dc:subject>
+        <dc:subject>Online Services</dc:subject>
+        <dc:subject>Network Security</dc:subject>
+        <dc:subject>Artificial Intelligence</dc:subject>
+        <dc:subject>Software Development &amp; Engineering</dc:subject>
+        <dc:subject>Information Technology</dc:subject>
+        <dc:subject>Networking</dc:subject>
+        <dc:subject>Language Arts &amp; Disciplines</dc:subject>
+        <dc:subject>Library &amp; Information Science</dc:subject>
+        <meta name="calibre:author_link_map" content="{&quot;Wei Lu&quot;: &quot;&quot;, &quot;Yuqing Zhang&quot;: &quot;&quot;, &quot;Weiping Wen&quot;: &quot;&quot;, &quot;Hanbing Yan&quot;: &quot;&quot;, &quot;Chao Li&quot;: &quot;&quot;}"/>
+        <meta name="calibre:timestamp" content="2022-01-23T09:25:55.178824+00:00"/>
+        <meta name="calibre:title_sort" content="Cyber Security: 18th China Annual Conference, CNCERT 2021, Beijing, China, July 20–21, 2021, Revised Selected Papers"/>
+    </metadata>
+    <guide>
+        <reference type="cover" title="Titelbild" href="cover.jpg"/>
+    </guide>
+</package>

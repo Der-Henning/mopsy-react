@@ -10,19 +10,20 @@ const finalConfig = {
   crawlers: (process.env.MOPSY_CRAWLERS || "").split(","),  // comma seperated list of crawler microservice hostnames
   pdfCache: process.env.MOPSY_PDF_CACHE || homedir,
   solr: {
-    host: process.env.MOPSY_SOLR_HOST || "localhost",
+    host: process.env.MOPSY_SOLR_HOST || "solr",
     port: process.env.MOPSY_SOLR_PORT || 8983,
-    core: process.env.MOPSY_SOLR_CORE,
+    core: process.env.MOPSY_SOLR_CORE || "mopsy",
     searchParams: Object.keys(process.env).filter(key => /^MOPSY_SOLR_SEARCHPARAMS_/.test(key)).reduce((result,key) => (
       {...result, [key.replace("MOPSY_SOLR_SEARCHPARAMS_", "").toLowerCase()]: process.env[key]}
     ), {}),                                                 // submits custom solr search params
   },
-  mysql: {
-    database: process.env.MOPSY_MYSQL_DATABASE,
-    host: process.env.MOPSY_MYSQL_HOST || "db",
-    port: process.env.MOPSY_MYSQL_PORT || 5432,
-    username: process.env.MOPSY_MYSQL_USERNAME || "mopsy",
-    password: process.env.MOPSY_MYSQL_PASSWORD || "myverygoodpassword",
+  db: {
+    dialect: process.env.MOPSY_DB_DIALECT || "postgres",
+    database: process.env.MOPSY_DB_DATABASE || "mopsy",
+    host: process.env.MOPSY_DB_HOST || "db",
+    port: process.env.MOPSY_DB_PORT || 5432,
+    username: process.env.MOPSY_DB_USERNAME || "mopsy",
+    password: process.env.MOPSY_DB_PASSWORD || "myverygoodpassword",
   },
   smtp: {
     host: process.env.MOPSY_SMTP_HOST || "",
@@ -32,9 +33,9 @@ const finalConfig = {
     from: process.env.MOPSY_SMTP_FROM || "",
   },
   redis: {
-    host: process.env.REDIS_HOST || "localhost",
-    port: process.env.REDIS_PORT || 6379,
-    expire: process.env.REDIS_EXPIRE || 1440              // expiration time for cached documents in minutes
+    host: process.env.MOPSY_REDIS_HOST || "redis",
+    port: process.env.MOPSY_REDIS_PORT || 6379,
+    expire: process.env.MOPSY_REDIS_EXPIRE || 1440              // expiration time for cached documents in minutes
   },
 };
 

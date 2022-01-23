@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='utf-8'?>
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uuid_id" version="2.0">
+    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+        <dc:identifier opf:scheme="calibre" id="calibre_id">6</dc:identifier>
+        <dc:identifier opf:scheme="uuid" id="uuid_id">e2d8196a-5b0e-4972-b863-0aedcd54511b</dc:identifier>
+        <dc:title>Sublinear Computation Paradigm: Algorithmic Revolution in the Big Data Era</dc:title>
+        <dc:creator opf:file-as="Katoh, Naoki &amp; Higashikawa, Yuya &amp; Ito, Hiro &amp; Nagao, Atsuki &amp; Shibuya, Tetsuo &amp; Sljoka, Adnan &amp; Tanaka, Kazuyuki &amp; Uno, Yushi" opf:role="aut">Naoki Katoh</dc:creator>
+        <dc:creator opf:file-as="Katoh, Naoki &amp; Higashikawa, Yuya &amp; Ito, Hiro &amp; Nagao, Atsuki &amp; Shibuya, Tetsuo &amp; Sljoka, Adnan &amp; Tanaka, Kazuyuki &amp; Uno, Yushi" opf:role="aut">Yuya Higashikawa</dc:creator>
+        <dc:creator opf:file-as="Katoh, Naoki &amp; Higashikawa, Yuya &amp; Ito, Hiro &amp; Nagao, Atsuki &amp; Shibuya, Tetsuo &amp; Sljoka, Adnan &amp; Tanaka, Kazuyuki &amp; Uno, Yushi" opf:role="aut">Hiro Ito</dc:creator>
+        <dc:creator opf:file-as="Katoh, Naoki &amp; Higashikawa, Yuya &amp; Ito, Hiro &amp; Nagao, Atsuki &amp; Shibuya, Tetsuo &amp; Sljoka, Adnan &amp; Tanaka, Kazuyuki &amp; Uno, Yushi" opf:role="aut">Atsuki Nagao</dc:creator>
+        <dc:creator opf:file-as="Katoh, Naoki &amp; Higashikawa, Yuya &amp; Ito, Hiro &amp; Nagao, Atsuki &amp; Shibuya, Tetsuo &amp; Sljoka, Adnan &amp; Tanaka, Kazuyuki &amp; Uno, Yushi" opf:role="aut">Tetsuo Shibuya</dc:creator>
+        <dc:creator opf:file-as="Katoh, Naoki &amp; Higashikawa, Yuya &amp; Ito, Hiro &amp; Nagao, Atsuki &amp; Shibuya, Tetsuo &amp; Sljoka, Adnan &amp; Tanaka, Kazuyuki &amp; Uno, Yushi" opf:role="aut">Adnan Sljoka</dc:creator>
+        <dc:creator opf:file-as="Katoh, Naoki &amp; Higashikawa, Yuya &amp; Ito, Hiro &amp; Nagao, Atsuki &amp; Shibuya, Tetsuo &amp; Sljoka, Adnan &amp; Tanaka, Kazuyuki &amp; Uno, Yushi" opf:role="aut">Kazuyuki Tanaka</dc:creator>
+        <dc:creator opf:file-as="Katoh, Naoki &amp; Higashikawa, Yuya &amp; Ito, Hiro &amp; Nagao, Atsuki &amp; Shibuya, Tetsuo &amp; Sljoka, Adnan &amp; Tanaka, Kazuyuki &amp; Uno, Yushi" opf:role="aut">Yushi Uno</dc:creator>
+        <dc:contributor opf:file-as="calibre" opf:role="bkp">calibre (5.35.0) [https://calibre-ebook.com]</dc:contributor>
+        <dc:date>2021-10-19T22:00:00+00:00</dc:date>
+        <dc:description>&lt;div&gt;
+&lt;p&gt;This open access book gives an overview of cutting-edge work on a new paradigm called the “sublinear computation paradigm,” which was proposed in the large multiyear academic research project “Foundations of Innovative Algorithms for Big Data.” That project ran from October 2014 to March 2020, in Japan. To handle the unprecedented explosion of big data sets in research, industry, and other areas of society, there is an urgent need to develop novel methods and approaches for big data analysis. To meet this need, innovative changes in algorithm theory for big data are being pursued. For example, polynomial-time algorithms have thus far been regarded as “fast,” but if a quadratic-time algorithm is applied to a petabyte-scale or larger big data set, problems are encountered in terms of computational resources or running time. To deal with this critical computational and algorithmic bottleneck, linear, sublinear, and constant time algorithms are required.The sublinear computation paradigm is proposed here in order to support innovation in the big data era. A foundation of innovative algorithms has been created by developing computational procedures, data structures, and modelling techniques for big data. The project is organized into three teams that focus on sublinear algorithms, sublinear data structures, and sublinear modelling. The work has provided high-level academic research results of strong computational and algorithmic interest, which are presented in this book.The book consists of five parts: Part I, which consists of a single chapter on the concept of the sublinear computation paradigm; Parts II, III, and IV review results on sublinear algorithms, sublinear data structures, and sublinear modelling, respectively; Part V presents application results. The information presented here will inspire the researchers who work in the field of modern algorithms.&lt;/p&gt;&lt;/div&gt;</dc:description>
+        <dc:publisher>Springer Singapore</dc:publisher>
+        <dc:identifier opf:scheme="ISBN">9789811640971</dc:identifier>
+        <dc:identifier opf:scheme="GOOGLE">j8Z4zgEACAAJ</dc:identifier>
+        <dc:language>eng</dc:language>
+        <dc:subject>Computers</dc:subject>
+        <dc:subject>Programming</dc:subject>
+        <dc:subject>Algorithms</dc:subject>
+        <dc:subject>Information Technology</dc:subject>
+        <dc:subject>Mathematics</dc:subject>
+        <dc:subject>Numerical Analysis</dc:subject>
+        <meta name="calibre:author_link_map" content="{&quot;Naoki Katoh&quot;: &quot;&quot;, &quot;Yuya Higashikawa&quot;: &quot;&quot;, &quot;Hiro Ito&quot;: &quot;&quot;, &quot;Atsuki Nagao&quot;: &quot;&quot;, &quot;Tetsuo Shibuya&quot;: &quot;&quot;, &quot;Adnan Sljoka&quot;: &quot;&quot;, &quot;Kazuyuki Tanaka&quot;: &quot;&quot;, &quot;Yushi Uno&quot;: &quot;&quot;}"/>
+        <meta name="calibre:timestamp" content="2022-01-23T09:25:55.102824+00:00"/>
+        <meta name="calibre:title_sort" content="Sublinear Computation Paradigm: Algorithmic Revolution in the Big Data Era"/>
+    </metadata>
+    <guide>
+        <reference type="cover" title="Titelbild" href="cover.jpg"/>
+    </guide>
+</package>

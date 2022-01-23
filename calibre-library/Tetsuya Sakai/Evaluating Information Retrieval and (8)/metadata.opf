@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uuid_id" version="2.0">
+    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+        <dc:identifier opf:scheme="calibre" id="calibre_id">8</dc:identifier>
+        <dc:identifier opf:scheme="uuid" id="uuid_id">296ae43a-e00b-44bf-8cc6-20d555eb00dd</dc:identifier>
+        <dc:title>Evaluating Information Retrieval and Access Tasks: NTCIR's Legacy of Research Impact</dc:title>
+        <dc:creator opf:file-as="Sakai, Tetsuya &amp; Oard, Douglas W. &amp; Kando, Noriko" opf:role="aut">Tetsuya Sakai</dc:creator>
+        <dc:creator opf:file-as="Sakai, Tetsuya &amp; Oard, Douglas W. &amp; Kando, Noriko" opf:role="aut">Douglas W. Oard</dc:creator>
+        <dc:creator opf:file-as="Sakai, Tetsuya &amp; Oard, Douglas W. &amp; Kando, Noriko" opf:role="aut">Noriko Kando</dc:creator>
+        <dc:contributor opf:file-as="calibre" opf:role="bkp">calibre (5.35.0) [https://calibre-ebook.com]</dc:contributor>
+        <dc:date>2020-09-17T22:00:00+00:00</dc:date>
+        <dc:description>&lt;div&gt;
+&lt;p&gt;This open access book summarizes the first two decades of the NII Testbeds and Community for Information access Research (NTCIR). NTCIR is a series of evaluation forums run by a global team of researchers and hosted by the National Institute of Informatics (NII), Japan. The book is unique in that it discusses not just what was done at NTCIR, but also how it was done and the impact it has achieved. For example, in some chapters the reader sees the early seeds of what eventually grew to be the search engines that provide access to content on the World Wide Web, today’s smartphones that can tailor what they show to the needs of their owners, and the smart speakers that enrich our lives at home and on the move. We also get glimpses into how new search engines can be built for mathematical formulae, or for the digital record of a lived human life. Key to the success of the NTCIR endeavor was early recognition that information access research is an empirical discipline and that evaluation therefore lay at the core of the enterprise. Evaluation is thus at the heart of each chapter in this book. They show, for example, how the recognition that some documents are more important than others has shaped thinking about evaluation design. The thirty-three contributors to this volume speak for the many hundreds of researchers from dozens of countries around the world who together shaped NTCIR as organizers and participants. This book is suitable for researchers, practitioners, and students—anyone who wants to learn about past and present evaluation efforts in information retrieval, information access, and natural language processing, as well as those who want to participate in an evaluation task or even to design and organize one.&lt;/p&gt;&lt;/div&gt;</dc:description>
+        <dc:publisher>Springer Singapore</dc:publisher>
+        <dc:identifier opf:scheme="ISBN">9789811555565</dc:identifier>
+        <dc:identifier opf:scheme="GOOGLE">17PXzQEACAAJ</dc:identifier>
+        <dc:language>eng</dc:language>
+        <dc:subject>Computers</dc:subject>
+        <dc:subject>System Administration</dc:subject>
+        <dc:subject>Storage &amp; Retrieval</dc:subject>
+        <dc:subject>Information Technology</dc:subject>
+        <meta name="calibre:author_link_map" content="{&quot;Tetsuya Sakai&quot;: &quot;&quot;, &quot;Douglas W. Oard&quot;: &quot;&quot;, &quot;Noriko Kando&quot;: &quot;&quot;}"/>
+        <meta name="calibre:timestamp" content="2022-01-23T09:25:55.248824+00:00"/>
+        <meta name="calibre:title_sort" content="Evaluating Information Retrieval and Access Tasks: NTCIR's Legacy of Research Impact"/>
+    </metadata>
+    <guide>
+        <reference type="cover" title="Titelbild" href="cover.jpg"/>
+    </guide>
+</package>

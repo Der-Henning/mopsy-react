@@ -1,0 +1,25 @@
+ARG PYTHON_VERSION="3.10-slim"
+
+FROM python:${PYTHON_VERSION}
+
+RUN addgroup --gid 1001 --system mopsy && \
+    adduser --shell /bin/false --disabled-password --uid 1001 --system --group mopsy
+
+RUN mkdir -p /app
+RUN chown mopsy:mopsy /app
+
+RUN mkdir -p /cache
+RUN chown mopsy:mopsy /cache
+ENV CACHE_DIRECTORY=/cache
+VOLUME /cache
+
+WORKDIR /app
+USER mopsy
+
+COPY --chown=mopsy:mopsy ./crawler/requirements.txt /tmp/pip-tmp/
+RUN pip3 --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
+    && rm -rf /tmp/pip-tmp
+
+COPY --chown=mopsy:mopsy ./crawler/src .
+
+CMD [ "python", "./server.py" ] 

@@ -2,7 +2,7 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.209.6/containers/javascript-node-postgres
 // Update the VARIANT arg in docker-compose.yml to pick a Node.js version
 {
-	"name": "Node.js & PostgreSQL",
+	"name": "Developement Container",
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
 	"workspaceFolder": "/workspace",
@@ -13,30 +13,46 @@
 			"name": "Container database",
 			"driver": "PostgreSQL",
 			"previewLimit": 50,
-			"server": "localhost",
+			"server": "db",
 			"port": 5432,
-			"database": "postgres",
-			"username": "postgres",
-			"password": "postgres"
-		}]
+			"database": "mopsy",
+			"username": "mopsy",
+			"password": "myverygoodpassword"
+		}],
+		"python.defaultInterpreterPath": "/usr/local/bin/python",
+		"python.linting.enabled": true,
+		"python.linting.pylintEnabled": true,
+		"python.formatting.autopep8Path": "/usr/local/py-utils/bin/autopep8",
+		"python.formatting.blackPath": "/usr/local/py-utils/bin/black",
+		"python.formatting.yapfPath": "/usr/local/py-utils/bin/yapf",
+		"python.linting.banditPath": "/usr/local/py-utils/bin/bandit",
+		"python.linting.flake8Path": "/usr/local/py-utils/bin/flake8",
+		"python.linting.mypyPath": "/usr/local/py-utils/bin/mypy",
+		"python.linting.pycodestylePath": "/usr/local/py-utils/bin/pycodestyle",
+		"python.linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
+		"python.linting.pylintPath": "/usr/local/py-utils/bin/pylint"
 	},
 
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
 		"dbaeumer.vscode-eslint",
 		"mtxr.sqltools",
-		"mtxr.sqltools-driver-pg"
+		"mtxr.sqltools-driver-pg",
+		"ms-python.python",
+		"ms-python.vscode-pylance"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [3000, 4000],
+	"forwardPorts": [3000, 4000, 5000, "db:5432", "solr:8983"],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "npm install",
 
 	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
-	"remoteUser": "node",
+	"remoteUser": "vscode",
 	"features": {
 	//	"git": "latest"
-	}
+	},
+
+	"shutdownAction": "stopCompose"
 }

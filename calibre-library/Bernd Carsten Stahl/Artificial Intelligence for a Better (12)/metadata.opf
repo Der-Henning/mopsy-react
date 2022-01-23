@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='utf-8'?>
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uuid_id" version="2.0">
+    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+        <dc:identifier opf:scheme="calibre" id="calibre_id">12</dc:identifier>
+        <dc:identifier opf:scheme="uuid" id="uuid_id">69487064-aa56-4332-9f98-32da85267546</dc:identifier>
+        <dc:title>Artificial Intelligence for a Better Future: An Ecosystem Perspective on the Ethics of AI and Emerging Digital Technologies</dc:title>
+        <dc:creator opf:file-as="Stahl, Bernd Carsten" opf:role="aut">Bernd Carsten Stahl</dc:creator>
+        <dc:contributor opf:file-as="calibre" opf:role="bkp">calibre (5.35.0) [https://calibre-ebook.com]</dc:contributor>
+        <dc:date>2021-03-17T23:00:00+00:00</dc:date>
+        <dc:description>&lt;div&gt;
+&lt;p&gt;This open access book proposes a novel approach to Artificial Intelligence (AI) ethics. AI offers many advantages: better and faster medical diagnoses, improved business processes and efficiency, and the automation of boring work. But undesirable and ethically problematic consequences are possible too: biases and discrimination, breaches of privacy and security, and societal distortions such as unemployment, economic exploitation and weakened democratic processes. There is even a prospect, ultimately, of super-intelligent machines replacing humans. The key question, then, is: how can we benefit from AI while addressing its ethical problems?This book presents an innovative answer to the question by presenting a different perspective on AI and its ethical consequences. Instead of looking at individual AI techniques, applications or ethical issues, we can understand AI as a system of ecosystems, consisting of numerous interdependent technologies, applications and stakeholders. Developing this idea, the book explores how AI ecosystems can be shaped to foster human flourishing. Drawing on rich empirical insights and detailed conceptual analysis, it suggests practical measures to ensure that AI is used to make the world a better place.&lt;/p&gt;&lt;/div&gt;</dc:description>
+        <dc:publisher>Springer International Publishing</dc:publisher>
+        <dc:identifier opf:scheme="ISBN">9783030699772</dc:identifier>
+        <dc:identifier opf:scheme="GOOGLE">d6YszgEACAAJ</dc:identifier>
+        <dc:language>eng</dc:language>
+        <dc:subject>Computers</dc:subject>
+        <dc:subject>Artificial Intelligence</dc:subject>
+        <dc:subject>General</dc:subject>
+        <dc:subject>Philosophy</dc:subject>
+        <dc:subject>Ethics &amp; Moral Philosophy</dc:subject>
+        <dc:subject>Social Aspects</dc:subject>
+        <dc:subject>Reference</dc:subject>
+        <dc:subject>Business &amp; Economics</dc:subject>
+        <dc:subject>Business Ethics</dc:subject>
+        <dc:subject>Information Technology</dc:subject>
+        <meta name="calibre:author_link_map" content="{&quot;Bernd Carsten Stahl&quot;: &quot;&quot;}"/>
+        <meta name="calibre:timestamp" content="2022-01-23T09:25:55.494823+00:00"/>
+        <meta name="calibre:title_sort" content="Artificial Intelligence for a Better Future: An Ecosystem Perspective on the Ethics of AI and Emerging Digital Technologies"/>
+    </metadata>
+    <guide>
+        <reference type="cover" title="Titelbild" href="cover.jpg"/>
+    </guide>
+</package>

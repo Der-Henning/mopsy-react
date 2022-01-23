@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='utf-8'?>
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uuid_id" version="2.0">
+    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+        <dc:identifier opf:scheme="calibre" id="calibre_id">9</dc:identifier>
+        <dc:identifier opf:scheme="uuid" id="uuid_id">fb0d527e-9451-4afd-9dcc-616c2755334f</dc:identifier>
+        <dc:title>Mobile Edge Computing</dc:title>
+        <dc:creator opf:file-as="Zhang, Yan" opf:role="aut">Yan Zhang</dc:creator>
+        <dc:contributor opf:file-as="calibre" opf:role="bkp">calibre (5.35.0) [https://calibre-ebook.com]</dc:contributor>
+        <dc:date>2021-10-01T22:00:00+00:00</dc:date>
+        <dc:description>&lt;div&gt;
+&lt;p&gt;This is an open access book.It offers comprehensive, self-contained knowledge on Mobile Edge Computing (MEC), which is a very promising technology for achieving intelligence in the next-generation wireless communications and computing networks.The book starts with the basic concepts, key techniques and network architectures of MEC. Then, we present the wide applications of MEC, including edge caching, 6G networks, Internet of Vehicles, and UAVs. In the last part, we present new opportunities when MEC meets blockchain, Artificial Intelligence, and distributed machine learning (e.g., federated learning). We also identify the emerging applications of MEC in pandemic, industrial Internet of Things and disaster management.The book allows an easy cross-reference owing to the broad coverage on both the principle and applications of MEC. The book is written for people interested in communications and computer networks at all levels. The primary audience includes senior undergraduates, postgraduates, educators, scientists, researchers, developers, engineers, innovators and research strategists.&lt;/p&gt;&lt;/div&gt;</dc:description>
+        <dc:publisher>Springer International Publishing</dc:publisher>
+        <dc:identifier opf:scheme="ISBN">9783030839437</dc:identifier>
+        <dc:identifier opf:scheme="GOOGLE">yuWLzgEACAAJ</dc:identifier>
+        <dc:language>eng</dc:language>
+        <dc:subject>Computers</dc:subject>
+        <dc:subject>Programming</dc:subject>
+        <dc:subject>Mobile Devices</dc:subject>
+        <dc:subject>Technology &amp; Engineering</dc:subject>
+        <dc:subject>Mobile &amp; Wireless Communications</dc:subject>
+        <dc:subject>Electrical</dc:subject>
+        <dc:subject>General</dc:subject>
+        <dc:subject>Networking</dc:subject>
+        <meta name="calibre:author_link_map" content="{&quot;Yan Zhang&quot;: &quot;&quot;}"/>
+        <meta name="calibre:timestamp" content="2022-01-23T09:25:55.321822+00:00"/>
+        <meta name="calibre:title_sort" content="Mobile Edge Computing"/>
+    </metadata>
+    <guide>
+        <reference type="cover" title="Titelbild" href="cover.jpg"/>
+    </guide>
+</package>
