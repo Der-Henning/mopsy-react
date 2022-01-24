@@ -1,5 +1,5 @@
 "use strict";
-import "core-js/stable";
+// import "core-js/stable";
 import "regenerator-runtime/runtime";
 
 const express = require("express");

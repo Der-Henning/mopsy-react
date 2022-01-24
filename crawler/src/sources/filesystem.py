@@ -16,7 +16,7 @@ class Documents:
         self._documents = list(Path(self._root_folder).glob('**/*.pdf'))
 
     # define individual facets for this crawler
-    fieldList = {
+    field_list = {
         "facets": {}
     }
 

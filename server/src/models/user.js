@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const config = require("../config");
 
 module.exports = (sequelize, type) => {
@@ -36,12 +36,14 @@ module.exports = (sequelize, type) => {
     models.User.hasMany(models.Favorite);
   };
 
-  User.hashPassword = async (password) => {
-    return await bcrypt.hash(password, parseInt(config.salt_rounds))
+  User.hashPassword = (password) => {
+    // return await bcrypt.hash(password, parseInt(config.salt_rounds))
+    return bcrypt.hashSync(password, config.salt_rounds)
   }
 
-  User.validate = async (password, hash) => {
-    return await bcrypt.compare(password, hash);
+  User.validate = (password, hash) => {
+    // return await bcrypt.compare(password, hash);
+    return bcrypt.compareSync(password, hash);
   }
 
   User.createAdmin = async (models) => {

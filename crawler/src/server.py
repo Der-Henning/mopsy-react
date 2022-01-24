@@ -38,7 +38,7 @@ def toggle_autorestart():
 
 @server.route("/fieldList", methods=["GET"])
 def field_list():
-    return jsonify(crawler.documents.fieldList)
+    return jsonify(crawler.documents.field_list)
 
 
 def start_server():
