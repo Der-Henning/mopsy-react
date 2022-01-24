@@ -84,8 +84,21 @@ class Crawler:
             "progress": self.proc_progress.get(),
             "text": self.proc_text.get(),
             "startable": self.proc_startable.get(),
-            "autorestart": self.proc_autorestart.get()
+            "autorestart": self.proc_autorestart.get(),
+            "indexed_docs": self.num_docs
         }
+
+    @property
+    def num_docs(self):
+        res = self.solr.select({
+            "q": f"source:{config.SOLR_PREFIX}",
+            "fl": "id"
+        })
+        return res["response"]["numFound"]
+
+    def delete_all_docs(self):
+        self.solr.remove_all(config.SOLR_PREFIX)
+        return self.status
 
     def worker(self, stopped, text, progress, status, startable):
         try:
@@ -252,6 +265,7 @@ class Crawler:
                 doc['pages'], start=1)})
             doc.pop("pages", None)
         doc["scanDate"] = datetime.datetime.now().isoformat() + "Z"
+        doc["source"] = config.SOLR_PREFIX
 
         # commit document to solr
         self.solr.commit(doc)

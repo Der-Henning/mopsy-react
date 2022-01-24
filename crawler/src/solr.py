@@ -65,6 +65,13 @@ class Solr:
         res = requests.post(url, json={"commit": {}, "delete": {"id": doc_id}})
         return res.json()
 
+    def remove_all(self, source):
+        url = self._build_url("/update")
+        self.wait_for_connection()
+        res = requests.post(url, json={"commit": {}, "delete": {
+                            "query": f"source:{source}"}})
+        return res.json()
+
     def optimize(self):
         url = self._build_url("/update")
         params = {"optimize": "true"}

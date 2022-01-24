@@ -5,7 +5,7 @@ from flask import jsonify
 from crawler import Crawler
 
 LOGLEVEL = log.DEBUG if os.getenv("DEBUG") == "true" else log.INFO
-PORT = int(os.getenv("CRAWLER_PORT", 80))
+PORT = int(os.getenv("CRAWLER_PORT", "80"))
 
 log.basicConfig(
     level=LOGLEVEL, format='%(levelname)s - %(name)s - %(message)s',)
@@ -34,6 +34,11 @@ def stop():
 @server.route("/toggleAutorestart", methods=["POST"])
 def toggle_autorestart():
     return jsonify(crawler.toggle_autorestart())
+
+
+@server.route("/resetIndex", methods=['POST'])
+def reset_index():
+    return jsonify(crawler.delete_all_docs())
 
 
 @server.route("/fieldList", methods=["GET"])
