@@ -12,9 +12,9 @@ jobs:
         name: Release Image
         runs-on: ubuntu-latest
         strategy:
-        fail-fast: false
-        matrix:
-            image: [ 'mopsy', 'mopsy-crawler' ]
+            fail-fast: false
+            matrix:
+                image: [ 'mopsy', 'mopsy-crawler' ]
         steps:
         -
             name: Checkout
