@@ -14,7 +14,9 @@ services:
       - ..:/workspace:cached
       - cache:/cache
     environment:
-      DANGEROUSLY_DISABLE_HOST_CHECK: "true"
+      DANGEROUSLY_DISABLE_HOST_CHECK: 'true'
+      FLASK_ENV: developement
+      DEBUG: 'true'
       MOPSY_CRAWLERS: "localhost:5000"
       MOPSY_DB_PASSWORD: myverygoodpassword
       CALIBRE_PATH: /workspace/calibre-library

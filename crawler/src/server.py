@@ -4,8 +4,10 @@ import flask
 from flask import jsonify
 from crawler import Crawler
 
-LOGLEVEL = log.DEBUG if os.getenv("DEBUG") == "true" else log.INFO
+DEBUG = os.getenv("DEBUG") == "true"
+LOGLEVEL = log.DEBUG if DEBUG else log.INFO
 PORT = int(os.getenv("CRAWLER_PORT", "80"))
+FLASK_ENV = os.getenv("FLASK_ENV", "production")
 
 log.basicConfig(
     level=LOGLEVEL, format='%(levelname)s - %(name)s - %(message)s',)
@@ -50,5 +52,17 @@ def start_server():
     server.run(host='0.0.0.0', port=PORT)
 
 
+def startServer():
+    from waitress import serve
+    serve(server, host='0.0.0.0', port=PORT)
+
+
+def startDevServer():
+    server.run(host='0.0.0.0', port=PORT, debug=DEBUG)
+
+
 if __name__ == "__main__":
-    start_server()
+    if FLASK_ENV == "developement":
+        startDevServer()
+    else:
+        startServer()
