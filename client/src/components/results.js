@@ -107,10 +107,10 @@ const Results = (props) => {
           className={"restore-" + doc.id}
         >
           <div style={{ display: "flex", width: "100%" }}>
-            <Accordion.Toggle
-              as={Card.Header}
+            <Card.Header
+              // as={Card.Header}
               block={"true"}
-              eventKey={doc.id}
+              // eventKey={doc.id}
               onClick={_toggleActiveDocument.bind(null, doc.id)}
               style={{
                 textAlign: "left",
@@ -124,14 +124,14 @@ const Results = (props) => {
               {doc["document"] && <span style={{ marginRight: "5px" }}>{_getVal(doc, "document")}</span>}
               {doc["title"] && <span style={{ marginRight: "5px" }}>{_getVal(doc, "title")}</span>}
               {doc["subtitle"] && <span style={{ marginRight: "5px" }}><i>{_getVal(doc, "subtitle")}</i></span>}
-            </Accordion.Toggle>
+            </Card.Header>
             <OpenExternalLinkButton link={doc.externallink || doc.link} />
             <FavoriteButton isFavorite={doc.isFavorite} onClick={_starKlickHandler.bind(null, i)} />
           </div>
-          <Accordion.Toggle
-            as={Card.Header}
+          <Card.Header
+            // as={Card.Header}
             block={"true"}
-            eventKey={doc.id}
+            // eventKey={doc.id}
             onClick={_toggleActiveDocument.bind(null, doc.id)}
             style={{
               textAlign: "left",
@@ -141,7 +141,7 @@ const Results = (props) => {
             }}
           >
             <small>{_getVal(doc, "zusatz")}</small>
-          </Accordion.Toggle>
+          </Card.Header>
         </Card.Header>
         <Accordion.Collapse eventKey={doc.id}>
           <Card.Body>{_cardBody(doc.id)}</Card.Body>
