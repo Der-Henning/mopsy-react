@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, useRef } from "react";
 import { Navbar, Nav } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
-import { withRouter } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { Menu, Sun, Moon, LogOut } from "react-feather";
 import { useGlobal } from "../context";
 
@@ -110,4 +110,4 @@ const Header = (props) => {
   return <React.Fragment></React.Fragment>;
 };
 
-export default withRouter(Header);
+export default Header;

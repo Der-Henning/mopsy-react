@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Pagination, Spinner } from "react-bootstrap";
 import { Results, PDFViewer, Searchbar, Filter } from "../components";
-import { withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useGlobal, useSearchData } from "../context";
 
 function useQuery() {
@@ -12,6 +12,7 @@ function useQuery() {
 const Search = (props) => {
   const q = useQuery().get("q");
   const page = parseInt(useQuery().get("page")) || 1;
+  const navigate = useNavigate();
 
   const { dimensions, setDisplayFooter } = useGlobal();
   const {
@@ -42,16 +43,16 @@ const Search = (props) => {
 
   const _setPage = useCallback(
     (page) => {
-      props.history.push("/search?q=" + params.searchText + "&page=" + page);
+      navigate("/search?q=" + params.searchText + "&page=" + page);
     },
-    [props.history, params.searchText]
+    [navigate, params.searchText]
   );
 
   const setPdfPage = useCallback(
     (page) => {
       setActiveDocumentPage(page);
       if (!dimensions.showPdfViewer)
-        props.history.push(
+      navigate(
           "/viewer?url=" +
             getDocumentData(activeDocument).link +
             "&page=" +
@@ -62,7 +63,7 @@ const Search = (props) => {
       activeDocument,
       setActiveDocumentPage,
       dimensions.showPdfViewer,
-      props.history,
+      navigate,
       getDocumentData,
     ]
   );
@@ -183,4 +184,4 @@ const Search = (props) => {
   );
 };
 
-export default withRouter(Search);
+export default Search;

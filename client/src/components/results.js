@@ -4,7 +4,7 @@ import Parser from "html-react-parser";
 import styles from "../styles/results.module.css";
 import Axios from "axios";
 import { useGlobal, useSearchData } from "../context";
-import { withRouter } from "react-router-dom";
+// import { withRouter } from "react-router-dom";
 import { OpenExternalLinkButton, FavoriteButton } from "../components";
 
 const Results = (props) => {
@@ -159,4 +159,4 @@ const Results = (props) => {
   } else return <React.Fragment></React.Fragment>;
 };
 
-export default withRouter(Results);
+export default Results;

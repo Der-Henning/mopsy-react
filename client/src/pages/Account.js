@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import { Spinner } from "react-bootstrap";
 import { useGlobal } from "../context";
@@ -27,6 +27,7 @@ const successStyle = {
 const Account = (props) => {
   const { userAPI } = useGlobal();
   const { user, getUserData, setUserData } = userAPI;
+  const navigate = useNavigate();
 
   const [state, setState] = useState({
     isFetching: true,
@@ -56,9 +57,9 @@ const Account = (props) => {
   }, [getUserData]);
 
   useEffect(() => {
-    if (!user.loggedIn) props.history.push("/");
+    if (!user.loggedIn) navigate("/");
     else _fetchData();
-  }, [user, _fetchData, props.history]);
+  }, [user, _fetchData, navigate]);
 
   const _update = useCallback(
     (e) => {
@@ -157,4 +158,4 @@ const Account = (props) => {
   );
 };
 
-export default withRouter(Account);
+export default Account;

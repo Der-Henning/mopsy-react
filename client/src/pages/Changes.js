@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { withRouter } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { Table, Spinner } from "react-bootstrap";
 import { useGlobal } from "../context";
 import { OpenExternalLinkButton, FavoriteButton } from "../components";
@@ -115,4 +115,4 @@ const Changes = (props) => {
     );
 };
 
-export default withRouter(Changes);
+export default Changes;

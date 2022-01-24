@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button, ToggleButton } from "react-bootstrap";
 import { Spinner } from "react-bootstrap";
 import { useGlobal } from "../context";
@@ -19,7 +19,8 @@ const Admin = (props) => {
   const { fetchCrawlers,
     startCrawler,
     stopCrawler,
-    toggleAutorestart } = useCrawlers(api)
+    toggleAutorestart } = useCrawlers(api);
+  const navigate = useNavigate();
 
   const [crawlers, setCrawlers] = useState({});
   const [state, setState] = useState({ loading: true });
@@ -116,9 +117,9 @@ const Admin = (props) => {
       interval = setInterval(() => {
         _fetchCrawlers();
       }, 2000);
-    else props.history.push("/");
+    else navigate("/");
     return () => clearInterval(interval);
-  }, [user, _fetchCrawlers, props.history]);
+  }, [user, _fetchCrawlers, navigate]);
 
   if (state.loading)
     return (
@@ -158,4 +159,4 @@ const Admin = (props) => {
   }
 };
 
-export default withRouter(Admin);
+export default Admin;

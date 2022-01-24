@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Table, Spinner } from "react-bootstrap";
 import { useGlobal } from "../context";
 import { OpenExternalLinkButton, DeleteButton } from "../components";
@@ -7,6 +7,7 @@ import { OpenExternalLinkButton, DeleteButton } from "../components";
 const Favorites = (props) => {
   const { userAPI } = useGlobal();
   const { user, getFavorites, toggleFavorites } = userAPI;
+  const navigate = useNavigate();
 
   const [state, setState] = useState({
     isFetching: true,
@@ -38,9 +39,9 @@ const Favorites = (props) => {
   }, [getFavorites]);
 
   useEffect(() => {
-    if (!user.loggedIn) props.history.push("/");
+    if (!user.loggedIn) navigate("/");
     else _fetchData();
-  }, [user, props.history, _fetchData]);
+  }, [user, navigate, _fetchData]);
 
   const _removeFavorite = useCallback(
     (DocId) => {
@@ -119,4 +120,4 @@ const Favorites = (props) => {
   );
 };
 
-export default withRouter(Favorites);
+export default Favorites;
