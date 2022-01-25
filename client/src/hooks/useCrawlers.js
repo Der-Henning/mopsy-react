@@ -21,43 +21,57 @@ export default function useCrawlers(api) {
 
     const startCrawler = useCallback(crawlerId => {
         return new Promise((resolve, reject) => {
-            Axios.get(api + `/crawler/${crawlerId}/start`)
-            .then((res) => {
-                if (isMounted) {
-                    resolve(res.data);
-                }
-            })
-            .catch((err) => {
-                if (isMounted) reject(err)
-            })
+            Axios.post(api + `/crawler/${crawlerId}/start`)
+                .then((res) => {
+                    if (isMounted) {
+                        resolve(res.data);
+                    }
+                })
+                .catch((err) => {
+                    if (isMounted) reject(err)
+                })
         })
     }, [api, isMounted])
-    
+
     const stopCrawler = useCallback(crawlerId => {
         return new Promise((resolve, reject) => {
-            Axios.get(api + `/crawler/${crawlerId}/stop`)
-            .then((res) => {
-                if (isMounted) {
-                    resolve(res.data);
-                }
-            })
-            .catch((err) => {
-                if (isMounted) reject(err)
-            })
+            Axios.post(api + `/crawler/${crawlerId}/stop`)
+                .then((res) => {
+                    if (isMounted) {
+                        resolve(res.data);
+                    }
+                })
+                .catch((err) => {
+                    if (isMounted) reject(err)
+                })
         })
     }, [api, isMounted])
 
     const toggleAutorestart = useCallback(crawlerId => {
         return new Promise((resolve, reject) => {
-            Axios.get(api + `/crawler/${crawlerId}/toggleAutorestart`)
-            .then((res) => {
-                if (isMounted) {
-                    resolve(res.data);
-                }
-            })
-            .catch((err) => {
-                if (isMounted) reject(err)
-            })
+            Axios.post(api + `/crawler/${crawlerId}/toggleAutorestart`)
+                .then((res) => {
+                    if (isMounted) {
+                        resolve(res.data);
+                    }
+                })
+                .catch((err) => {
+                    if (isMounted) reject(err)
+                })
+        })
+    }, [api, isMounted])
+
+    const resetIndex = useCallback(crawlerId => {
+        return new Promise((resolve, reject) => {
+            Axios.post(api + `/crawler/${crawlerId}/resetIndex`)
+                .then((res) => {
+                    if (isMounted) {
+                        resolve(res.data);
+                    }
+                })
+                .catch((err) => {
+                    if (isMounted) reject(err)
+                })
         })
     }, [api, isMounted])
 
@@ -65,6 +79,7 @@ export default function useCrawlers(api) {
         fetchCrawlers,
         startCrawler,
         stopCrawler,
-        toggleAutorestart
+        toggleAutorestart,
+        resetIndex
     }
 }
