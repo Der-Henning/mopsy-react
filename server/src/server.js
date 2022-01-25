@@ -51,8 +51,12 @@ server.use(compression());
 if (config.rate_limit) server.use('/api', apiLimiter);
 server.use(`/api/${apiVersion}`, apiRouter);
 
-server.use(express.static(path.join(__dirname, "../../client/build")));
-server.use("/*", indexRouter);
+// serve static react client files only in developement mode
+// in production static files are served via nginx web server
+if (!config.production) {
+  server.use(express.static(path.join(__dirname, "../../client/build")));
+  server.use("/*", indexRouter);
+}
 
 server.use(function (err, req, res, next) {
   console.error(err.stack);

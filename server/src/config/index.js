@@ -2,6 +2,7 @@ const homedir = require('os').homedir();
 const finalConfig = {
   app_name: process.env.MOPSY_APP_NAME || "MOPSY Search",
   port: process.env.MOPSY_PORT || 4000,
+  production: ((process.env.NODE_ENV || "developement") == "production"),
   json_indentation: process.env.MOPSY_JSON_IDENTATION || 4,
   sessionkey: process.env.MOPSY_SESSIONKEY || "myprivatekey",
   salt_rounds: process.env.MOPSY_SALT_ROUNDS || 10,
