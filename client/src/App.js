@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { Header, Footer } from "./components";
 import {
   Home,
@@ -30,16 +30,17 @@ const App = (props) => {
     >
       <Header visible={true} />
       <Routes>
-        <Route exact path="/" element={<Home />} />
-        <Route path="/favorites" element={<Favorites />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/account" element={<Account />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/changes" element={<Changes />} />
-        <Route path="/search" element={<Search />} />
-        <Route path="/viewer" element={<Viewer />} />
+        <Route index element={<Home />} />
+        <Route path="favorites" element={<Favorites />} />
+        <Route path="about" element={<About />} />
+        <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
+        <Route path="account" element={<Account />} />
+        <Route path="admin" element={<Admin />} />
+        <Route path="changes" element={<Changes />} />
+        <Route path="search" element={<Search />} />
+        <Route path="viewer" element={<Viewer />} />
+        <Route path="*" element={<Navigate to="/" replace={true} />} />
       </Routes>
       <Footer style={{ marginTop: "auto" }} visible={displayFooter} />
     </div>

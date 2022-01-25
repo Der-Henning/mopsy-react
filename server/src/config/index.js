@@ -9,6 +9,9 @@ const finalConfig = {
   pdf_dummy: process.env.MOPSY_PDF_DUMMY || null,           // will be displayed if pdf file does not exist
   crawlers: (process.env.MOPSY_CRAWLERS || "").split(","),  // comma seperated list of crawler microservice hostnames
   pdfCache: process.env.MOPSY_PDF_CACHE || homedir,
+  rate_limit: process.env.MOPSY_RATE_LIMIT || false,
+  rate_limit_window: process.env.MOPSY_RATE_LIMIT_WINDOW || 5 * 60 * 1000, // 5 minutes
+  rate_limit_max: process.env.MOPSY_RATE_LIMIT_MAX || 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
   solr: {
     host: process.env.MOPSY_SOLR_HOST || "solr",
     port: process.env.MOPSY_SOLR_PORT || 8983,
