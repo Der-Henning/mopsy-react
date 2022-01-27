@@ -14,8 +14,9 @@ FROM node:${VARIANT}-alpine
 WORKDIR /usr/mopsy
 ENV NODE_ENV=production
 
-RUN mkdir /server
-RUN mkdir /client
+RUN mkdir /cache
+ENV CACHE_DIRECTORY=/cache
+VOLUME /cache
 
 COPY ./server/package.json ./server/
 COPY ./server/package-lock.json ./server/

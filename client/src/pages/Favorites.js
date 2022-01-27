@@ -80,11 +80,11 @@ const Favorites = (props) => {
         <tbody>
           {state.data.map((doc) => {
             return (
-              <tr key={doc.DocId}>
+              <tr key={doc.id}>
                 <td>
                   {doc.deleted ?
                     "gelöscht" :
-                    <OpenExternalLinkButton link={doc.externallink || doc.link} />
+                    <OpenExternalLinkButton link={doc.cache} />
                   }
                 </td>
                 <td>
@@ -92,11 +92,11 @@ const Favorites = (props) => {
                   <br />
                   <small>{doc.subtitle}</small>
                 </td>
-                <td style={{ whiteSpace: "nowrap" }}>{doc.date}</td>
+                <td style={{ whiteSpace: "nowrap" }}>{doc.scanDate?.split("T")[0]}</td>
                 <td>
                   <DeleteButton
                     onClick={() => {
-                      _removeFavorite(doc.DocId);
+                      _removeFavorite(doc.id);
                     }}
                   />
                 </td>

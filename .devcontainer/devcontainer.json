@@ -5,7 +5,7 @@
 	"name": "Developement Container",
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
-	"workspaceFolder": "/workspace",
+	"workspaceFolder": "/usr/mopsy",
 
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
@@ -39,11 +39,12 @@
 		"mtxr.sqltools",
 		"mtxr.sqltools-driver-pg",
 		"ms-python.python",
-		"ms-python.vscode-pylance"
+		"ms-python.vscode-pylance",
+		"redhat.vscode-xml"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [3000, 4000, 5000, "db:5432", "solr:8983"],
+	"forwardPorts": [3000, 4000, 5000, 80, "db:5432", "solr:8983"],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "npm install",

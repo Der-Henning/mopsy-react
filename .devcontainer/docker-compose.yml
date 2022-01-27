@@ -11,7 +11,7 @@ services:
         PYTHON_VERSION: "3.10"
         NODE_VERSION: 16
     volumes:
-      - ..:/workspace:cached
+      - ..:/usr/mopsy:cached
       - cache:/cache
     environment:
       DANGEROUSLY_DISABLE_HOST_CHECK: 'true'
@@ -19,7 +19,7 @@ services:
       DEBUG: 'true'
       MOPSY_CRAWLERS: "localhost:5000"
       MOPSY_DB_PASSWORD: myverygoodpassword
-      CALIBRE_PATH: /workspace/calibre-library
+      CALIBRE_PATH: /usr/mopsy/calibre-library
       CRAWLER_AUTORESTART: 'false'
       CRAWLER_AUTOSTART: 'false'
       CRAWLER_PORT: 5000

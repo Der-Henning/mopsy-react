@@ -4,7 +4,6 @@ import Parser from "html-react-parser";
 import styles from "../styles/results.module.css";
 import Axios from "axios";
 import { useGlobal, useSearchData } from "../context";
-// import { withRouter } from "react-router-dom";
 import { OpenExternalLinkButton, FavoriteButton } from "../components";
 
 const Results = (props) => {
@@ -34,33 +33,44 @@ const Results = (props) => {
   const _cardBody = useCallback(
     (docId) => {
       const highlights = highlighting[docId];
-      var pages = [];
       if (!highlights?.fetched) {
         return <div>Loading ...</div>;
       }
-      for (let key in highlights) {
-        if (key.split("_")[0] === "page") {
-          pages.push(
-            <tr
-              key={key}
-              className={styles.cardTr}
-              style={{ textAlign: "left", cursor: "pointer" }}
-              onClick={() => setPdfPage(key.split("_")[1])}
-            >
-              <td style={{ padding: "3px 5px 3px 1px", textAlign: "center" }}>
-                {key.split("_")[1]}
-              </td>
-              <td style={{ padding: "3px 1px" }}>
-                {Parser(highlights[key].join(" ... "))}
-              </td>
-            </tr>
-          );
-        }
-      }
       return (
         <table>
-          <tbody>{pages}</tbody>
+          <tbody>{highlights.pages.map((page) => (
+            <tr
+              key={page[0]}
+              className={styles.cardTr}
+              style={{ textAlign: "left", cursor: "pointer" }}
+              onClick={() => setPdfPage(page[0])}
+            >
+              <td style={{ padding: "3px 5px 3px 1px", textAlign: "center" }}>
+                {page[0]}
+              </td>
+              <td style={{ padding: "3px 1px", overflowWrap: "anywhere", hyphens: "auto" }}>
+                {Parser(page[1].join(" ... "))}
+              </td>
+            </tr>
+          ))}</tbody>
         </table>
+              //   <table>
+              //   <tbody>{Object.keys(highlights.pages).map((page) => (
+              //     <tr
+              //       key={page}
+              //       className={styles.cardTr}
+              //       style={{ textAlign: "left", cursor: "pointer" }}
+              //       onClick={() => setPdfPage(page)}
+              //     >
+              //       <td style={{ padding: "3px 5px 3px 1px", textAlign: "center" }}>
+              //         {page}
+              //       </td>
+              //       <td style={{ padding: "3px 1px", overflowWrap: "anywhere", hyphens: "auto" }}>
+              //         {Parser(highlights.pages[page].join(" ... "))}
+              //       </td>
+              //     </tr>
+              //   ))}</tbody>
+              // </table>
       );
     },
     [highlighting, setPdfPage]
@@ -125,7 +135,7 @@ const Results = (props) => {
               {doc["title"] && <span style={{ marginRight: "5px" }}>{_getVal(doc, "title")}</span>}
               {doc["subtitle"] && <span style={{ marginRight: "5px" }}><i>{_getVal(doc, "subtitle")}</i></span>}
             </Card.Header>
-            <OpenExternalLinkButton link={doc.externallink || doc.link} />
+            <OpenExternalLinkButton link={doc.cache} />
             <FavoriteButton isFavorite={doc.isFavorite} onClick={_starKlickHandler.bind(null, i)} />
           </div>
           <Card.Header

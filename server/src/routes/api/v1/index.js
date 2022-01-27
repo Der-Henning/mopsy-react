@@ -7,7 +7,7 @@ const searchRouter = require("./search");
 const userRouter = require("./user");
 const favoriteRouter = require("./favorite");
 const crawlerRouter = require("./crawler");
-const pdfRouter = require("./pdf");
+//const pdfRouter = require("./pdf");
 const changesRouter = require("./changes");
 
 router.get("", function (req, res, next) {
@@ -18,7 +18,7 @@ router.use("/search", searchRouter);
 router.use("/user", userRouter);
 router.use("/favorite", favoriteRouter);
 router.use("/crawler", crawlerRouter);
-router.use("/pdf", pdfRouter);
+//router.use("/pdf", pdfRouter);
 router.use("/changes", changesRouter);
 
 router.use("/*", function (req, res, next) {

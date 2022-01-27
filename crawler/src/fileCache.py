@@ -21,3 +21,12 @@ class FileCache:
         file_path = path.join(self.cache_folder, f"{doc_id}.pdf")
         if path.exists(file_path):
             os.remove(file_path)
+
+    def remove_all(self):
+        for file in os.listdir(self.cache_folder):
+            os.remove(path.join(self.cache_folder, file))
+
+    def symlink(self, file, doc_id):
+        dest = path.join(self.cache_folder, f"{doc_id}.pdf")
+        os.symlink(file, dest)
+        return dest

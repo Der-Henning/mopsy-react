@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-// import { withRouter } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Search } from "react-feather";
 import styles from "../styles/searchbar.module.css";

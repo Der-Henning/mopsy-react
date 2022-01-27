@@ -21,8 +21,8 @@ const Search = (props) => {
     params,
     isFetchingDocs,
     getDocumentData,
-    // activeDocumentData,
-    // activeDocumentPage,
+    activeDocumentData,
+    activeDocumentPage,
     setSearchText,
     setPage,
     setActiveDocumentPage,
@@ -54,7 +54,7 @@ const Search = (props) => {
       if (!dimensions.showPdfViewer)
       navigate(
           "/viewer?url=" +
-            getDocumentData(activeDocument).link +
+            getDocumentData(activeDocument).cache +
             "&page=" +
             page
         );
@@ -137,7 +137,7 @@ const Search = (props) => {
         <Filter />
         <Results
           setPdfPage={setPdfPage}
-          // setFavorite={this.setFavorite}
+        // setFavorite={this.setFavorite}
         />
         {_pagination()}
       </React.Fragment>
@@ -170,15 +170,13 @@ const Search = (props) => {
       <div style={{ minWidth: dimensions.pdfWidth }}>
         {!isFetchingDocs && activeDocument ? (
           <PDFViewer
-            // url={activeDocument ? activeDocumentData()?.link : null}
-            // page={activeDocumentPage}
+            url={activeDocumentData()?.cache}
+            page={activeDocumentPage}
 
             // format={"pdf"}
-            style={{width:dimensions.pdfWidth, height:dimensions.pdfHeight}}
+            style={{ width: dimensions.pdfWidth, height: dimensions.pdfHeight }}
           />
-        ) : (
-          ""
-        )}
+        ) : (null)}
       </div>
     </div>
   );

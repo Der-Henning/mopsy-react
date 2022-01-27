@@ -1,7 +1,6 @@
 import React, { useEffect, useCallback, useRef } from "react";
 import { Navbar, Nav } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
-// import { useNavigate } from "react-router-dom";
 import { Menu, Sun, Moon, LogOut } from "react-feather";
 import { useGlobal } from "../context";
 
@@ -95,10 +94,10 @@ const Header = (props) => {
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" children={<Menu />} />
         <Navbar.Collapse id="responsive-navbar-nav">
-          <Nav className="mr-auto">
+          <Nav className="me-auto my-2 my-lg-0">
             {_getNavbarContent()}
           </Nav>
-          <Nav>
+          <Nav className="d-flex">
             {_getLoginForm()}
             <Nav.Link onClick={() => toggleTheme()} as={Nav.Link} href={"#"} >
               {theme === "dark" ? <Sun /> : <Moon />}
