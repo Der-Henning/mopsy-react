@@ -91,26 +91,32 @@ const PDFViewer = (props) => {
         }
     }, [])
 
+    // RegEx monster ... seems to work
     const _highlightMatches = useCallback((document, page) => {
         const textLayer = pdfViewer._pages[page - 1]?.textLayer?.textLayerDiv;
-        // const highlights = highlighting?.[document]?.pages?.[page];
         const highlights = highlighting?.[document]?.pages?.find(p => p[0] === page);
         if (textLayer && highlights && highlights[1] && !textLayer.highlighted) {
             textLayer.highlighted = true
-            let phrases = highlights[1].map(h => (
-                h.split("<b>")[1].split("</b>")[0]
-            ));
+            let phrases = [];
+            const pattern1 = new RegExp("<*b[^>]*>(.*?)</b>", "gm");
+            highlights[1].forEach(h => {
+                var match = pattern1.exec(h);
+                while (match != null) {
+                    phrases.push(match[1]);
+                    match = pattern1.exec(h);
+                }
+            })
             phrases = [...new Set(phrases)];
             for (let phrase in phrases) {
                 phrases[phrase] = phrases[phrase].split('').join('(<[^>]+>)*');
             }
-            const pattern = new RegExp("(" + phrases.join("|") + ")", "g");
-            textLayer.innerHTML = textLayer.innerHTML.replace(pattern, (match) => {
-                const pattern = new RegExp("(<[^>]+>)+");
-                var splits = match.split(pattern);
+            const pattern2 = new RegExp("(" + phrases.join("|") + ")", "g");
+            textLayer.innerHTML = textLayer.innerHTML.replace(pattern2, (match) => {
+                const pattern3 = new RegExp("(</?[^>]+>)");
+                var splits = match.split(pattern3);
                 for (let s in splits) {
-                    if (!pattern.test(splits[s])) {
-                        splits[s] = "<span style='background-color:yellow'>" + splits[s] + "</span>"
+                    if (!pattern3.test(splits[s]) && splits[s] !== "") {
+                        splits[s] = "<em style='background-color:yellow'>" + splits[s] + "</em>"
                     }
                 }
                 return splits.join('');
