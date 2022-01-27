@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button, ToggleButton } from "react-bootstrap";
 import { Spinner } from "react-bootstrap";
 import { useGlobal } from "../context";
@@ -19,7 +19,9 @@ const Admin = (props) => {
   const { fetchCrawlers,
     startCrawler,
     stopCrawler,
-    toggleAutorestart } = useCrawlers(api)
+    toggleAutorestart,
+    resetIndex } = useCrawlers(api);
+  const navigate = useNavigate();
 
   const [crawlers, setCrawlers] = useState({});
   const [state, setState] = useState({ loading: true });
@@ -77,6 +79,20 @@ const Admin = (props) => {
     [toggleAutorestart, crawlers]
   )
 
+  const _resetIndex = useCallback(
+    (i) => {
+      resetIndex(i)
+        .then((res) => {
+          console.log(`deleted index of ${crawlers[i].name}`);
+          _start(i);
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+    },
+    [resetIndex, _start, crawlers]
+  )
+
   const startStopBtn = useCallback(
     (i) => {
       if (crawlers[i].startable) {
@@ -98,6 +114,13 @@ const Admin = (props) => {
       </ToggleButton>
     },
     [_toggleAutorestart, crawlers]
+  );
+
+  const resetButton = useCallback(
+    (i) => {
+      return <Button onClick={() => _resetIndex(i)}>reset Index</Button>
+    },
+    [_resetIndex]
   )
 
   const progress = useCallback((p) => {
@@ -116,9 +139,9 @@ const Admin = (props) => {
       interval = setInterval(() => {
         _fetchCrawlers();
       }, 2000);
-    else props.history.push("/");
+    else navigate("/");
     return () => clearInterval(interval);
-  }, [user, _fetchCrawlers, props.history]);
+  }, [user, _fetchCrawlers, navigate]);
 
   if (state.loading)
     return (
@@ -136,10 +159,10 @@ const Admin = (props) => {
   if (crawlers) {
     return (
       <div
-        // style={{
-        //   height: dimensions.pdfHeight,
-        //   overflowY: "auto",
-        // }}
+      // style={{
+      //   height: dimensions.pdfHeight,
+      //   overflowY: "auto",
+      // }}
       >
         {Object.keys(crawlers).map((key) => (
           <div key={key} style={styles}>
@@ -148,7 +171,7 @@ const Admin = (props) => {
             <p>{progress(crawlers[key].progress)}</p>
             <p>{crawlers[key].message || ""}</p>
             <p>{crawlers[key].text || ""}</p>
-            <p>{startStopBtn(key)} {toggleAutostartBtn(key)}</p>
+            <p>{startStopBtn(key)} {toggleAutostartBtn(key)} {resetButton(key)}</p>
           </div>
         ))}
       </div>
@@ -158,4 +181,4 @@ const Admin = (props) => {
   }
 };
 
-export default withRouter(Admin);
+export default Admin;

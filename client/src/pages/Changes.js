@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { withRouter } from "react-router-dom";
 import { Table, Spinner } from "react-bootstrap";
 import { useGlobal } from "../context";
 import { OpenExternalLinkButton, FavoriteButton } from "../components";
@@ -79,11 +78,11 @@ const Changes = (props) => {
                 <tbody>
                     {state.data.map((doc) => {
                         return (
-                            <tr key={doc.DocId}>
+                            <tr key={doc.id}>
                                 <td>
                                     {doc.deleted ?
                                         "gelöscht" :
-                                        <OpenExternalLinkButton link={doc.externallink || doc.link} />
+                                        <OpenExternalLinkButton link={doc.cache} />
                                     }
                                 </td>
                                 <td>
@@ -91,9 +90,9 @@ const Changes = (props) => {
                                     <br />
                                     <small>{doc.subtitle}</small>
                                 </td>
-                                <td style={{ whiteSpace: "nowrap" }}>{doc.date}</td>
+                                <td style={{ whiteSpace: "nowrap" }}>{doc.scanDate?.split("T")[0]}</td>
                                 <td>
-                                    <FavoriteButton isFavorite={doc.isFavorite} onClick={_starKlickHandler.bind(null, doc.DocId)} />
+                                    <FavoriteButton isFavorite={doc.isFavorite} onClick={_starKlickHandler.bind(null, doc.id)} />
                                 </td>
                             </tr>
                         );
@@ -115,4 +114,4 @@ const Changes = (props) => {
     );
 };
 
-export default withRouter(Changes);
+export default Changes;

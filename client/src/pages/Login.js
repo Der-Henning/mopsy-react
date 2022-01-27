@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import { useGlobal } from "../context";
 
@@ -20,6 +20,7 @@ const errorStyle = {
 const Login = (props) => {
   const { userAPI } = useGlobal();
   const { user, login, sendMail } = userAPI;
+  const navigate = useNavigate();
 
   const [state, setState] = useState({
     error: null,
@@ -29,8 +30,8 @@ const Login = (props) => {
   });
 
   useEffect(() => {
-    if (user.loggedIn) props.history.push("/");
-  }, [user, props.history]);
+    if (user.loggedIn) navigate("/");
+  }, [user, navigate]);
 
   const _login = useCallback(
     (e) => {
@@ -194,4 +195,4 @@ const Login = (props) => {
   );
 };
 
-export default withRouter(Login);
+export default Login;

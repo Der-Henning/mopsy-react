@@ -1,90 +1,7 @@
 const router = require("express").Router();
-const config = require("../../../config");
 const models = require("../../../models");
 const errors = require("../../../middleware/errors");
 const solr = require("../../../middleware/solr");
-const Axios = require("axios")
-
-const apiVersion = "v1";
-
-const facetFields = async () => {
-  var facet = {
-    Keywords: {
-      type: "terms",
-      field: "Keywords_facet"
-    },
-    Authors: {
-      type: "terms",
-      field: "Authors_facet"
-    },
-    Publishers: {
-      type: "terms",
-      field: "Publishers_facet"
-    },
-    Language: {
-      type: "terms",
-      field: "language"
-    },
-    Creation: {
-      type: "terms",
-      field: "creationDate",
-      // gap: "+1DAY",
-      // end: "NOW",
-      // start: "NOW/MONTH"
-      // TZ: "America/Los_Angeles",
-    }
-  }
-
-  await Promise.all(config.crawlers.map(async crawler => {
-    try {
-      const c = await Axios.get(`http://${crawler}/fieldList`)
-      facet = {...facet, ...c.data.facets}
-    } catch (err) {
-      console.log(err);
-    }
-  }))
-
-  return facet
-}
-
-const searchBody = async (q, page, fq) => {
-  return {
-    ...config.solr.searchParams,
-    query: q,
-    limit: 10,
-    offset: (page - 1) * 10,
-    filter: fq,
-    params: {
-      hl: "on",
-      "hl.snippets": 1,
-      "hl.fl": "document,title_*,subtitle_*,tags_*,authors",
-      "hl.fragsize": 0
-    },
-    facet: await facetFields(),
-  };
-};
-
-const searchPagesBody = (q, DocId) => {
-  return {
-    ...config.solr.searchParams,
-    query: q,
-    limit: 1,
-    fields: "id",
-    filter: [`id:"${DocId}"`],
-    params: {
-      hl: "on",
-      "hl.fl": "*_page_*",
-      "hl.snippets": 10,
-    }
-  };
-};
-
-const selectPage = (DocId, Page) => {
-  return {
-    query: `id:"${DocId}"`,
-    fields: `p_${Page}_page_*`,
-  };
-};
 
 // search
 router.post("/", async (req, res, next) => {
@@ -94,12 +11,12 @@ router.post("/", async (req, res, next) => {
   try {
     var fq = [];
     if (req.body.fq) {
-      const fields = await facetFields()
+      const fields = await solr.facetFields()
       fq = req.body.fq.map(f => (`${fields[f[0]].field}:"${f[1]}"`))
     }
     if (userId && req.body.onlyFavs) {
       var favs = await models.Favorite.findAll({
-        where: { UserId: userId,},
+        where: { UserId: userId, },
         attributes: ["DocId"],
         raw: true,
       });
@@ -108,24 +25,7 @@ router.post("/", async (req, res, next) => {
         fq = fq.concat("id:(" + favorites.join(" OR ") + ")");
       }
     }
-    const data = await solr.post("/search", await searchBody(q, page, fq));
-    data.response.docs = data.response.docs.map((doc) => ({
-        id: doc.id,
-        document: doc.document,
-        title: doc["title_txt_" + doc.language],
-        subtitle: doc["subtitle_txt_" + doc.language],
-        authors: doc.authors,
-        language: doc.language,
-        creationDate: doc.creationDate,
-        scanDate: doc.scanDate,
-        publicationDate: doc.publicationDate,
-        modificationDate: doc.modificationDate,
-        data: doc.data,
-        path: doc.path,
-        externallink: doc.externallink,
-        // link: doc.link || `/api/${apiVersion}/pdf/${doc.id}`,
-        link: `/api/${apiVersion}/pdf/${doc.id}`,
-    }));
+    const data = await solr.search(q, page, fq);
     if (userId) {
       data.response.docs = await Promise.all(
         data.response.docs.map(async (doc) => ({
@@ -135,25 +35,10 @@ router.post("/", async (req, res, next) => {
               UserId: userId,
               DocId: doc.id,
             },
-          }))
-            ? true
-            : false,
+          })),
         }))
       );
     }
-    Object.keys(data.highlighting).forEach((d) => {
-      Object.keys(data.highlighting[d]).forEach((f) => {
-        if (RegExp("p_[0-9]*_page_txt_[a-z]*").test(f)) {
-          data.highlighting[d]["page_" + f.split("_")[1]] =
-            data.highlighting[d][f];
-          delete data.highlighting[d][f];
-        }
-        if (RegExp("[a-z]*_txt_[a-z]*").test(f)) {
-          data.highlighting[d][f.split("_")[0]] = data.highlighting[d][f];
-          delete data.highlighting[d][f];
-        }
-      });
-    });
     res.status(200).send(data);
     next();
   } catch (err) {
@@ -193,10 +78,9 @@ router.post("/", (req, res, next) => {
 // get search suggestions
 router.get("/suggest", async (req, res, next) => {
   const { q } = req.query;
-
   try {
     if (!q) return next(new errors.MissingParameterError());
-    const data = await solr.post("/suggest", { query: q });
+    const data = await solr.suggest(q);
     res.send(
       data.suggest.mySuggester[q].suggestions.map((t) =>
         t.term.replace(/<(.|\n)*?>/g, "")
@@ -211,25 +95,8 @@ router.get("/suggest", async (req, res, next) => {
 router.get("/:DocId", async (req, res, next) => {
   const q = req.query.q || "*";
   const DocId = req.params.DocId;
-
   try {
-    const data = await solr.post("/search", searchPagesBody(q, DocId));
-    Object.keys(data.highlighting).forEach((d) => {
-      data.highlighting[d]["pages"] = {};
-      Object.keys(data.highlighting[d]).forEach((f) => {
-        if (RegExp("p_[0-9]*_page_txt_[a-z]*").test(f)) {
-          data.highlighting[d]["page_" + f.split("_")[1]] =
-            data.highlighting[d][f];
-          data.highlighting[d]["pages"][parseInt(f.split("_")[1])] = data.highlighting[d][f];
-          delete data.highlighting[d][f];
-        }
-        if (RegExp("[a-z]*_txt_[a-z]*").test(f)) {
-          data.highlighting[d][f.split("_")[0]] = data.highlighting[d][f];
-          delete data.highlighting[d][f];
-        }
-      });
-    });
-
+    const data = await solr.search_pages(q, DocId);
     res.status(200).send(data);
   } catch (err) {
     next(err);
@@ -240,9 +107,9 @@ router.get("/:DocId", async (req, res, next) => {
 router.get("/:DocId/:page", async (req, res, next) => {
   const { DocId, page } = req.params;
   try {
-    const data = await solr.post("/select", selectPage(DocId, page));
+    const data = await solr.select_doc(DocId, `p_${page}_page_*`)
     if ((data.response.numFound = 0))
-        return next(new errors.SolrDocumentDoesntExistError());
+      return next(new errors.SolrDocumentDoesntExistError());
     var doc = data.response.docs[0];
     Object.keys(doc).forEach((p) => {
       doc[p.split("_")[1]] = doc[p];
@@ -265,10 +132,10 @@ router.post("/select", async (req, res, next) => {
 });
 
 // get data for specific document
-router.post("/select/:DocId", async (req, res, next) => {
+router.get("/select/:DocId", async (req, res, next) => {
   const { DocId } = req.params;
   try {
-    const data = await solr.post("/select", { query: "id:" + DocId });
+    const data = await solr.select_doc(DocId)
     res.send(data);
   } catch (err) {
     next(err);

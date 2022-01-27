@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import { useGlobal } from "../context";
 
@@ -20,12 +20,13 @@ const errorStyle = {
 const Register = (props) => {
   const { userAPI } = useGlobal();
   const { user, register } = userAPI;
+  const navigate = useNavigate();
 
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (user.loggedIn) props.history.push("/");
-  }, [user, props.history]);
+    if (user.loggedIn) navigate("/");
+  }, [user, navigate]);
 
   const _register = useCallback(
     (e) => {
@@ -94,4 +95,4 @@ const Register = (props) => {
   );
 };
 
-export default withRouter(Register);
+export default Register;

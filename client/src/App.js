@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { Header, Footer } from "./components";
 import {
   Home,
@@ -13,38 +13,35 @@ import {
   Admin,
   Changes
 } from "./pages";
-import { useGlobal, SearchDataProvider } from "./context";
+import { useGlobal } from "./context";
 
 const App = (props) => {
-  const { theme, displayFooter } = useGlobal();
+  const { theme, displayFooter, dimensions } = useGlobal();
 
   return (
     <div
       data-theme={theme === "light" ? "light" : "dark"}
       style={{
-        overflowY: displayFooter ? "auto" : "" ,
+        overflowY: displayFooter || !dimensions.showPdfViewer ? "auto" : "",
         display: "flex",
         flexDirection: "column",
         height: `calc(100vh)`
       }}
     >
-      <Router>
-        <Header visible={true} />
-        <Switch>
-          <Route exact path="/" component={Home} />
-          <Route path="/favorites" component={Favorites} />
-          <Route path="/about" component={About} />
-          <Route path="/login" component={Login} />
-          <Route path="/register" component={Register} />
-          <Route path="/account" component={Account} />
-          <Route path="/admin" component={Admin} />
-          <Route path="/changes" component={Changes} />
-          <SearchDataProvider>
-            <Route path="/search" component={Search} />
-            <Route path="/viewer" component={Viewer} />
-          </SearchDataProvider>
-        </Switch>
-      </Router>
+      <Header visible={true} />
+      <Routes>
+        <Route index element={<Home />} />
+        <Route path="favorites" element={<Favorites />} />
+        <Route path="about" element={<About />} />
+        <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
+        <Route path="account" element={<Account />} />
+        <Route path="admin" element={<Admin />} />
+        <Route path="changes" element={<Changes />} />
+        <Route path="search" element={<Search />} />
+        <Route path="viewer" element={<Viewer />} />
+        <Route path="*" element={<Navigate to="/" replace={true} />} />
+      </Routes>
       <Footer style={{ marginTop: "auto" }} visible={displayFooter} />
     </div>
   );

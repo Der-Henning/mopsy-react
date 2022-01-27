@@ -1,9 +1,7 @@
 ARG VARIANT=16
-
 # Use NodeJS v16 as base image
 FROM node:${VARIANT} AS builder
 
-# Set Working directory
 WORKDIR /usr/mopsy
 
 # Install NodeJS modules and build app
@@ -16,8 +14,9 @@ FROM node:${VARIANT}-alpine
 WORKDIR /usr/mopsy
 ENV NODE_ENV=production
 
-RUN mkdir /server
-RUN mkdir /client
+RUN mkdir /cache
+ENV CACHE_DIRECTORY=/cache
+VOLUME /cache
 
 COPY ./server/package.json ./server/
 COPY ./server/package-lock.json ./server/
@@ -28,6 +27,17 @@ COPY --from=builder /usr/mopsy/server/build ./server/build
 WORKDIR /usr/mopsy/server
 
 RUN npm ci
+
+## setup nginx
+RUN apk update && apk upgrade && \
+    apk add nginx && \
+    rm -rf /var/cache/apk/* && \
+    rm /etc/nginx/http.d/*
+COPY ./nginx/* /etc/nginx/http.d/
+
+COPY ./docker/entrypoint.sh entrypoint.sh
+RUN chmod +x entrypoint.sh
+ENTRYPOINT ["./entrypoint.sh"]
 
 # Start Server
 CMD ["npm", "start"]

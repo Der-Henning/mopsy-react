@@ -14,7 +14,6 @@ services:
       - cache:/cache:ro
     environment:
       MOPSY_APP_NAME: MOPSY Search
-      MOPSY_PORT: 80
       MOPSY_DB_PASSWORD: myverygoodpassword
       MOPSY_SESSIONKEY: myprivatekey
       MOPSY_CRAWLERS: filesystem    ## hostnames of used crawlers

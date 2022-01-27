@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Search } from "react-feather";
 import styles from "../styles/searchbar.module.css";
 import Axios from "axios";
@@ -53,6 +53,7 @@ const Searchbar = (props) => {
   const { autofocus, q } = props;
   const { api, token } = useGlobal();
   const mountedRef = useRef(true)
+  const navigate = useNavigate();
 
   const [state, setState] = useState({
     searchText: q || "",
@@ -77,9 +78,9 @@ const Searchbar = (props) => {
 
   const _search = useCallback(
     (searchText) => {
-      props.history.push("/search?q=" + searchText);
+      navigate("/search?q=" + searchText);
     },
-    [props.history]
+    [navigate]
   );
 
   const _submitForm = (e) => {
@@ -218,4 +219,4 @@ const Searchbar = (props) => {
   );
 };
 
-export default withRouter(Searchbar);
+export default Searchbar;

@@ -20,7 +20,7 @@ router.get("/", async (req, res, next) => {
   res.status(200).send(data)
 })
 
-router.get("/:crawler/start", async (req, res, next) => {
+router.post("/:crawler/start", async (req, res, next) => {
   const { crawler } = req.params;
   try {
     const response = await Axios.post(`http://${crawler}/start`)
@@ -30,7 +30,7 @@ router.get("/:crawler/start", async (req, res, next) => {
   }
 });
 
-router.get("/:crawler/stop", async (req, res, next) => {
+router.post("/:crawler/stop", async (req, res, next) => {
   const { crawler } = req.params;
   try {
     const response = await Axios.post(`http://${crawler}/stop`)
@@ -40,7 +40,7 @@ router.get("/:crawler/stop", async (req, res, next) => {
   }
 });
 
-router.get("/:crawler/toggleAutorestart", async (req, res, next) => {
+router.post("/:crawler/toggleAutorestart", async (req, res, next) => {
   const { crawler } = req.params;
   try {
     const response = await Axios.post(`http://${crawler}/toggleAutorestart`)
@@ -48,6 +48,16 @@ router.get("/:crawler/toggleAutorestart", async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-})
+});
+
+router.post("/:crawler/resetIndex", async (req, res, next) => {
+  const { crawler } = req.params;
+  try {
+    const response = await Axios.post(`http://${crawler}/resetIndex`)
+    res.status(200).send(response.data)
+  } catch (err) {
+    next(err);
+  }
+});
 
 module.exports = router;

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
  Licensed to the Apache Software Foundation (ASF) under one or more
  contributor license agreements.  See the NOTICE file distributed with
@@ -114,7 +114,7 @@
 
        solr.RAMDirectoryFactory is memory based and not persistent.
     -->
-  <directoryFactory name="DirectoryFactory" class="${solr.directoryFactory:solr.NRTCachingDirectoryFactory}"/>
+  <directoryFactory name="DirectoryFactory" class="${solr.directoryFactory:solr.NRTCachingDirectoryFactory}" />
 
   <!-- The CodecFactory for defining the format of the inverted index.
        The default implementation is SchemaCodecFactory, which is the official Lucene
@@ -128,7 +128,7 @@
        between the existing compression modes in the default codec: "BEST_SPEED" (default)
        or "BEST_COMPRESSION".
   -->
-  <codecFactory class="solr.SchemaCodecFactory"/>
+  <codecFactory class="solr.SchemaCodecFactory" />
 
   <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
        Index Config - These settings control low-level behavior of indexing
@@ -424,7 +424,7 @@
                       to occupy. Note that when this option is specified, the size
                       and initialSize parameters are ignored.
       -->
-    <filterCache class="solr.FastLRUCache" size="512" initialSize="512" autowarmCount="0"/>
+    <filterCache class="solr.FastLRUCache" size="512" initialSize="512" autowarmCount="0" />
 
     <!-- Query Result Cache
 
@@ -434,7 +434,7 @@
             maxRamMB - the maximum amount of RAM (in MB) that this cache is allowed
                        to occupy
       -->
-    <queryResultCache class="solr.LRUCache" size="512" initialSize="512" autowarmCount="0"/>
+    <queryResultCache class="solr.LRUCache" size="512" initialSize="512" autowarmCount="0" />
 
     <!-- Document Cache
 
@@ -442,7 +442,7 @@
          document).  Since Lucene internal document ids are transient,
          this cache will not be autowarmed.
       -->
-    <documentCache class="solr.LRUCache" size="512" initialSize="512" autowarmCount="0"/>
+    <documentCache class="solr.LRUCache" size="512" initialSize="512" autowarmCount="0" />
 
     <!-- custom cache currently used by block join -->
     <cache name="perSegFilter" class="solr.search.LRUCache" size="10" initialSize="0" autowarmCount="10" regenerator="solr.NoOpRegenerator" />
@@ -745,7 +745,7 @@
       <str name="defType">edismax</str>
       <str name="qf">document^4.0 authors^3.5 tags_txt_other^3.0 title_txt_other^2.5 subtitle_txt_other^2.0 summary_txt_other^1.5 content_txt_other^1.0 tags_txt_en^3.0 title_txt_en^2.5 subtitle_txt_en^2.0 summary_txt_en^1.5 content_txt_en^1.0 tags_txt_de^3.0 title_txt_de^2.5 subtitle_txt_de^2.0 summary_txt_de^1.5 content_txt_de^1.0 tags_txt_ar^3.0 title_txt_ar^2.5 subtitle_txt_ar^2.0 summary_txt_ar^1.5 content_txt_ar^1.0 tags_txt_bg^3.0 title_txt_bg^2.5 subtitle_txt_bg^2.0 summary_txt_bg^1.5 content_txt_bg^1.0 tags_txt_ca^3.0 title_txt_ca^2.5 subtitle_txt_ca^2.0 summary_txt_ca^1.5 content_txt_ca^1.0 tags_txt_cjk^3.0 title_txt_cjk^2.5 subtitle_txt_cjk^2.0 summary_txt_cjk^1.5 content_txt_cjk^1.0 tags_txt_cz^3.0 title_txt_cz^2.5 subtitle_txt_cz^2.0 summary_txt_cz^1.5 content_txt_cz^1.0 tags_txt_da^3.0 title_txt_da^2.5 subtitle_txt_da^2.0 summary_txt_da^1.5 content_txt_da^1.0 tags_txt_el^3.0 title_txt_el^2.5 subtitle_txt_el^2.0 summary_txt_el^1.5 content_txt_el^1.0 tags_txt_es^3.0 title_txt_es^2.5 subtitle_txt_es^2.0 summary_txt_es^1.5 content_txt_es^1.0 tags_txt_et^3.0 title_txt_et^2.5 subtitle_txt_et^2.0 summary_txt_et^1.5 content_txt_et^1.0 tags_txt_eu^3.0 title_txt_eu^2.5 subtitle_txt_eu^2.0 summary_txt_eu^1.5 content_txt_eu^1.0 tags_txt_fa^3.0 title_txt_fa^2.5 subtitle_txt_fa^2.0 summary_txt_fa^1.5 content_txt_fa^1.0 tags_txt_fi^3.0 title_txt_fi^2.5 subtitle_txt_fi^2.0 summary_txt_fi^1.5 content_txt_fi^1.0 tags_txt_fr^3.0 title_txt_fr^2.5 subtitle_txt_fr^2.0 summary_txt_fr^1.5 content_txt_fr^1.0 tags_txt_ga^3.0 title_txt_ga^2.5 subtitle_txt_ga^2.0 summary_txt_ga^1.5 content_txt_ga^1.0 tags_txt_gl^3.0 title_txt_gl^2.5 subtitle_txt_gl^2.0 summary_txt_gl^1.5 content_txt_gl^1.0 tags_txt_hi^3.0 title_txt_hi^2.5 subtitle_txt_hi^2.0 summary_txt_hi^1.5 content_txt_hi^1.0 tags_txt_hu^3.0 title_txt_hu^2.5 subtitle_txt_hu^2.0 summary_txt_hu^1.5 content_txt_hu^1.0 tags_txt_hy^3.0 title_txt_hy^2.5 subtitle_txt_hy^2.0 summary_txt_hy^1.5 content_txt_hy^1.0 tags_txt_id^3.0 title_txt_id^2.5 subtitle_txt_id^2.0 summary_txt_id^1.5 content_txt_id^1.0 tags_txt_it^3.0 title_txt_it^2.5 subtitle_txt_it^2.0 summary_txt_it^1.5 content_txt_it^1.0 tags_txt_ja^3.0 title_txt_ja^2.5 subtitle_txt_ja^2.0 summary_txt_ja^1.5 content_txt_ja^1.0 tags_txt_ko^3.0 title_txt_ko^2.5 subtitle_txt_ko^2.0 summary_txt_ko^1.5 content_txt_ko^1.0 tags_txt_lv^3.0 title_txt_lv^2.5 subtitle_txt_lv^2.0 summary_txt_lv^1.5 content_txt_lv^1.0 tags_txt_nl^3.0 title_txt_nl^2.5 subtitle_txt_nl^2.0 summary_txt_nl^1.5 content_txt_nl^1.0 tags_txt_no^3.0 title_txt_no^2.5 subtitle_txt_no^2.0 summary_txt_no^1.5 content_txt_no^1.0 tags_txt_pt^3.0 title_txt_pt^2.5 subtitle_txt_pt^2.0 summary_txt_pt^1.5 content_txt_pt^1.0 tags_txt_ro^3.0 title_txt_ro^2.5 subtitle_txt_ro^2.0 summary_txt_ro^1.5 content_txt_ro^1.0 tags_txt_ru^3.0 title_txt_ru^2.5 subtitle_txt_ru^2.0 summary_txt_ru^1.5 content_txt_ru^1.0 tags_txt_sv^3.0 title_txt_sv^2.5 subtitle_txt_sv^2.0 summary_txt_sv^1.5 content_txt_sv^1.0 tags_txt_th^3.0 title_txt_th^2.5 subtitle_txt_th^2.0 summary_txt_th^1.5 content_txt_th^1.0 tags_txt_tr^3.0 title_txt_tr^2.5 subtitle_txt_tr^2.0 summary_txt_tr^1.5 content_txt_tr^1.0</str>
       <str name="rows">10</str>
-      <str name="fl">id,document,title_txt_*,subtitle_txt_*,tags_txt_*,summary_txt_*,authors,score,path,language,file,link,externallink,scanDate,creationDate,modificationDate,publicationDate,rating,source</str>
+      <str name="fl">id,document,title_txt_*,subtitle_txt_*,tags_txt_*,summary_txt_*,authors,score,path,language,cache,file,link,externallink,scanDate,creationDate,modificationDate,publicationDate,rating,source</str>
       <str name="wt">json</str>
       <str name="fq">deleted:false</str>
       <!-- <str name="hl.fl">page_*,title,zusatz,document,meta_*,data_*</str> -->
@@ -953,7 +953,7 @@
        A component to return terms and document frequency of those
        terms
     -->
-  <searchComponent name="terms" class="solr.TermsComponent"/>
+  <searchComponent name="terms" class="solr.TermsComponent" />
 
   <!-- A request handler for demonstrating the terms component -->
   <requestHandler name="/terms" class="solr.SearchHandler" startup="lazy">
@@ -997,8 +997,12 @@
       <!-- Configure the standard formatter -->
       <formatter name="html" default="true" class="solr.highlight.HtmlFormatter">
         <lst name="defaults">
-          <str name="hl.simple.pre"><![CDATA[<em>]]></str>
-          <str name="hl.simple.post"><![CDATA[</em>]]></str>
+          <str name="hl.simple.pre">
+            <![CDATA[<em>]]>
+          </str>
+          <str name="hl.simple.post">
+            <![CDATA[</em>]]>
+          </str>
         </lst>
       </formatter>
 
@@ -1006,13 +1010,13 @@
       <encoder name="html" class="solr.highlight.HtmlEncoder" />
 
       <!-- Configure the standard fragListBuilder -->
-      <fragListBuilder name="simple" class="solr.highlight.SimpleFragListBuilder"/>
+      <fragListBuilder name="simple" class="solr.highlight.SimpleFragListBuilder" />
 
       <!-- Configure the single fragListBuilder -->
-      <fragListBuilder name="single" class="solr.highlight.SingleFragListBuilder"/>
+      <fragListBuilder name="single" class="solr.highlight.SingleFragListBuilder" />
 
       <!-- Configure the weighted fragListBuilder -->
-      <fragListBuilder name="weighted" default="true" class="solr.highlight.WeightedFragListBuilder"/>
+      <fragListBuilder name="weighted" default="true" class="solr.highlight.WeightedFragListBuilder" />
 
       <!-- default tag FragmentsBuilder -->
       <fragmentsBuilder name="default" default="true" class="solr.highlight.ScoreOrderFragmentsBuilder">
@@ -1026,13 +1030,17 @@
       <!-- multi-colored tag FragmentsBuilder -->
       <fragmentsBuilder name="colored" class="solr.highlight.ScoreOrderFragmentsBuilder">
         <lst name="defaults">
-          <str name="hl.tag.pre"><![CDATA[
+          <str name="hl.tag.pre">
+            <![CDATA[
                <b style="background:yellow">,<b style="background:lawgreen">,
                <b style="background:aquamarine">,<b style="background:magenta">,
                <b style="background:palegreen">,<b style="background:coral">,
                <b style="background:wheat">,<b style="background:khaki">,
-               <b style="background:lime">,<b style="background:deepskyblue">]]></str>
-          <str name="hl.tag.post"><![CDATA[</b>]]></str>
+               <b style="background:lime">,<b style="background:deepskyblue">]]>
+          </str>
+          <str name="hl.tag.post">
+            <![CDATA[</b>]]>
+          </str>
         </lst>
       </fragmentsBuilder>
 
@@ -1080,15 +1088,15 @@
 
        See http://wiki.apache.org/solr/GuessingFieldTypes
     -->
-  <updateProcessor class="solr.UUIDUpdateProcessorFactory" name="uuid"/>
-  <updateProcessor class="solr.RemoveBlankFieldUpdateProcessorFactory" name="remove-blank"/>
+  <updateProcessor class="solr.UUIDUpdateProcessorFactory" name="uuid" />
+  <updateProcessor class="solr.RemoveBlankFieldUpdateProcessorFactory" name="remove-blank" />
   <updateProcessor class="solr.FieldNameMutatingUpdateProcessorFactory" name="field-name-mutating">
     <str name="pattern">[^\w-\.]</str>
     <str name="replacement">_</str>
   </updateProcessor>
-  <updateProcessor class="solr.ParseBooleanFieldUpdateProcessorFactory" name="parse-boolean"/>
-  <updateProcessor class="solr.ParseLongFieldUpdateProcessorFactory" name="parse-long"/>
-  <updateProcessor class="solr.ParseDoubleFieldUpdateProcessorFactory" name="parse-double"/>
+  <updateProcessor class="solr.ParseBooleanFieldUpdateProcessorFactory" name="parse-boolean" />
+  <updateProcessor class="solr.ParseLongFieldUpdateProcessorFactory" name="parse-long" />
+  <updateProcessor class="solr.ParseDoubleFieldUpdateProcessorFactory" name="parse-double" />
   <updateProcessor class="solr.ParseDateFieldUpdateProcessorFactory" name="parse-date">
     <arr name="format">
       <str>yyyy-MM-dd['T'[HH:mm[:ss[.SSS]][z</str>
@@ -1138,13 +1146,13 @@
       <str name="langid.langField">language</str>
       <str name="langid.fallback">en</str>
     </processor> -->
-    
-    <processor class="solr.LogUpdateProcessorFactory"/>
-    <processor class="solr.DistributedUpdateProcessorFactory"/>
-    <processor class="solr.RunUpdateProcessorFactory"/>
+
+    <processor class="solr.LogUpdateProcessorFactory" />
+    <processor class="solr.DistributedUpdateProcessorFactory" />
+    <processor class="solr.RunUpdateProcessorFactory" />
   </updateRequestProcessorChain>
 
-<!-- Language identification
+  <!-- Language identification
 
        This example update chain identifies the language of the incoming
        documents using the langid contrib. The detected language is
@@ -1154,7 +1162,7 @@
        rich documents injected via ExtractingRequestHandler.
        See more about langId at http://wiki.apache.org/solr/LanguageDetection
     -->
-    
+
   <!-- <updateRequestProcessorChain name="langid">
     <processor class="org.apache.solr.update.processor.TikaLanguageIdentifierUpdateProcessorFactory">
       <str name="langid.fl">*_page,title,subject,description</str>
@@ -1165,7 +1173,7 @@
     <processor class="solr.LogUpdateProcessorFactory" />
     <processor class="solr.RunUpdateProcessorFactory" />
   </updateRequestProcessorChain> -->
-   
+
 
   <!-- Deduplication
 

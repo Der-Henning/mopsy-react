@@ -84,8 +84,23 @@ class Crawler:
             "progress": self.proc_progress.get(),
             "text": self.proc_text.get(),
             "startable": self.proc_startable.get(),
-            "autorestart": self.proc_autorestart.get()
+            "autorestart": self.proc_autorestart.get(),
+            "indexed_docs": self.num_docs
         }
+
+    @property
+    def num_docs(self):
+        res = self.solr.select({
+            "q": f"source:{config.SOLR_PREFIX}",
+            "fl": "id"
+        })
+        return res["response"]["numFound"]
+
+    def delete_all_docs(self):
+        self.solr.remove_all(config.SOLR_PREFIX)
+        self.solr.optimize()
+        self.file_cache.remove_all()
+        return self.status
 
     def worker(self, stopped, text, progress, status, startable):
         try:
@@ -180,19 +195,21 @@ class Crawler:
 
         # get file
         if "indexlink" in doc:
-            file_path = self.file_cache.download(doc["indexlink"], doc["id"])
+            cache = self.file_cache.download(doc["indexlink"], doc["id"])
             doc.pop("indexlink", None)
-            doc['file'] = file_path
+            doc["cache"] = cache
         elif "file" in doc:
-            file_path = doc["file"]
+            # file_path = doc["file"]
+            cache = self.file_cache.symlink(doc["file"], doc["id"])
+            doc["cache"] = cache
         elif "link" in doc:
-            file_path = self.file_cache.download(doc["link"], doc["id"])
-            doc['file'] = file_path
+            cache = self.file_cache.download(doc["link"], doc["id"])
+            doc["cache"] = cache
         # else: return
 
         # if no file provided delete cached file
         # if exists in solr -> mark as deleted else stop
-        if doc['file'] is None or not os.path.exists(doc['file']):
+        if doc["cache"] is None or not os.path.exists(doc["cache"]):
             log.info("No file found")
             self.file_cache.remove(doc["id"])
             if len(solr_doc["response"]["docs"]) > 0:
@@ -206,11 +223,11 @@ class Crawler:
         # if md5 matches saved one -> stop
         # else extract data from file
         else:
-            doc["md5"] = tomd5(file_path)
+            doc["md5"] = tomd5(doc["cache"])
             log.info(doc["md5"])
             if md5 != doc["md5"]:
                 log.info("new Document")
-                extract = self.extract_data(file_path)
+                extract = self.extract_data(doc["cache"])
                 if not extract:
                     log.info("Error extracting data from file")
                     return
@@ -252,6 +269,7 @@ class Crawler:
                 doc['pages'], start=1)})
             doc.pop("pages", None)
         doc["scanDate"] = datetime.datetime.now().isoformat() + "Z"
+        doc["source"] = config.SOLR_PREFIX
 
         # commit document to solr
         self.solr.commit(doc)

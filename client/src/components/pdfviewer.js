@@ -38,64 +38,44 @@ const StyledSlider = withStyles({
     },
 })(Slider);
 
-const PDFViewer = () => {
+const PDFViewer = (props) => {
     const viewerContainer = useRef(null);
     const viewer = useRef(null);
 
     const {
         activeDocument,
-        activeDocumentPage,
-        setActiveDocumentPage,
-        activeDocumentData,
         highlighting
     } = useSearchData();
 
-    const [document, setDocument] = useState({
+    const [document, _setDocument] = useState({
         loading: true,
         content: null,
     });
-    const [pdfViewerLoaded, setPdfViewerLoaded] = useState(false);
-    const [progress, setProgress] = useState(0);
-    const [swipeStart, setSwipeStart] = useState(0);
-    const [swipeStop, setSwipeStop] = useState(0);
-    const [marks, setMarks] = useState([]);
-    const [currentDoc, setCurrentDoc] = useState(0);
+    const [pdfViewerLoaded, _setPdfViewerLoaded] = useState(false);
+    const [progress, _setProgress] = useState(0);
+    const [swipeStart, _setSwipeStart] = useState(0);
+    const [swipeStop, _setSwipeStop] = useState(0);
+    const [marks, _setMarks] = useState([]);
+    const [currentDoc, _setCurrentDoc] = useState(0);
+    const [currentPage, _setCurrentPage] = useState(parseInt(props.page));
 
     useEffect(() => {
         if (highlighting?.[activeDocument]?.pages) {
-            setMarks(() => Object.keys(highlighting[activeDocument]["pages"]).map(p => ({ value: p })))
+            // _setMarks(() => Object.keys(highlighting[activeDocument]["pages"]).map(p => ({ value: p })))
+            _setMarks(() => highlighting[activeDocument]["pages"].map(p => ({ value: p[0] })))
         }
     }, [activeDocument, highlighting])
+
+    useEffect(() => {
+        _setCurrentPage(parseInt(props.page));
+    }, [props.page])
 
     const getPageCount = useMemo(() => {
         if (!document.content) return 0
         return document.content.reduce((total, doc) => (total + doc.numPages), 0)
     }, [document])
 
-    // useEffect(() => {
-    //     console.log(activeDocumentPage)
-    // }, [activeDocumentPage])
-
-    // useEffect(() => {
-    //     const { content } = document;
-    //     if (content && pdfViewerLoaded) {
-    //         eventBus.on('pagechanging', e => {
-    //             console.log(`e.pageNumber: ${e.pageNumber}`)
-    //             var docNum = 0;
-    //             var pageNum = e.pageNumber;
-    //             while (docNum < currentDoc) {
-    //                 pageNum += content[docNum].numPages;
-    //                 docNum += 1;
-    //             }
-    //             console.log(`pageNum: ${pageNum}`)
-    //             console.log(`active: ${activeDocumentPage}`)
-    //             if (pageNum !== activeDocumentPage)
-    //                 setActiveDocumentPage(pageNum)
-    //         });
-    //     }
-    // }, [document, pdfViewerLoaded, activeDocumentPage, setActiveDocumentPage, currentDoc])
-
-    const initPdfViewer = useCallback(() => {
+    const _initPdfViewer = useCallback(() => {
         if (viewerContainer.current) {
             pdfViewer = new pdfjsViewer.PDFSinglePageViewer({
                 container: viewerContainer.current,
@@ -107,16 +87,17 @@ const PDFViewer = () => {
                 renderInteractiveForms: true,
             });
             pdfLinkService.setViewer(pdfViewer);
-            setPdfViewerLoaded(true);
+            _setPdfViewerLoaded(true);
         }
     }, [])
 
-    const highlightMatches = useCallback((document, page) => {
+    const _highlightMatches = useCallback((document, page) => {
         const textLayer = pdfViewer._pages[page - 1]?.textLayer?.textLayerDiv;
-        const highlights = highlighting?.[document]?.pages?.[page];
-        if (textLayer && highlights && !textLayer.highlighted) {
+        // const highlights = highlighting?.[document]?.pages?.[page];
+        const highlights = highlighting?.[document]?.pages?.find(p => p[0] === page);
+        if (textLayer && highlights && highlights[1] && !textLayer.highlighted) {
             textLayer.highlighted = true
-            let phrases = highlights.map(h => (
+            let phrases = highlights[1].map(h => (
                 h.split("<b>")[1].split("</b>")[0]
             ));
             phrases = [...new Set(phrases)];
@@ -139,22 +120,22 @@ const PDFViewer = () => {
 
     const _setPage = useCallback(async () => {
         const { content } = document;
-        if (content && pdfViewerLoaded && activeDocumentPage <= getPageCount) {
+        if (content && pdfViewerLoaded && currentPage <= getPageCount) {
             try {
                 const docID = activeDocument;
                 const [docNum, pageNum] = (() => {
                     var pageSum = content[0].numPages
                     var docNum = 0
                     var pageSums = 0
-                    while (pageSum < activeDocumentPage) {
+                    while (pageSum < currentPage) {
                         pageSums += content[docNum].numPages
                         docNum += 1
                         pageSum += content[docNum].numPages
                     }
-                    return [docNum, activeDocumentPage - pageSums]
+                    return [docNum, currentPage - pageSums]
                 })()
                 if (currentDoc !== docNum) {
-                    setCurrentDoc(docNum)
+                    _setCurrentDoc(docNum)
                 } else {
                     const pdfPage = await content[docNum].getPage(pageNum);
                     if (viewerContainer.current) {
@@ -169,29 +150,29 @@ const PDFViewer = () => {
                         pdfViewer.currentScale = scale;
                         pdfViewer.currentPageNumber = pageNum;
                         pdfViewer.eventBus.on("textlayerrendered", () => {
-                            highlightMatches(docID, pageNum);
+                            _highlightMatches(docID, pageNum);
                         })
                     }
                 }
             } catch (e) { }
         }
-    }, [document, activeDocument, activeDocumentPage, pdfViewerLoaded, highlightMatches, getPageCount, currentDoc])
+    }, [document, activeDocument, pdfViewerLoaded, _highlightMatches, getPageCount, currentDoc, currentPage])
 
     const _loadDocument = useCallback(async () => {
-        setDocument(() => ({
+        _setDocument(() => ({
             loading: true,
             content: null
         }));
-        if (activeDocumentData()?.link) {
+        if (props.url) {
             try {
                 if (loadingTask) loadingTask.destroy();
                 loadingTask = pdfjs.getDocument({
-                    url: activeDocumentData().link,
+                    url: props.url,
                     cMapUrl: CMAP_URL,
                     cMapPacked: CMAP_PACKED,
                 });
                 loadingTask.onProgress = (data) => {
-                    setProgress(data.loaded / data.total * 100);
+                    _setProgress(data.loaded / data.total * 100);
                 }
                 var docs = [await loadingTask.promise]
                 try {
@@ -208,62 +189,56 @@ const PDFViewer = () => {
                         }
                     }
                 } catch (e) { console.log(e) }
-                setProgress(100)
-                setDocument(() => ({
+                _setProgress(100)
+                _setDocument(() => ({
                     loading: false,
                     content: docs
                 }));
-                setProgress(0);
+                _setProgress(0);
             } catch (e) {
                 console.log(e)
-                setDocument(() => ({
+                _setDocument(() => ({
                     loading: false,
                     content: null
                 }));
             }
         }
-    }, [activeDocumentData]);
+    }, [props.url]);
 
-    const wheelEvent = useCallback((e) => {
-        if (e.deltaY < 0) {
-            setActiveDocumentPage((() => {
-                if (activeDocumentPage - 1 > 0) return activeDocumentPage - 1
-                return activeDocumentPage
-            })());
-        }
-        if (e.deltaY > 0) {
-            setActiveDocumentPage((() => {
-                if (activeDocumentPage + 1 <= getPageCount) return activeDocumentPage + 1
-                return activeDocumentPage
-            })());
-        }
-    }, [setActiveDocumentPage, activeDocumentPage, getPageCount])
+    const _goUp = useCallback(() => {
+        _setCurrentPage((() => {
+            if (currentPage - 1 > 0) return currentPage - 1
+            return currentPage
+        })());
+    }, [currentPage])
 
-    const startSwipe = useCallback((e) => {
+    const _goDown = useCallback(() => {
+        _setCurrentPage((() => {
+            if (currentPage + 1 <= getPageCount) return currentPage + 1
+            return currentPage
+        })());
+    }, [currentPage, getPageCount])
+
+    const _wheelEvent = useCallback((e) => {
+        if (e.deltaY < 0) _goUp()
+        if (e.deltaY > 0) _goDown()
+    }, [_goUp, _goDown])
+
+    const _startSwipe = useCallback((e) => {
         const { clientY } = e.targetTouches[0];
-        setSwipeStart(clientY);
-        setSwipeStop(clientY);
+        _setSwipeStart(clientY);
+        _setSwipeStop(clientY);
     }, [])
 
-    const moveSwipe = useCallback((e) => {
+    const _moveSwipe = useCallback((e) => {
         const { clientY } = e.targetTouches[0];
-        setSwipeStop(clientY);
+        _setSwipeStop(clientY);
     }, [])
 
-    const stopSwipe = useCallback(() => {
-        if (swipeStop - swipeStart > 150) {
-            setActiveDocumentPage((() => {
-                if (activeDocumentPage - 1 > 0) return activeDocumentPage - 1
-                return activeDocumentPage
-            })());
-        }
-        if (swipeStop - swipeStart < -150) {
-            setActiveDocumentPage((() => {
-                if (activeDocumentPage + 1 < pdfViewer.pagesCount) return activeDocumentPage + 1
-                return activeDocumentPage
-            })());
-        }
-    }, [swipeStart, swipeStop, setActiveDocumentPage, activeDocumentPage])
+    const _stopSwipe = useCallback(() => {
+        if (swipeStop - swipeStart > 150) _goUp()
+        if (swipeStop - swipeStart < -150) _goDown()
+    }, [swipeStart, swipeStop, _goUp, _goDown])
 
     useEffect(() => {
         _loadDocument();
@@ -280,8 +255,8 @@ const PDFViewer = () => {
     }, [document, pdfViewerLoaded, currentDoc])
 
     useLayoutEffect(() => {
-        initPdfViewer();
-    }, [initPdfViewer])
+        _initPdfViewer();
+    }, [_initPdfViewer])
 
     useEffect(() => {
         _setPage();
@@ -295,10 +270,10 @@ const PDFViewer = () => {
             <div style={{ ...styles, display: !document.content && !document.loading ? "flex" : "none" }}>PDF missing!</div>
             <div
                 ref={viewerContainer}
-                onWheel={(e) => wheelEvent(e)}
-                onTouchStart={e => startSwipe(e)}
-                onTouchMove={e => moveSwipe(e)}
-                onTouchEnd={() => stopSwipe()}
+                onWheel={(e) => _wheelEvent(e)}
+                onTouchStart={e => _startSwipe(e)}
+                onTouchMove={e => _moveSwipe(e)}
+                onTouchEnd={() => _stopSwipe()}
                 style={{
                     ...styles,
                     backgroundColor: "lightgrey",
@@ -332,11 +307,11 @@ const PDFViewer = () => {
                         min={1}
                         max={getPageCount}
                         // getAriaValueText={valuetext}
-                        value={getPageCount - activeDocumentPage + 1}
+                        value={getPageCount - currentPage + 1}
                         track="inverted"
                         marks={marks.map(m => ({ value: getPageCount - m.value + 1 }))}
                         // aria-labelledby="vertical-slider"
-                        onChange={(e, v) => setActiveDocumentPage(getPageCount - v + 1)}
+                        onChange={(e, v) => _setCurrentPage(getPageCount - v + 1)}
                     />
                     : ""}
             </div>
