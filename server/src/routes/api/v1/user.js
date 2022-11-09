@@ -3,6 +3,7 @@ const models = require("../../../models");
 const config = require("../../../config");
 const errors = require("../../../middleware/errors");
 const nodemailer = require("nodemailer");
+const generator = require("generate-password");
 const { smtp } = config;
 const transporter = nodemailer.createTransport({
   host: smtp.host,
@@ -34,7 +35,7 @@ router.get("/data", async (req, res, next) => {
   const { userId } = req.session
   try {
     if (!userId) return next(new errors.UnauthorizedError());
-    const user = await models.User.findByPk(userId, {attributes: ["username", "email"]});
+    const user = await models.User.findByPk(userId, { attributes: ["username", "email"] });
     if (!user) return next(new errors.ResourceNotFoundError("User"));
     res.send({ username: user.username, email: user.email })
   } catch (err) {
@@ -146,9 +147,10 @@ router.post("/forgottpassword", async (req, res, next) => {
   try {
     const user = await models.User.findOne({ where: { email: email } });
     if (!user) return next(new errors.ResourceNotFoundError("E-Mail"));
-    const randomPassword = Math.random()
-      .toString(36)
-      .slice(-8);
+    const randomPassword = generator.generate({
+      length: 10,
+      numbers: true
+    });
     const mailOptions = {
       from: smtp.from,
       to: email,

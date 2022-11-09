@@ -64,26 +64,26 @@ services:
     command:
       solr-precreate mopsy /opt/solr/server/solr/configsets/myconfig
 
-  # calibre:
-  #   build:
-  #     context: ..
-  #     dockerfile: .devcontainer/Dockerfile.crawler
-  #     args:
-  #       PYTHON_VERSION: "3.10-slim"
-  #   volumes:
-  #     - ../crawler:/app:cached
-  #     - ../calibre-library:/workspace/calibre-library:ro
-  #     - cache:/cache
-  #   environment:
-  #     DEBUG: 'true'
-  #     CRAWLER_PORT: 8989
-  #     CRAWLER_TYPE: calibre
-  #     CRAWLER_NAME: Calibre V1.0
-  #     CALIBRE_PATH: /workspace/calibre-library
-  #     CRAWLER_AUTORESTART: 'false'
-  #     CRAWLER_AUTOSTART: 'false'
-  #     MOPSY_SOLR_PREFIX: calibre
-  #   command: python src/server.py
+  calibre:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile.crawler
+      args:
+        PYTHON_VERSION: "3.10-slim"
+    volumes:
+      - ../crawler:/app:cached
+      - ../calibre-library:/workspace/calibre-library:ro
+      - cache:/cache
+    environment:
+      DEBUG: 'true'
+      CRAWLER_PORT: 8989
+      CRAWLER_TYPE: calibre
+      CRAWLER_NAME: Calibre V1.0
+      CALIBRE_PATH: /workspace/calibre-library
+      CRAWLER_AUTORESTART: 'false'
+      CRAWLER_AUTOSTART: 'false'
+      MOPSY_SOLR_PREFIX: calibre
+    command: python src/server.py
 
 volumes:
   postgres-data:

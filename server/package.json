@@ -20,6 +20,7 @@
     "express-rate-limit": "^6.2.0",
     "express-session": "^1.17.2",
     "fs": "0.0.1-security",
+    "generate-password": "^1.7.0",
     "http": "^0.0.1-security",
     "langs": "^2.0.0",
     "md5-file": "^5.0.0",
